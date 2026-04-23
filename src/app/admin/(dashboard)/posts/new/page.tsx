@@ -21,6 +21,7 @@ export default function NewPostPage() {
     const [newCategoryName, setNewCategoryName] = useState('')
     const [loading, setLoading] = useState(false)
     const [error, setError] = useState('')
+    const [publishedAt, setPublishedAt] = useState('')
 
     useEffect(() => {
         fetchCategories()
@@ -80,7 +81,9 @@ export default function NewPostPage() {
             process.env.NEXT_PUBLIC_SUPABASE_ANON_KEY!
         )
 
-        const publishedAt = status === 'published' ? new Date().toISOString() : null
+        const publishedAtISO = publishedAt
+            ? new Date(publishedAt).toISOString()
+            : (status === 'published' ? new Date().toISOString() : null)
 
         const { error: insertError } = await supabase.from('posts').insert({
             title,
@@ -90,7 +93,7 @@ export default function NewPostPage() {
             cover_image_url: coverImageUrl || null,
             category_id: categoryId || null,
             status,
-            published_at: publishedAt,
+            published_at: publishedAtISO,
         })
 
         if (insertError) {
@@ -186,6 +189,17 @@ export default function NewPostPage() {
                         <option value="draft">Draft</option>
                         <option value="published">Published</option>
                     </select>
+                </div>
+
+                <div>
+                    <label className="block text-sm font-medium text-[#666666] mb-1">Published Date</label>
+                    <input
+                        type="datetime-local"
+                        value={publishedAt}
+                        onChange={(e) => setPublishedAt(e.target.value)}
+                        className="w-full px-3 py-2 border border-gray-300 rounded focus:outline-none focus:border-[#2563EB] focus:ring-1 focus:ring-[#2563EB]"
+                    />
+                    <p className="text-xs text-gray-500 mt-1">Leave blank to use current time when publishing.</p>
                 </div>
 
                 <div>

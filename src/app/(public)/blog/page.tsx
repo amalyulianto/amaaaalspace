@@ -21,6 +21,7 @@ export default async function BlogPage() {
       categories(id, name, slug, created_at)
     `)
         .eq('status', 'published')
+        .lte('published_at', new Date().toISOString())
         .order('published_at', { ascending: false })
 
     const { data: categoriesData } = await supabase

@@ -8,6 +8,7 @@ export async function GET() {
         .from('posts')
         .select('slug, updated_at')
         .eq('status', 'published')
+        .lte('published_at', new Date().toISOString())
 
     const staticPages = ['/', '/blog', '/portfolio', '/resume', '/guestbook']
 

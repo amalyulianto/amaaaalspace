@@ -47,6 +47,7 @@ export default async function CategoryPage({ params }: PageProps) {
     `)
         .eq('status', 'published')
         .eq('category_id', category.id)
+        .lte('published_at', new Date().toISOString())
         .order('published_at', { ascending: false })
 
     const { data: allCategoriesData } = await supabase

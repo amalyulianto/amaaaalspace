@@ -23,9 +23,7 @@ export default function TiptapEditor({ content, onChange }: TiptapEditorProps) {
             Underline,
             Link.configure({ openOnClick: false }),
             ResizeImage.configure({
-                HTMLAttributes: {
-                    class: 'max-w-full h-auto rounded-lg',
-                },
+                inline: false,
             }),
             Placeholder.configure({ placeholder: 'Start writing...' }),
         ],
@@ -119,7 +117,7 @@ export default function TiptapEditor({ content, onChange }: TiptapEditorProps) {
                 <ToolbarButton onClick={() => editor.chain().focus().redo().run()}>Redo</ToolbarButton>
             </div>
             <div className="p-4 min-h-[400px] max-w-none">
-                <EditorContent editor={editor} className="min-h-[400px] outline-none" />
+                <EditorContent editor={editor} className="prose-content min-h-[400px] outline-none" />
             </div>
         </div>
     )

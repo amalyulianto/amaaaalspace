@@ -27,6 +27,7 @@ export async function generateMetadata({ params }: PageProps): Promise<Metadata>
         .select('title, excerpt, cover_image_url, slug, categories(name, slug)')
         .eq('slug', params.slug)
         .eq('status', 'published')
+        .lte('published_at', new Date().toISOString())
         .single()
 
     if (!data) return { title: 'Post not found' }
@@ -56,6 +57,7 @@ export default async function BlogPostPage({ params }: PageProps) {
     `)
         .eq('slug', params.slug)
         .eq('status', 'published')
+        .lte('published_at', new Date().toISOString())
         .limit(1)
         .single()
 

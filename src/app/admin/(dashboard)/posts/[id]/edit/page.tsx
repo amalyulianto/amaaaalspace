@@ -21,6 +21,7 @@ export default function EditPostPage({ params }: { params: { id: string } }) {
     const [status, setStatus] = useState<'draft' | 'published'>('draft')
     const [content, setContent] = useState('')
     const [initialPublishedAt, setInitialPublishedAt] = useState<string | null>(null)
+    const [publishedAt, setPublishedAt] = useState('')
 
     const [newCategoryName, setNewCategoryName] = useState('')
     const [loading, setLoading] = useState(false)
@@ -57,6 +58,12 @@ export default function EditPostPage({ params }: { params: { id: string } }) {
             setStatus(post.status)
             setContent(post.content || '')
             setInitialPublishedAt(post.published_at)
+            if (post.published_at) {
+                // Convert UTC to local datetime-local format (YYYY-MM-DDTHH:mm)
+                const date = new Date(post.published_at)
+                const localISO = new Date(date.getTime() - date.getTimezoneOffset() * 60000).toISOString().slice(0, 16)
+                setPublishedAt(localISO)
+            }
         }
         setFetching(false)
     }
@@ -101,8 +108,8 @@ export default function EditPostPage({ params }: { params: { id: string } }) {
             process.env.NEXT_PUBLIC_SUPABASE_ANON_KEY!
         )
 
-        let finalPublishedAt = initialPublishedAt
-        if (status === 'published' && !initialPublishedAt) {
+        let finalPublishedAt = publishedAt ? new Date(publishedAt).toISOString() : initialPublishedAt
+        if (status === 'published' && !finalPublishedAt) {
             finalPublishedAt = new Date().toISOString()
         }
 
@@ -218,6 +225,17 @@ export default function EditPostPage({ params }: { params: { id: string } }) {
                         <option value="draft">Draft</option>
                         <option value="published">Published</option>
                     </select>
+                </div>
+
+                <div>
+                    <label className="block text-sm font-medium text-[#666666] mb-1">Published Date</label>
+                    <input
+                        type="datetime-local"
+                        value={publishedAt}
+                        onChange={(e) => setPublishedAt(e.target.value)}
+                        className="w-full px-3 py-2 border border-gray-300 rounded focus:outline-none focus:border-[#2563EB] focus:ring-1 focus:ring-[#2563EB]"
+                    />
+                    <p className="text-xs text-gray-500 mt-1">Manual publication date/time.</p>
                 </div>
 
                 <div>
