@@ -1,3 +1,4 @@
+import Image from 'next/image'
 import Link from 'next/link'
 import { PortfolioItem } from '@/lib/types'
 
@@ -7,7 +8,18 @@ interface ProjectCardProps {
 
 export default function ProjectCard({ item }: ProjectCardProps) {
     return (
-        <article className="mb-8">
+        <article className="mb-12">
+            {item.cover_image_url && (
+                <div className="mb-4">
+                    <Image
+                        src={item.cover_image_url}
+                        alt={item.title}
+                        width={680}
+                        height={400}
+                        className="w-full h-auto rounded border border-[#E5E7EB]"
+                    />
+                </div>
+            )}
             <h2 className="text-[1.1rem] font-semibold mb-1">{item.title}</h2>
             {item.description && (
                 <p className="text-[#666666] text-[0.95rem] leading-relaxed mb-2">

@@ -1,6 +1,6 @@
 'use client'
 
-import { useRef, useState } from 'react'
+import { useEffect, useRef, useState } from 'react'
 import { createBrowserClient } from '@supabase/ssr'
 
 interface ImageUploaderProps {
@@ -14,6 +14,10 @@ export default function ImageUploader({ onUpload, currentUrl, label = 'Cover Ima
     const [uploading, setUploading] = useState(false)
     const [uploadStatus, setUploadStatus] = useState<'idle' | 'success' | 'error'>('idle')
     const [previewUrl, setPreviewUrl] = useState<string | undefined>(currentUrl)
+
+    useEffect(() => {
+        setPreviewUrl(currentUrl)
+    }, [currentUrl])
 
     const handleFileChange = async (e: React.ChangeEvent<HTMLInputElement>) => {
         const file = e.target.files?.[0]
