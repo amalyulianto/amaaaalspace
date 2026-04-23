@@ -40,11 +40,11 @@ export default function GuestbookForm() {
     return (
         <div>
             {status === 'success' ? (
-                <p className="text-[#666666] text-[0.95rem]">
-                    Thanks for visiting! Your message will appear after review.
+                <p className="text-[#111111] font-bold text-[1.2rem] py-4">
+                    Thanks for leaving a trace! It will appear after review.
                 </p>
             ) : (
-                <form ref={formRef} onSubmit={handleSubmit} className="space-y-4">
+                <form ref={formRef} onSubmit={handleSubmit} className="space-y-8 max-w-lg">
                     {/* Honeypot */}
                     <input
                         type="text"
@@ -55,33 +55,29 @@ export default function GuestbookForm() {
                     />
 
                     <div>
-                        <label htmlFor="guestbook-name" className="block text-[0.9rem] font-medium mb-1">
-                            Name
-                        </label>
                         <input
                             id="guestbook-name"
                             type="text"
                             name="author_name"
                             required
-                            className="w-full border border-gray-200 rounded px-3 py-2 text-[0.95rem] focus:outline-none focus:border-blue-600"
+                            placeholder="Your name"
+                            className="w-full bg-transparent border-0 border-b-2 border-[#E5E7EB] focus:border-[#111111] px-0 py-3 text-[1.2rem] focus:outline-none focus:ring-0 transition-colors placeholder:text-[#999999] font-medium"
                         />
                     </div>
 
                     <div>
-                        <label htmlFor="guestbook-message" className="block text-[0.9rem] font-medium mb-1">
-                            Message
-                        </label>
                         <textarea
                             id="guestbook-message"
                             name="message"
                             required
-                            rows={3}
-                            className="w-full border border-gray-200 rounded px-3 py-2 text-[0.95rem] focus:outline-none focus:border-blue-600 resize-y"
+                            rows={2}
+                            placeholder="Leave a message..."
+                            className="w-full bg-transparent border-0 border-b-2 border-[#E5E7EB] focus:border-[#111111] px-0 py-3 text-[1.2rem] focus:outline-none focus:ring-0 resize-none transition-colors placeholder:text-[#999999] font-medium"
                         />
                     </div>
 
                     {status === 'error' && (
-                        <p className="text-red-600 text-[0.9rem]">
+                        <p className="text-red-600 font-medium">
                             Something went wrong. Please try again.
                         </p>
                     )}
@@ -89,9 +85,9 @@ export default function GuestbookForm() {
                     <button
                         type="submit"
                         disabled={status === 'loading'}
-                        className="bg-blue-600 text-white px-4 py-2 rounded text-[0.9rem] hover:bg-blue-700 disabled:opacity-60 disabled:cursor-not-allowed"
+                        className="bg-neutral-900 text-white px-8 py-3 rounded-full font-medium tracking-wide text-sm hover:bg-black hover:scale-[1.02] active:scale-[0.98] transition-all disabled:opacity-60 disabled:cursor-not-allowed inline-flex items-center"
                     >
-                        {status === 'loading' ? 'Sending...' : 'Sign guestbook'}
+                        {status === 'loading' ? 'Signing...' : 'Leave a Note'}
                     </button>
                 </form>
             )}

@@ -1,22 +1,27 @@
-import Container from '@/components/layout/Container'
-import GuestbookForm from '@/components/guestbook/GuestbookForm'
-import GuestbookList from '@/components/guestbook/GuestbookList'
+import { createClient } from '@/lib/supabase/server'
 import type { Metadata } from 'next'
+import { GuestbookClient, GuestbookMessage } from '@/components/guestbook/GuestbookClient'
 
 export const metadata: Metadata = {
     title: 'Guestbook',
     description: 'Leave a message for Alapakadala.',
 }
 
-export default function GuestbookPage() {
-    return (
-        <Container>
-            <h1 className="text-[1.8rem] font-bold mb-2">Guestbook</h1>
-            <p className="text-[#666666] mb-8">Leave a message. Say hello.</p>
-            <GuestbookForm />
-            <div className="mt-10">
-                <GuestbookList />
-            </div>
-        </Container>
-    )
+export default async function GuestbookPage() {
+    const supabase = createClient()
+
+    const { data: entries } = await supabase
+        .from('guestbook')
+        .select('*')
+        .eq('approved', true)
+        .order('created_at', { ascending: false })
+
+    const formattedMessages: GuestbookMessage[] = (entries ?? []).map((entry) => ({
+        id: entry.id,
+        name: entry.author_name,
+        message: entry.message,
+        date: entry.created_at,
+    }))
+
+    return <GuestbookClient initialMessages={formattedMessages} />
 }

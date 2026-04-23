@@ -8,22 +8,28 @@ interface CategoryFilterProps {
 
 export default function CategoryFilter({ categories, activeSlug }: CategoryFilterProps) {
     return (
-        <div className="flex flex-wrap gap-x-4 gap-y-2 mb-8">
+        <nav className="flex flex-wrap gap-2">
             <Link
                 href="/blog"
-                className={`text-[0.9rem] no-underline hover:underline ${!activeSlug ? 'font-bold text-[#111111]' : 'text-blue-600'}`}
+                className={`px-3 py-1.5 rounded-full text-sm font-medium transition-colors no-underline ${!activeSlug
+                    ? "bg-neutral-900 text-white"
+                    : "bg-neutral-100 text-neutral-600 hover:bg-neutral-200"
+                    }`}
             >
-                All
+                All Posts
             </Link>
             {categories.map((category) => (
                 <Link
                     key={category.id}
                     href={`/blog/category/${category.slug}`}
-                    className={`text-[0.9rem] no-underline hover:underline ${activeSlug === category.slug ? 'font-bold text-[#111111]' : 'text-blue-600'}`}
+                    className={`px-3 py-1.5 rounded-full text-sm font-medium transition-colors no-underline capitalize ${activeSlug === category.slug
+                        ? "bg-neutral-900 text-white"
+                        : "bg-neutral-100 text-neutral-600 hover:bg-neutral-200"
+                        }`}
                 >
                     {category.name}
                 </Link>
             ))}
-        </div>
+        </nav>
     )
 }

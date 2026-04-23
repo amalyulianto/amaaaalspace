@@ -1,121 +1,122 @@
-import Image from 'next/image'
-import { notFound } from 'next/navigation'
 import { createClient } from '@/lib/supabase/server'
-import Container from '@/components/layout/Container'
-import CommentList from '@/components/blog/CommentList'
-import CommentForm from '@/components/blog/CommentForm'
-import { Post } from '@/lib/types'
+import { notFound } from 'next/navigation'
+import Link from 'next/link'
+import { ArrowLeft } from 'lucide-react'
 import type { Metadata } from 'next'
+import { CommentClient } from '@/components/blog/CommentClient'
+import { Comment } from '@/lib/types'
 
-interface PageProps {
+type Props = {
     params: { slug: string }
 }
 
-function formatDate(dateString: string | null): string {
-    if (!dateString) return ''
-    return new Date(dateString).toLocaleDateString('en-US', {
-        year: 'numeric',
-        month: 'long',
-        day: 'numeric',
-    })
-}
-
-export async function generateMetadata({ params }: PageProps): Promise<Metadata> {
+export async function generateMetadata({ params }: Props): Promise<Metadata> {
     const supabase = createClient()
-    const { data } = await supabase
+    const { data: post } = await supabase
         .from('posts')
-        .select('title, excerpt, cover_image_url, slug, categories(name, slug)')
+        .select('title, excerpt')
         .eq('slug', params.slug)
-        .eq('status', 'published')
-        .lte('published_at', new Date().toISOString())
         .single()
 
-    if (!data) return { title: 'Post not found' }
-
-    const description = data.excerpt ?? 'A post by Alapakadala'
     return {
-        title: data.title,
-        description,
-        openGraph: {
-            title: data.title,
-            description,
-            url: `${process.env.NEXT_PUBLIC_SITE_URL}/blog/${data.slug}`,
-            images: data.cover_image_url ? [{ url: data.cover_image_url, width: 1200, height: 630 }] : [],
-        },
+        title: post?.title || 'Post Not Found',
+        description: post?.excerpt || '',
     }
 }
 
-export default async function BlogPostPage({ params }: PageProps) {
+export default async function BlogPostPage({ params }: Props) {
     const supabase = createClient()
 
+    // Fetch post with category
     const { data: postData } = await supabase
         .from('posts')
         .select(`
-      id, title, slug, excerpt, cover_image_url, content, category_id,
-      status, published_at, created_at, updated_at,
-      categories(id, name, slug, created_at)
-    `)
+            *,
+            categories (id, name, slug)
+        `)
         .eq('slug', params.slug)
         .eq('status', 'published')
-        .lte('published_at', new Date().toISOString())
-        .limit(1)
         .single()
 
-    if (!postData) notFound()
-
-    const post: Post = {
-        ...postData,
-        category: Array.isArray(postData.categories)
-            ? postData.categories[0]
-            : (postData.categories ?? undefined),
+    if (!postData) {
+        notFound()
     }
 
+    const category = Array.isArray(postData.categories) ? postData.categories[0] : postData.categories
+
+    // Fetch comments
+    const { data: commentsData } = await supabase
+        .from('comments')
+        .select('*')
+        .eq('post_id', postData.id)
+        .eq('approved', true)
+        .order('created_at', { ascending: true })
+
+    const initialComments: Comment[] = commentsData ?? []
+
     return (
-        <Container>
-            <article>
-                <header className="mb-8">
-                    <h1 className="text-[1.8rem] font-bold leading-snug mb-3">{post.title}</h1>
-                    <div className="flex items-center gap-3 text-[0.85rem] text-[#666666]">
-                        <span>{formatDate(post.published_at)}</span>
-                        {post.category && (
-                            <>
-                                <span>·</span>
-                                <span>{post.category.name}</span>
-                            </>
-                        )}
-                    </div>
-                </header>
+        <article className="animate-in fade-in duration-500 max-w-2xl mx-auto">
+            <Link
+                href="/blog"
+                className="inline-flex items-center gap-2 text-sm text-neutral-500 hover:text-neutral-900 mb-8 transition-colors no-underline"
+            >
+                <ArrowLeft className="w-4 h-4" /> Back to blog
+            </Link>
 
-                {post.cover_image_url && (
-                    <div className="mb-8">
-                        <Image
-                            src={post.cover_image_url}
-                            alt={post.title}
-                            width={680}
-                            height={400}
-                            className="w-full h-auto rounded"
-                            priority
-                        />
-                    </div>
-                )}
-
-                {post.content && (
-                    <div
-                        className="prose-content leading-[1.7] text-[#111111]"
-                        dangerouslySetInnerHTML={{ __html: post.content }}
-                    />
-                )}
-            </article>
-
-            <hr className="border-gray-200 my-12" />
-
-            <section>
-                <h2 className="text-[1.1rem] font-semibold mb-6">Comments</h2>
-                <CommentList postId={post.id} />
-                <div className="mt-8">
-                    <CommentForm postId={post.id} />
+            <header className="mb-10 space-y-4 text-center">
+                <div className="flex items-center justify-center gap-3 text-sm font-medium text-neutral-500 mb-6">
+                    <time dateTime={postData.published_at || ''}>
+                        {new Date(postData.published_at || '').toLocaleDateString("en-US", {
+                            month: "long",
+                            day: "numeric",
+                            year: "numeric"
+                        })}
+                    </time>
+                    {category && (
+                        <>
+                            <span className="w-1 h-1 rounded-full bg-neutral-300" />
+                            <Link
+                                href={`/blog/category/${category.slug}`}
+                                className="hover:text-neutral-900 transition-colors uppercase tracking-wider text-xs no-underline"
+                            >
+                                {category.name}
+                            </Link>
+                        </>
+                    )}
                 </div>
-            </section>
-        </Container>
+
+                <h1 className="text-3xl sm:text-4xl md:text-5xl font-bold tracking-tight text-neutral-900 leading-tight">
+                    {postData.title}
+                </h1>
+
+                {postData.excerpt && (
+                    <p className="text-xl text-neutral-500 max-w-xl mx-auto italic">
+                        {postData.excerpt}
+                    </p>
+                )}
+            </header>
+
+            {postData.cover_image_url && (
+                <figure className="mb-12 rounded-xl overflow-hidden bg-neutral-100 border border-neutral-200 aspect-video relative">
+                    <img
+                        src={postData.cover_image_url}
+                        alt={`Cover for ${postData.title}`}
+                        className="w-full h-full object-cover"
+                    />
+                </figure>
+            )}
+
+            {/* Post Content */}
+            {postData.content && (
+                <div
+                    className="prose prose-neutral prose-lg max-w-none prose-p:leading-relaxed prose-headings:font-bold prose-a:text-blue-600 hover:prose-a:text-blue-500"
+                    dangerouslySetInnerHTML={{ __html: postData.content }}
+                />
+            )}
+
+            <hr className="my-16 border-neutral-200" />
+
+            <CommentClient postId={postData.id} initialComments={initialComments} />
+        </article>
     )
 }

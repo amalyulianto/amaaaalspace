@@ -4,6 +4,7 @@ import { useEffect, useState } from 'react'
 import { useRouter } from 'next/navigation'
 import { createBrowserClient } from '@supabase/ssr'
 import ImageUploader from '@/components/admin/ImageUploader'
+import TiptapEditor from '@/components/admin/TiptapEditor'
 import { PortfolioItem } from '@/lib/types'
 
 export default function EditPortfolioPage({ params }: { params: { id: string } }) {
@@ -13,6 +14,7 @@ export default function EditPortfolioPage({ params }: { params: { id: string } }
     const [title, setTitle] = useState('')
     const [slug, setSlug] = useState('')
     const [description, setDescription] = useState('')
+    const [content, setContent] = useState('')
     const [techStackInput, setTechStackInput] = useState('')
     const [coverImageUrl, setCoverImageUrl] = useState('')
     const [projectUrl, setProjectUrl] = useState('')
@@ -38,6 +40,7 @@ export default function EditPortfolioPage({ params }: { params: { id: string } }
             setTitle(item.title)
             setSlug(item.slug)
             setDescription(item.description || '')
+            setContent(item.content || '')
             setTechStackInput(item.tech_stack?.join(', ') || '')
             setCoverImageUrl(item.cover_image_url || '')
             setProjectUrl(item.project_url || '')
@@ -82,6 +85,7 @@ export default function EditPortfolioPage({ params }: { params: { id: string } }
                 title,
                 slug,
                 description,
+                content,
                 tech_stack,
                 cover_image_url: coverImageUrl || null,
                 project_url: projectUrl || null,
@@ -129,13 +133,18 @@ export default function EditPortfolioPage({ params }: { params: { id: string } }
                 </div>
 
                 <div>
-                    <label className="block text-sm font-medium text-[#666666] mb-1">Description</label>
+                    <label className="block text-sm font-medium text-[#666666] mb-1">Description (Short)</label>
                     <textarea
                         value={description}
                         onChange={(e) => setDescription(e.target.value)}
-                        rows={4}
+                        rows={3}
                         className="w-full px-3 py-2 border border-gray-300 rounded focus:outline-none focus:border-[#2563EB] focus:ring-1 focus:ring-[#2563EB]"
                     />
+                </div>
+
+                <div>
+                    <label className="block text-sm font-medium text-[#666666] mb-1">Full Content (Blog Style)</label>
+                    <TiptapEditor content={content} onChange={setContent} />
                 </div>
 
                 <div>

@@ -25,10 +25,20 @@ export type PortfolioItem = {
   title: string
   slug: string
   description: string | null
+  content: string | null
   tech_stack: string[]
   cover_image_url: string | null
   project_url: string | null
   github_url: string | null
+  display_order: number
+  created_at: string
+}
+
+export type LinkItem = {
+  id: string
+  title: string
+  url: string
+  icon: string | null
   display_order: number
   created_at: string
 }

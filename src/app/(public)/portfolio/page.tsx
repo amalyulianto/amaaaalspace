@@ -1,5 +1,4 @@
 import { createClient } from '@/lib/supabase/server'
-import Container from '@/components/layout/Container'
 import ProjectCard from '@/components/portfolio/ProjectCard'
 import { PortfolioItem } from '@/lib/types'
 import type { Metadata } from 'next'
@@ -20,15 +19,25 @@ export default async function PortfolioPage() {
     const items: PortfolioItem[] = data ?? []
 
     return (
-        <Container>
-            <h1 className="text-[1.8rem] font-bold mb-8">Work</h1>
-            {items.length > 0 ? (
-                items.map((item) => (
-                    <ProjectCard key={item.id} item={item} />
-                ))
-            ) : (
-                <p className="text-[#666666]">No projects yet.</p>
-            )}
-        </Container>
+        <div className="space-y-12 animate-in fade-in duration-500 pt-4 md:pt-10">
+            <header className="space-y-4 border-b border-neutral-100 pb-8">
+                <h1 className="text-3xl font-bold tracking-tight">Portfolio</h1>
+                <p className="text-lg text-neutral-600 max-w-2xl">
+                    Selected projects and experiments.
+                </p>
+            </header>
+
+            <div className="space-y-12">
+                {items.length > 0 ? (
+                    <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
+                        {items.map((item) => (
+                            <ProjectCard key={item.id} item={item} />
+                        ))}
+                    </div>
+                ) : (
+                    <p className="text-neutral-500">No projects yet.</p>
+                )}
+            </div>
+        </div>
     )
 }

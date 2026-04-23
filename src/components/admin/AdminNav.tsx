@@ -40,6 +40,7 @@ export default function AdminNav() {
         { name: 'Resume', href: '/admin/resume' },
         { name: 'Comments', href: '/admin/comments' },
         { name: 'Guestbook', href: '/admin/guestbook' },
+        { name: 'Links', href: '/admin/links' },
     ]
 
     return (
@@ -59,8 +60,8 @@ export default function AdminNav() {
                                 <Link
                                     href={link.href}
                                     className={`block px-3 py-2 rounded text-sm ${isActive
-                                            ? 'bg-[#E5E7EB] font-bold text-[#111111]'
-                                            : 'text-[#666666] hover:bg-gray-200 hover:text-[#111111]'
+                                        ? 'bg-[#E5E7EB] font-bold text-[#111111]'
+                                        : 'text-[#666666] hover:bg-gray-200 hover:text-[#111111]'
                                         }`}
                                 >
                                     {link.name}

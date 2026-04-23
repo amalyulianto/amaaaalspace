@@ -1,5 +1,4 @@
 import { createClient } from '@/lib/supabase/server'
-import Container from '@/components/layout/Container'
 import PostCard from '@/components/blog/PostCard'
 import CategoryFilter from '@/components/blog/CategoryFilter'
 import { Post, Category } from '@/lib/types'
@@ -37,16 +36,27 @@ export default async function BlogPage() {
     const categories: Category[] = categoriesData ?? []
 
     return (
-        <Container>
-            <h1 className="text-[1.8rem] font-bold mb-6">Writing</h1>
-            <CategoryFilter categories={categories} />
-            {posts.length > 0 ? (
-                posts.map((post) => (
-                    <PostCard key={post.id} post={post} />
-                ))
-            ) : (
-                <p className="text-[#666666]">No posts yet.</p>
-            )}
-        </Container>
+        <div className="space-y-12 animate-in fade-in duration-500 pt-4 md:pt-10">
+            <header className="space-y-4 border-b border-neutral-100 pb-8">
+                <h1 className="text-3xl font-bold tracking-tight">Writing</h1>
+                <p className="text-lg text-neutral-600 max-w-2xl">
+                    Thoughts on software engineering, design, and life.
+                </p>
+
+                <div className="pt-4">
+                    <CategoryFilter categories={categories} />
+                </div>
+            </header>
+
+            <div className="space-y-12">
+                {posts.length > 0 ? (
+                    posts.map((post) => (
+                        <PostCard key={post.id} post={post} />
+                    ))
+                ) : (
+                    <p className="text-neutral-500">No posts found in this category.</p>
+                )}
+            </div>
+        </div>
     )
 }

@@ -17,7 +17,7 @@
   }
 
   a:hover {
-    @apply underline;
+    @apply no-underline;
   }
 
   blockquote {
