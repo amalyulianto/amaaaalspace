@@ -73,7 +73,12 @@ export default function TiptapEditor({ content, onChange }: TiptapEditorProps) {
         if (!file) return
         const url = await uploadEditorImage(file)
         if (url) {
-            editor.chain().focus().setImage({ src: url }).run()
+            editor.chain().focus().insertContent({
+                type: 'imageResize',
+                attrs: {
+                    src: url,
+                },
+            }).run()
         }
         if (fileInputRef.current) {
             fileInputRef.current.value = ''
