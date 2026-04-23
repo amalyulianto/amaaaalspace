@@ -1,10 +1,12 @@
-import { createClient } from '@/lib/supabase/server'
+import { createPublicClient } from '@/lib/supabase/server'
 import type { Metadata } from 'next'
 import { LinkItem } from '@/lib/types'
 import {
     Link2, Mail, Globe, Book, Briefcase, FileText, Code,
     MessageSquare, Coffee, Video, Music, Monitor, Smartphone, Heart, Star, Cloud
 } from 'lucide-react'
+
+export const revalidate = 60;
 
 export const metadata: Metadata = {
     title: 'Links | Alapakadala',
@@ -21,7 +23,7 @@ const getIcon = (name: string | null) => {
 }
 
 export default async function LinksPage() {
-    const supabase = createClient()
+    const supabase = createPublicClient()
 
     const { data: linksData } = await supabase
         .from('links')

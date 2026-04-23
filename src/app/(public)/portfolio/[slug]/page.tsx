@@ -42,7 +42,7 @@ export default async function PortfolioDetailPage({ params }: Props) {
                 href="/portfolio"
                 className="inline-flex items-center gap-2 text-sm text-neutral-500 hover:text-neutral-900 mb-8 transition-colors no-underline"
             >
-                <ArrowLeft className="w-4 h-4" /> Back to portfolio
+                <ArrowLeft className="w-4 h-4" /> Kembali ke Karya
             </Link>
 
             <header className="mb-10 space-y-4 text-center">
@@ -88,7 +88,7 @@ export default async function PortfolioDetailPage({ params }: Props) {
                                 rel="noreferrer"
                                 className="inline-flex items-center gap-1.5 text-sm font-medium text-neutral-600 hover:text-neutral-900 transition-colors no-underline"
                             >
-                                <Code className="w-4 h-4" /> Source
+                                <Code className="w-4 h-4" /> Kode Sumber
                             </a>
                         )}
                     </div>
@@ -113,7 +113,7 @@ export default async function PortfolioDetailPage({ params }: Props) {
                 />
             ) : (
                 <div className="text-center py-12 border border-dashed border-neutral-200 rounded-xl bg-neutral-50/50">
-                    <p className="text-neutral-500">More details about this project will be added soon.</p>
+                    <p className="text-neutral-500">Deskripsi belum diisi. Tunggu, ya!</p>
                 </div>
             )}
 
@@ -124,7 +124,7 @@ export default async function PortfolioDetailPage({ params }: Props) {
                     href="/portfolio"
                     className="inline-flex items-center justify-center px-6 py-2.5 bg-neutral-900 text-white font-medium text-sm rounded-lg hover:bg-neutral-800 transition-colors no-underline"
                 >
-                    View All Projects
+                    Lihat semua karya
                 </Link>
             </div>
         </article>

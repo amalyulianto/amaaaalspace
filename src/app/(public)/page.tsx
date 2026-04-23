@@ -4,27 +4,27 @@ import { ArrowRight, BookOpen, Briefcase, FileText, MessageSquare, Link2 } from 
 export default function HomePage() {
 
     const navItems = [
-        { title: "Blog", path: "/blog", desc: "Writing about web development and design.", icon: BookOpen },
-        { title: "Portfolio", path: "/portfolio", desc: "Selected projects and open-source.", icon: Briefcase },
-        { title: "Resume", path: "/resume", desc: "Professional experience and skills.", icon: FileText },
-        { title: "Guestbook", path: "/guestbook", desc: "Leave a trace, say hello.", icon: MessageSquare },
-        { title: "Links", path: "/links", desc: "All my social icons and important links.", icon: Link2 },
+        { title: "Tulisan", path: "/blog", desc: "Blog pribadi karena suka nulis. Tulisan tentang apa saja.", icon: BookOpen },
+        { title: "Karya", path: "/portfolio", desc: "Karya-karya yang pernah dibuat yang berani dipublikasikan. Tidak semua bagus, tapi ada yang bagus, kok...", icon: Briefcase },
+        { title: "Resume", path: "/resume", desc: "Lihat pengalaman dan rekam jejak saya.", icon: FileText },
+        { title: "Buku Tamu", path: "/guestbook", desc: "Tinggalkan jejak, kayak di Kaskus.", icon: MessageSquare },
+        { title: "Links", path: "/links", desc: "Semua link penting tentang achu.", icon: Link2 },
     ];
 
     return (
         <div className="space-y-16 animate-in fade-in duration-500">
             {/* Hero Section */}
-            <section className="space-y-6 pt-4 md:pt-10">
+            <section className="space-y-6 pt-8">
                 <h1 className="text-4xl sm:text-5xl md:text-6xl font-bold tracking-tight text-neutral-900 leading-tight">
-                    Hi, I'm Alapakadala.
+                    Halo, ini Amal.
                 </h1>
                 <p className="text-xl sm:text-2xl text-neutral-600 leading-relaxed max-w-2xl font-light">
-                    I'm a Flutter developer and designer who loves building clean, accessible, and performant web applications.
+                    Saya orang. Suka menulis. Menulis kode, menulis blog, menulis cerita pendek, menulis apa saja kalau lagi pengen. Suka main catur juga walaupun yang ini agak sedikit bodoh dan tidak mahir, add amalyulianto di chess.com. Akhir-akhir ini juga lagi hobi Stand Up Comedy.
                 </p>
             </section>
 
             {/* Navigation Grid */}
-            <nav className="grid sm:grid-cols-2 md:grid-cols-3 gap-4 md:gap-6 pt-8">
+            <nav className="grid sm:grid-cols-2 md:grid-cols-3 gap-4 md:gap-6 pt-2">
                 {navItems.map(item => (
                     <Link
                         key={item.path}

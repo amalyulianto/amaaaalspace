@@ -42,7 +42,11 @@ export default function AdminDashboard() {
     }, [])
 
     if (loading) {
-        return <div className="text-[#666666]">Loading stats...</div>
+        return (
+            <div className="py-12 text-[#666666] animate-pulse">
+                Loading dashboard data...
+            </div>
+        )
     }
 
     const statBoxes = [
@@ -63,24 +67,24 @@ export default function AdminDashboard() {
 
     return (
         <div>
-            <h1 className="text-2xl font-bold text-[#111111] mb-8">Dashboard</h1>
+            <h1 className="text-xl font-bold text-[#111111] mb-8">Dashboard Overview</h1>
 
-            <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-4 mb-12">
+            <div className="grid grid-cols-2 md:grid-cols-4 gap-4 mb-12">
                 {statBoxes.map((box, i) => (
-                    <div key={i} className="bg-white border border-[#E5E7EB] rounded p-6 shadow-sm">
-                        <div className="text-[#666666] text-sm mb-2">{box.label}</div>
-                        <div className="text-3xl font-bold text-[#111111]">{box.value}</div>
+                    <div key={i} className="bg-white border border-[#E5E7EB] rounded p-5">
+                        <div className="text-[#666666] text-sm mb-1">{box.label}</div>
+                        <div className="text-2xl font-bold text-[#111111]">{box.value}</div>
                     </div>
                 ))}
             </div>
 
-            <h2 className="text-xl font-bold text-[#111111] mb-4">Quick Links</h2>
-            <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-4">
+            <h2 className="text-lg font-bold text-[#111111] mb-4">Quick Links</h2>
+            <div className="grid grid-cols-2 md:grid-cols-3 gap-4">
                 {quickLinks.map((link, i) => (
                     <Link
                         key={i}
                         href={link.href}
-                        className="block bg-gray-50 border border-[#E5E7EB] p-4 rounded text-[#2563EB] font-medium hover:bg-gray-100 transition-colors"
+                        className="block border border-[#E5E7EB] p-4 rounded text-[#111111] font-medium hover:bg-[#F3F4F6] hover:border-[#111111] transition-all"
                     >
                         {link.name} &#8594;
                     </Link>

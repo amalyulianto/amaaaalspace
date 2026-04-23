@@ -3,12 +3,18 @@
 import { useState } from "react";
 import { MessageSquare } from "lucide-react";
 import { Comment } from "@/lib/types";
+import { PALESTINE_NAMES } from "@/lib/constants";
 
 export function CommentClient({ postId, initialComments }: { postId: string, initialComments: Comment[] }) {
     const [comments] = useState<Comment[]>(initialComments);
     const [commentForm, setCommentForm] = useState({ name: "", message: "", honeypot: "" });
     const [isSubmitting, setIsSubmitting] = useState(false);
     const [submitSuccess, setSubmitSuccess] = useState(false);
+
+    const generateRandomName = () => {
+        const randomIndex = Math.floor(Math.random() * PALESTINE_NAMES.length);
+        setCommentForm({ ...commentForm, name: PALESTINE_NAMES[randomIndex] });
+    };
 
     const handleSubmit = async (e: React.FormEvent) => {
         e.preventDefault();
@@ -68,30 +74,30 @@ export function CommentClient({ postId, initialComments }: { postId: string, ini
                 ))}
 
                 {comments.length === 0 && (
-                    <p className="text-neutral-500 italic">No comments yet. Be the first to share your thoughts!</p>
+                    <p className="text-neutral-500 italic">Belum ada komentar. Mari aja lah kalau mau komeng, aku sule.</p>
                 )}
             </div>
 
             {/* Comment Form */}
             <div className="mt-12 bg-white p-6 md:p-8 rounded-xl border border-neutral-200 shadow-sm">
-                <h3 className="text-lg font-bold mb-6">Leave a Reply</h3>
+                <h3 className="text-lg font-bold mb-6">Balas komentar</h3>
 
                 {submitSuccess ? (
                     <div className="bg-green-50 text-green-800 p-4 rounded-lg border border-green-200">
-                        <p className="font-medium">Thanks for your comment!</p>
-                        <p className="text-sm mt-1">It has been submitted and is awaiting approval before it appears here.</p>
+                        <p className="font-medium">Makasih udah komeng</p>
+                        <p className="text-sm mt-1">Komengmu sudah masuk, tapi ga tau ya kalo bakal kutampilin di sini. Kalau mood aja sih.</p>
                         <button
                             onClick={() => setSubmitSuccess(false)}
                             className="mt-4 text-sm font-medium underline"
                         >
-                            Write another comment
+                            Komeng lagi?
                         </button>
                     </div>
                 ) : (
                     <form onSubmit={handleSubmit} className="space-y-5">
                         {/* Honeypot field (hidden from users) */}
                         <div className="hidden" aria-hidden="true">
-                            <label htmlFor="honeypot">Leave this field empty</label>
+                            <label htmlFor="honeypot">Jangan diisi</label>
                             <input
                                 type="text"
                                 id="honeypot"
@@ -104,7 +110,16 @@ export function CommentClient({ postId, initialComments }: { postId: string, ini
                         </div>
 
                         <div>
-                            <label htmlFor="name" className="block text-sm font-medium text-neutral-700 mb-1">Name</label>
+                            <div className="flex justify-between items-baseline mb-1">
+                                <label htmlFor="name" className="block text-sm font-medium text-neutral-700">Nama</label>
+                                <button
+                                    type="button"
+                                    onClick={generateRandomName}
+                                    className="text-[0.75rem] text-blue-600 hover:underline font-medium"
+                                >
+                                    Nama Random
+                                </button>
+                            </div>
                             <input
                                 type="text"
                                 id="name"
@@ -112,12 +127,12 @@ export function CommentClient({ postId, initialComments }: { postId: string, ini
                                 value={commentForm.name}
                                 onChange={(e) => setCommentForm({ ...commentForm, name: e.target.value })}
                                 className="w-full px-4 py-2 border border-neutral-300 rounded-lg focus:ring-2 focus:ring-neutral-900 focus:border-neutral-900 outline-none transition-shadow"
-                                placeholder="John Doe"
+                                placeholder="Jok Mobil"
                             />
                         </div>
 
                         <div>
-                            <label htmlFor="message" className="block text-sm font-medium text-neutral-700 mb-1">Message</label>
+                            <label htmlFor="message" className="block text-sm font-medium text-neutral-700 mb-1">Pesan</label>
                             <textarea
                                 id="message"
                                 required
@@ -125,7 +140,7 @@ export function CommentClient({ postId, initialComments }: { postId: string, ini
                                 value={commentForm.message}
                                 onChange={(e) => setCommentForm({ ...commentForm, message: e.target.value })}
                                 className="w-full px-4 py-2 border border-neutral-300 rounded-lg focus:ring-2 focus:ring-neutral-900 focus:border-neutral-900 outline-none transition-shadow resize-y"
-                                placeholder="What are your thoughts?"
+                                placeholder="Apa komengmu tulis sini."
                             />
                         </div>
 
@@ -134,7 +149,7 @@ export function CommentClient({ postId, initialComments }: { postId: string, ini
                             disabled={isSubmitting}
                             className="w-full sm:w-auto px-6 py-2.5 bg-neutral-900 text-white font-medium rounded-lg hover:bg-neutral-800 transition-colors disabled:opacity-70 flex items-center justify-center min-w-[120px]"
                         >
-                            {isSubmitting ? "Submitting..." : "Post Comment"}
+                            {isSubmitting ? "Mengirim..." : "Kirim Komengtar"}
                         </button>
                     </form>
                 )}

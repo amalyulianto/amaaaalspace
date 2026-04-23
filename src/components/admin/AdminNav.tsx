@@ -44,24 +44,24 @@ export default function AdminNav() {
     ]
 
     return (
-        <div className="w-[220px] bg-[#F3F4F6] flex flex-col min-h-screen">
-            <div className="p-4 border-b border-[#E5E7EB]">
-                <Link href="/" className="text-sm font-medium text-[#111111] hover:text-[#2563EB]">
-                    Alapakadala &#8594;
+        <div className="w-[240px] bg-white flex flex-col min-h-screen flex-shrink-0">
+            <div className="p-8 pb-4">
+                <Link href="/" className="text-[17px] tracking-tight font-bold text-[#111111] hover:text-[#2563EB] transition-colors">
+                    Alapakadala <span className="opacity-50 font-normal">&rarr;</span>
                 </Link>
             </div>
 
-            <nav className="flex-1 py-4">
-                <ul className="space-y-1 px-2">
+            <nav className="flex-1 py-4 px-6">
+                <ul className="space-y-1">
                     {navLinks.map((link) => {
                         const isActive = pathname === link.href || (pathname.startsWith(link.href) && link.href !== '/admin')
                         return (
                             <li key={link.href}>
                                 <Link
                                     href={link.href}
-                                    className={`block px-3 py-2 rounded text-sm ${isActive
-                                        ? 'bg-[#E5E7EB] font-bold text-[#111111]'
-                                        : 'text-[#666666] hover:bg-gray-200 hover:text-[#111111]'
+                                    className={`block px-3 py-2 rounded-md text-[14px] transition-all font-medium ${isActive
+                                        ? 'bg-[#F3F4F6] text-[#111111]'
+                                        : 'text-[#666666] hover:bg-[#F9FAFB] hover:text-[#111111]'
                                         }`}
                                 >
                                     {link.name}
@@ -72,13 +72,13 @@ export default function AdminNav() {
                 </ul>
             </nav>
 
-            <div className="p-4 border-t border-[#E5E7EB] text-sm">
-                <div className="text-[#666666] truncate mb-2">{email || 'User'}</div>
+            <div className="p-8 pt-4">
+                <div className="text-[#666666] text-[13px] truncate mb-3">{email || 'User'}</div>
                 <button
                     onClick={handleSignOut}
-                    className="text-[#666666] hover:text-red-600 hover:bg-red-50 px-2 py-1 -ml-2 rounded text-left transition-colors"
+                    className="text-[#666666] hover:text-[#111111] text-[14px] font-medium block w-full text-left transition-colors"
                 >
-                    Sign Out
+                    Sign Out &rarr;
                 </button>
             </div>
         </div>

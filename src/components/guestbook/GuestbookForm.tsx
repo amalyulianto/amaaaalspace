@@ -1,5 +1,3 @@
-'use client'
-
 import { useState, useRef } from 'react'
 
 export default function GuestbookForm() {
@@ -41,7 +39,7 @@ export default function GuestbookForm() {
         <div>
             {status === 'success' ? (
                 <p className="text-[#111111] font-bold text-[1.2rem] py-4">
-                    Thanks for leaving a trace! It will appear after review.
+                    Makasih dah ngisi. Nanti kutampilin kalo mood.
                 </p>
             ) : (
                 <form ref={formRef} onSubmit={handleSubmit} className="space-y-8 max-w-lg">
@@ -60,7 +58,7 @@ export default function GuestbookForm() {
                             type="text"
                             name="author_name"
                             required
-                            placeholder="Your name"
+                            placeholder="Jok Mobil"
                             className="w-full bg-transparent border-0 border-b-2 border-[#E5E7EB] focus:border-[#111111] px-0 py-3 text-[1.2rem] focus:outline-none focus:ring-0 transition-colors placeholder:text-[#999999] font-medium"
                         />
                     </div>
@@ -71,14 +69,14 @@ export default function GuestbookForm() {
                             name="message"
                             required
                             rows={2}
-                            placeholder="Leave a message..."
+                            placeholder="Tulis di sini"
                             className="w-full bg-transparent border-0 border-b-2 border-[#E5E7EB] focus:border-[#111111] px-0 py-3 text-[1.2rem] focus:outline-none focus:ring-0 resize-none transition-colors placeholder:text-[#999999] font-medium"
                         />
                     </div>
 
                     {status === 'error' && (
                         <p className="text-red-600 font-medium">
-                            Something went wrong. Please try again.
+                            Hmm ada yang salah. Yaudah maap.
                         </p>
                     )}
 

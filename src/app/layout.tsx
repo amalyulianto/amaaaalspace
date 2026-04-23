@@ -4,15 +4,15 @@ import Footer from '@/components/layout/Footer'
 
 export const metadata: Metadata = {
   title: {
-    default: 'Alapakadala',
-    template: '%s | Alapakadala',
+    default: 'Amal\'s Space',
+    template: '%s | Amal\'s Space',
   },
   description: 'Flutter developer and writer based in Indonesia.',
   openGraph: {
     type: 'website',
     locale: 'en_US',
     url: process.env.NEXT_PUBLIC_SITE_URL,
-    siteName: 'Alapakadala',
+    siteName: 'Amal\'s Space',
   },
   twitter: {
     card: 'summary_large_image',

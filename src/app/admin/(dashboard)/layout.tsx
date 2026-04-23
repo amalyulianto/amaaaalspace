@@ -36,10 +36,12 @@ export default function DashboardLayout({ children }: { children: React.ReactNod
     }
 
     return (
-        <div className="flex min-h-screen">
+        <div className="flex min-h-screen bg-white text-[#111111]">
             <AdminNav />
-            <main className="flex-1 p-8 bg-white border-l border-[#E5E7EB]">
-                {children}
+            <main className="flex-1 border-l border-[#E5E7EB] bg-white overflow-x-auto min-w-0">
+                <div className="w-full p-8">
+                    {children}
+                </div>
             </main>
         </div>
     )

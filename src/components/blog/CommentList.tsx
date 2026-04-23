@@ -28,7 +28,7 @@ export default async function CommentList({ postId }: CommentListProps) {
     if (comments.length === 0) {
         return (
             <p className="text-[#666666] text-[0.95rem]">
-                No comments yet. Be the first!
+                Belum ada komeng. Sule aja kali ya?
             </p>
         )
     }

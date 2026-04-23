@@ -1,6 +1,8 @@
-import { createClient } from '@/lib/supabase/server'
+import { createPublicClient } from '@/lib/supabase/server'
 import { Resume, ResumeData } from '@/lib/types'
 import type { Metadata } from 'next'
+
+export const revalidate = 60
 
 export const metadata: Metadata = {
     title: 'Resume',
@@ -8,7 +10,7 @@ export const metadata: Metadata = {
 }
 
 export default async function ResumePage() {
-    const supabase = createClient()
+    const supabase = createPublicClient()
 
     const { data } = await supabase
         .from('resume')
@@ -33,7 +35,7 @@ export default async function ResumePage() {
     }
 
     return (
-        <div className="space-y-16 animate-in fade-in duration-500 pt-4 md:pt-10">
+        <article className="animate-in fade-in duration-500">
             <header className="space-y-4 border-b border-neutral-100 pb-8">
                 <h1 className="text-3xl font-bold tracking-tight">Resume</h1>
                 {content.summary && (
@@ -45,9 +47,9 @@ export default async function ResumePage() {
 
             {/* Experience */}
             {content.experience && content.experience.length > 0 && (
-                <section className="space-y-8">
+                <section className="space-y-8 mt-12">
                     <h2 className="text-2xl font-bold tracking-tight">Experience</h2>
-                    <div className="space-y-12 border-l-2 border-neutral-100 pl-6 ml-2 relative before:absolute before:inset-0 before:left-[-1px] before:w-0.5 before:bg-gradient-to-b before:from-neutral-300 before:to-transparent">
+                    <div className="space-y-12 border-l-2 border-neutral-100 pl-6 ml-2 relative">
                         {content.experience.map((exp, i) => (
                             <div key={i} className="relative">
                                 <span className="absolute w-3 h-3 rounded-full bg-neutral-900 border-2 border-white -left-[31px] top-1.5" />
@@ -69,7 +71,7 @@ export default async function ResumePage() {
 
             {/* Education */}
             {content.education && content.education.length > 0 && (
-                <section className="space-y-8">
+                <section className="space-y-8 mt-16">
                     <h2 className="text-2xl font-bold tracking-tight">Education</h2>
                     <div className="space-y-8">
                         {content.education.map((edu, i) => (
@@ -87,7 +89,7 @@ export default async function ResumePage() {
 
             {/* Skills */}
             {content.skills && content.skills.length > 0 && (
-                <section className="space-y-8">
+                <section className="space-y-8 mt-16">
                     <h2 className="text-2xl font-bold tracking-tight">Skills</h2>
                     <ul className="grid grid-cols-2 sm:grid-cols-3 gap-y-4 gap-x-6">
                         {content.skills.map((skill, i) => (
@@ -99,6 +101,6 @@ export default async function ResumePage() {
                     </ul>
                 </section>
             )}
-        </div>
+        </article>
     )
 }

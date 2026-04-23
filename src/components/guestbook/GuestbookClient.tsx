@@ -3,6 +3,7 @@
 import { useState } from "react";
 import Masonry, { ResponsiveMasonry } from "react-responsive-masonry";
 import { PenLine, X } from "lucide-react";
+import { PALESTINE_NAMES } from "@/lib/constants";
 
 export interface GuestbookMessage {
     id: string;
@@ -18,6 +19,11 @@ export function GuestbookClient({ initialMessages }: { initialMessages: Guestboo
     const [form, setForm] = useState({ name: "", message: "", honeypot: "" });
     const [isSubmitting, setIsSubmitting] = useState(false);
     const [submitSuccess, setSubmitSuccess] = useState(false);
+
+    const generateRandomName = () => {
+        const randomIndex = Math.floor(Math.random() * PALESTINE_NAMES.length);
+        setForm({ ...form, name: PALESTINE_NAMES[randomIndex] });
+    };
 
     const handleSubmit = async (e: React.FormEvent) => {
         e.preventDefault();
@@ -62,7 +68,7 @@ export function GuestbookClient({ initialMessages }: { initialMessages: Guestboo
                 <div className="space-y-4">
                     <h1 className="text-3xl font-bold tracking-tight">Guestbook</h1>
                     <p className="text-lg text-neutral-600">
-                        Leave a trace. Share a thought, a quote, or just say hi.
+                        Tinggalin jejak. Bebas deh mau bilang apa. Mulut ya mulutmu. Bilang halo, kek. Nanya kabar, kek.
                     </p>
                 </div>
                 {!isFormOpen && (
@@ -70,7 +76,7 @@ export function GuestbookClient({ initialMessages }: { initialMessages: Guestboo
                         onClick={() => setIsFormOpen(true)}
                         className="inline-flex items-center gap-2 px-5 py-2.5 bg-neutral-900 text-white text-sm font-medium rounded-full hover:bg-neutral-800 transition-colors shadow-sm whitespace-nowrap self-start md:self-auto"
                     >
-                        <PenLine className="w-4 h-4" /> Leave a Note
+                        <PenLine className="w-4 h-4" /> Tinggalin jejak.
                     </button>
                 )}
             </header>
@@ -89,12 +95,12 @@ export function GuestbookClient({ initialMessages }: { initialMessages: Guestboo
                         <X className="w-4 h-4" />
                     </button>
 
-                    <h2 className="text-xl font-bold mb-6 pr-8">Sign the Guestbook</h2>
+                    <h2 className="text-xl font-bold mb-6 pr-8">Isi Buku Tamu</h2>
 
                     {submitSuccess ? (
                         <div className="bg-green-50 text-green-800 p-5 rounded-xl border border-green-200 animate-in zoom-in-95">
-                            <p className="font-medium text-lg">Thanks for your note!</p>
-                            <p className="text-sm mt-1">Your message is securely stored and awaiting brief review before it appears.</p>
+                            <p className="font-medium text-lg">Makasih udah ngisi!</p>
+                            <p className="text-sm mt-1">Blablablabla... Sana pergi.</p>
                         </div>
                     ) : (
                         <form onSubmit={handleSubmit} className="space-y-5">
@@ -108,14 +114,23 @@ export function GuestbookClient({ initialMessages }: { initialMessages: Guestboo
                                 />
                             </div>
 
-                            <div>
+                            <div className="relative">
+                                <div className="absolute right-0 top-0">
+                                    <button
+                                        type="button"
+                                        onClick={generateRandomName}
+                                        className="text-[0.7rem] text-neutral-400 hover:text-neutral-900 font-medium transition-colors"
+                                    >
+                                        Nama Random
+                                    </button>
+                                </div>
                                 <input
                                     type="text"
                                     required
                                     value={form.name}
                                     onChange={(e) => setForm({ ...form, name: e.target.value })}
                                     className="w-full px-0 py-2 bg-transparent border-0 border-b-2 border-neutral-200 focus:ring-0 focus:border-neutral-900 text-lg outline-none transition-colors placeholder:text-neutral-400"
-                                    placeholder="What's your name?"
+                                    placeholder="Jok Mobil"
                                 />
                             </div>
 
@@ -126,7 +141,7 @@ export function GuestbookClient({ initialMessages }: { initialMessages: Guestboo
                                     value={form.message}
                                     onChange={(e) => setForm({ ...form, message: e.target.value })}
                                     className="w-full px-0 py-2 bg-transparent border-0 border-b-2 border-neutral-200 focus:ring-0 focus:border-neutral-900 text-lg outline-none transition-colors resize-none placeholder:text-neutral-400"
-                                    placeholder="Write your message here..."
+                                    placeholder="Tulis di sini"
                                 />
                             </div>
 
@@ -136,7 +151,7 @@ export function GuestbookClient({ initialMessages }: { initialMessages: Guestboo
                                     disabled={isSubmitting || !form.name || !form.message}
                                     className="px-6 py-2.5 bg-neutral-900 text-white font-medium rounded-full hover:bg-neutral-800 transition-colors disabled:opacity-50 disabled:cursor-not-allowed flex items-center justify-center min-w-[120px]"
                                 >
-                                    {isSubmitting ? "Signing..." : "Sign"}
+                                    {isSubmitting ? "Mengirim" : "Kirim"}
                                 </button>
                             </div>
                         </form>
@@ -183,7 +198,7 @@ export function GuestbookClient({ initialMessages }: { initialMessages: Guestboo
                     </ResponsiveMasonry>
                 ) : (
                     <div className="text-center py-20 border-2 border-dashed border-neutral-200 rounded-2xl w-full">
-                        <p className="text-neutral-500">The guestbook is empty. Be the first to leave a trace!</p>
+                        <p className="text-neutral-500">Buku Tamu masih kosong. Emang siapa juga mau ke sini...</p>
                     </div>
                 )}
             </div>

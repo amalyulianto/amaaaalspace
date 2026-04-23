@@ -1,16 +1,18 @@
-import { createClient } from '@/lib/supabase/server'
+import { createPublicClient } from '@/lib/supabase/server'
 import PostCard from '@/components/blog/PostCard'
 import CategoryFilter from '@/components/blog/CategoryFilter'
 import { Post, Category } from '@/lib/types'
 import { notFound } from 'next/navigation'
 import type { Metadata } from 'next'
 
+export const revalidate = 60;
+
 type Props = {
     params: { slug: string }
 }
 
 export async function generateMetadata({ params }: Props): Promise<Metadata> {
-    const supabase = createClient()
+    const supabase = createPublicClient()
     const { data: category } = await supabase
         .from('categories')
         .select('name')
@@ -24,7 +26,7 @@ export async function generateMetadata({ params }: Props): Promise<Metadata> {
 }
 
 export default async function CategoryPage({ params }: Props) {
-    const supabase = createClient()
+    const supabase = createPublicClient()
 
     const { data: category } = await supabase
         .from('categories')
@@ -61,13 +63,13 @@ export default async function CategoryPage({ params }: Props) {
     const allCategories: Category[] = categoriesData ?? []
 
     return (
-        <div className="space-y-12 animate-in fade-in duration-500 pt-4 md:pt-10">
+        <div className="space-y-12 animate-in fade-in duration-500">
             <header className="space-y-4 border-b border-neutral-100 pb-8">
                 <h1 className="text-3xl font-bold tracking-tight">
-                    Writing: {category.name}
+                    Tulisan: {category.name}
                 </h1>
                 <p className="text-lg text-neutral-600 max-w-2xl">
-                    Thoughts on software engineering, design, and life.
+                    Blog pribadi. Setiap tulisannya dihasilkan setiap kurasa ingin menulis, dan diunggah kalau ingin diunggah. Tentang apa saja.
                 </p>
 
                 <div className="pt-4">

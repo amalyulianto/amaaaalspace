@@ -1,5 +1,3 @@
-'use client'
-
 import { useState, useRef } from 'react'
 
 interface CommentFormProps {
@@ -44,11 +42,11 @@ export default function CommentForm({ postId }: CommentFormProps) {
 
     return (
         <div>
-            <h3 className="text-[1rem] font-semibold mb-4">Leave a comment</h3>
+            <h3 className="text-[1rem] font-semibold mb-4">Tinggalkan Komengtar</h3>
 
             {status === 'success' ? (
                 <p className="text-[#666666] text-[0.95rem]">
-                    Thanks! Your comment is awaiting moderation.
+                    Makasih udah komeng. Kalau mood, nanti kutampilin di sini.
                 </p>
             ) : (
                 <form ref={formRef} onSubmit={handleSubmit} className="space-y-4">
@@ -63,7 +61,7 @@ export default function CommentForm({ postId }: CommentFormProps) {
 
                     <div>
                         <label htmlFor="comment-name" className="block text-[0.9rem] font-medium mb-1">
-                            Name
+                            Nama
                         </label>
                         <input
                             id="comment-name"
@@ -76,7 +74,7 @@ export default function CommentForm({ postId }: CommentFormProps) {
 
                     <div>
                         <label htmlFor="comment-content" className="block text-[0.9rem] font-medium mb-1">
-                            Comment
+                            Komengmu
                         </label>
                         <textarea
                             id="comment-content"
@@ -89,7 +87,7 @@ export default function CommentForm({ postId }: CommentFormProps) {
 
                     {status === 'error' && (
                         <p className="text-red-600 text-[0.9rem]">
-                            Something went wrong. Please try again.
+                            Hmm ada yang salah. Maap lah ya.
                         </p>
                     )}
 

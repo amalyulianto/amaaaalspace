@@ -1,4 +1,4 @@
-import { createClient } from '@/lib/supabase/server'
+import { createPublicClient } from '@/lib/supabase/server'
 import { notFound } from 'next/navigation'
 import Link from 'next/link'
 import { ArrowLeft } from 'lucide-react'
@@ -6,12 +6,14 @@ import type { Metadata } from 'next'
 import { CommentClient } from '@/components/blog/CommentClient'
 import { Comment } from '@/lib/types'
 
+export const revalidate = 60;
+
 type Props = {
     params: { slug: string }
 }
 
 export async function generateMetadata({ params }: Props): Promise<Metadata> {
-    const supabase = createClient()
+    const supabase = createPublicClient()
     const { data: post } = await supabase
         .from('posts')
         .select('title, excerpt')
@@ -25,7 +27,7 @@ export async function generateMetadata({ params }: Props): Promise<Metadata> {
 }
 
 export default async function BlogPostPage({ params }: Props) {
-    const supabase = createClient()
+    const supabase = createPublicClient()
 
     // Fetch post with category
     const { data: postData } = await supabase
@@ -60,7 +62,7 @@ export default async function BlogPostPage({ params }: Props) {
                 href="/blog"
                 className="inline-flex items-center gap-2 text-sm text-neutral-500 hover:text-neutral-900 mb-8 transition-colors no-underline"
             >
-                <ArrowLeft className="w-4 h-4" /> Back to blog
+                <ArrowLeft className="w-4 h-4" /> Kembali ke Tulisan
             </Link>
 
             <header className="mb-10 space-y-4 text-center">

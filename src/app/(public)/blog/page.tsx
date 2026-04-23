@@ -1,8 +1,10 @@
-import { createClient } from '@/lib/supabase/server'
+import { createPublicClient } from '@/lib/supabase/server'
 import PostCard from '@/components/blog/PostCard'
 import CategoryFilter from '@/components/blog/CategoryFilter'
 import { Post, Category } from '@/lib/types'
 import type { Metadata } from 'next'
+
+export const revalidate = 60
 
 export const metadata: Metadata = {
     title: 'Blog',
@@ -10,7 +12,7 @@ export const metadata: Metadata = {
 }
 
 export default async function BlogPage() {
-    const supabase = createClient()
+    const supabase = createPublicClient()
 
     const { data: postsData } = await supabase
         .from('posts')
@@ -36,11 +38,11 @@ export default async function BlogPage() {
     const categories: Category[] = categoriesData ?? []
 
     return (
-        <div className="space-y-12 animate-in fade-in duration-500 pt-4 md:pt-10">
+        <div className="space-y-12 animate-in fade-in duration-500">
             <header className="space-y-4 border-b border-neutral-100 pb-8">
-                <h1 className="text-3xl font-bold tracking-tight">Writing</h1>
+                <h1 className="text-3xl font-bold tracking-tight">Tulisan</h1>
                 <p className="text-lg text-neutral-600 max-w-2xl">
-                    Thoughts on software engineering, design, and life.
+                    Blog pribadi. Setiap tulisannya dihasilkan setiap kurasa ingin menulis, dan diunggah kalau ingin diunggah. Tentang apa saja.
                 </p>
 
                 <div className="pt-4">

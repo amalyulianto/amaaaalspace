@@ -25,3 +25,18 @@ export function createClient() {
         }
     )
 }
+
+// Public client that does not read cookies to allow Next.js static generation (SSG)
+export function createPublicClient() {
+    return createServerClient(
+        process.env.NEXT_PUBLIC_SUPABASE_URL!,
+        process.env.NEXT_PUBLIC_SUPABASE_ANON_KEY!,
+        {
+            cookies: {
+                get(name: string) { return undefined },
+                set(name: string, value: string, options: CookieOptions) { },
+                remove(name: string, options: CookieOptions) { },
+            },
+        }
+    )
+}

@@ -16,7 +16,7 @@ export default function CategoryFilter({ categories, activeSlug }: CategoryFilte
                     : "bg-neutral-100 text-neutral-600 hover:bg-neutral-200"
                     }`}
             >
-                All Posts
+                Semua Tulisan
             </Link>
             {categories.map((category) => (
                 <Link

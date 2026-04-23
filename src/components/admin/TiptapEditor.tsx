@@ -121,8 +121,14 @@ export default function TiptapEditor({ content, onChange }: TiptapEditorProps) {
                 <ToolbarButton onClick={() => editor.chain().focus().undo().run()}>Undo</ToolbarButton>
                 <ToolbarButton onClick={() => editor.chain().focus().redo().run()}>Redo</ToolbarButton>
             </div>
-            <div className="p-4 min-h-[400px] max-w-none">
-                <EditorContent editor={editor} className="prose-content min-h-[400px] outline-none" />
+            <div
+                className="p-4 min-h-[400px] cursor-text"
+                onClick={() => editor.chain().focus().run()}
+            >
+                <EditorContent
+                    editor={editor}
+                    className="prose-content min-h-[400px] outline-none [&_.ProseMirror]:min-h-[400px]"
+                />
             </div>
         </div>
     )

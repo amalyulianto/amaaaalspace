@@ -142,50 +142,52 @@ export default function EditPostPage({ params }: { params: { id: string } }) {
     }
 
     return (
-        <div className="max-w-4xl">
-            <h1 className="text-2xl font-bold text-[#111111] mb-8">Edit Post</h1>
+        <div>
+            <div className="flex justify-between items-end mb-8 border-b border-[#E5E7EB] pb-4">
+                <h1 className="text-xl font-bold text-[#111111]">Edit Post</h1>
+            </div>
 
             {error && <div className="bg-red-50 text-red-600 p-4 rounded mb-6 border border-red-200">{error}</div>}
 
-            <div className="space-y-6 bg-white p-6 rounded border border-[#E5E7EB]">
+            <div className="space-y-6">
                 <div>
-                    <label className="block text-sm font-medium text-[#666666] mb-1">Title</label>
+                    <label className="block text-sm font-medium text-[#111111] mb-2">Title</label>
                     <input
                         type="text"
                         value={title}
                         onChange={handleTitleChange}
-                        className="w-full px-3 py-2 border border-gray-300 rounded focus:outline-none focus:border-[#2563EB] focus:ring-1 focus:ring-[#2563EB]"
+                        className="w-full px-4 py-2 border border-[#E5E7EB] rounded focus:outline-none focus:border-[#2563EB] focus:ring-1 focus:ring-[#2563EB] text-[#111111] transition-colors"
                     />
                 </div>
 
                 <div>
-                    <label className="block text-sm font-medium text-[#666666] mb-1">Slug</label>
+                    <label className="block text-sm font-medium text-[#111111] mb-2">Slug</label>
                     <input
                         type="text"
                         value={slug}
                         onChange={(e) => setSlug(e.target.value)}
-                        className="w-full px-3 py-2 border border-gray-300 rounded focus:outline-none focus:border-[#2563EB] focus:ring-1 focus:ring-[#2563EB]"
+                        className="w-full px-4 py-2 border border-[#E5E7EB] rounded focus:outline-none focus:border-[#2563EB] focus:ring-1 focus:ring-[#2563EB] text-[#111111] transition-colors"
                     />
-                    <p className="text-xs text-gray-500 mt-1">Preview: /blog/{slug || '...'}</p>
+                    <p className="text-[#666666] text-[13px] mt-2">Preview: /blog/{slug || '...'}</p>
                 </div>
 
                 <div>
-                    <label className="block text-sm font-medium text-[#666666] mb-1">Excerpt</label>
+                    <label className="block text-sm font-medium text-[#111111] mb-2">Excerpt</label>
                     <textarea
                         value={excerpt}
                         onChange={(e) => setExcerpt(e.target.value)}
                         rows={3}
-                        className="w-full px-3 py-2 border border-gray-300 rounded focus:outline-none focus:border-[#2563EB] focus:ring-1 focus:ring-[#2563EB]"
+                        className="w-full px-4 py-2 border border-[#E5E7EB] rounded focus:outline-none focus:border-[#2563EB] focus:ring-1 focus:ring-[#2563EB] text-[#111111] transition-colors"
                     />
                 </div>
 
                 <div>
-                    <label className="block text-sm font-medium text-[#666666] mb-1">Category</label>
+                    <label className="block text-sm font-medium text-[#111111] mb-2">Category</label>
                     <div className="flex gap-2 items-center">
                         <select
                             value={categoryId}
                             onChange={(e) => setCategoryId(e.target.value)}
-                            className="flex-1 px-3 py-2 border border-gray-300 rounded focus:outline-none focus:border-[#2563EB] focus:ring-1 focus:ring-[#2563EB]"
+                            className="flex-1 px-4 py-2 border border-[#E5E7EB] rounded focus:outline-none focus:border-[#2563EB] focus:ring-1 focus:ring-[#2563EB] bg-white text-[#111111]"
                         >
                             <option value="">No Category</option>
                             {categories.map(c => (
@@ -198,12 +200,12 @@ export default function EditPostPage({ params }: { params: { id: string } }) {
                                 placeholder="New Category"
                                 value={newCategoryName}
                                 onChange={(e) => setNewCategoryName(e.target.value)}
-                                className="w-40 px-3 py-2 border border-gray-300 rounded text-sm focus:outline-none focus:border-[#2563EB] focus:ring-1 focus:ring-[#2563EB]"
+                                className="w-40 px-4 py-2 border border-[#E5E7EB] rounded focus:outline-none focus:border-[#2563EB] focus:ring-1 focus:ring-[#2563EB] text-[15px] text-[#111111]"
                             />
                             <button
                                 type="button"
                                 onClick={handleAddCategory}
-                                className="bg-white border border-[#E5E7EB] px-3 py-2 rounded text-sm hover:bg-gray-50"
+                                className="border border-[#E5E7EB] px-4 py-2 rounded text-[15px] text-[#111111] hover:bg-[#F3F4F6] transition-colors"
                             >
                                 Add
                             </button>
@@ -216,11 +218,11 @@ export default function EditPostPage({ params }: { params: { id: string } }) {
                 </div>
 
                 <div>
-                    <label className="block text-sm font-medium text-[#666666] mb-1">Status</label>
+                    <label className="block text-sm font-medium text-[#111111] mb-2">Status</label>
                     <select
                         value={status}
                         onChange={(e) => setStatus(e.target.value as 'draft' | 'published')}
-                        className="w-full px-3 py-2 border border-gray-300 rounded focus:outline-none focus:border-[#2563EB] focus:ring-1 focus:ring-[#2563EB]"
+                        className="w-full px-4 py-2 border border-[#E5E7EB] rounded focus:outline-none focus:border-[#2563EB] focus:ring-1 focus:ring-[#2563EB] bg-white text-[#111111]"
                     >
                         <option value="draft">Draft</option>
                         <option value="published">Published</option>
@@ -228,26 +230,26 @@ export default function EditPostPage({ params }: { params: { id: string } }) {
                 </div>
 
                 <div>
-                    <label className="block text-sm font-medium text-[#666666] mb-1">Published Date</label>
+                    <label className="block text-sm font-medium text-[#111111] mb-2">Published Date</label>
                     <input
                         type="datetime-local"
                         value={publishedAt}
                         onChange={(e) => setPublishedAt(e.target.value)}
-                        className="w-full px-3 py-2 border border-gray-300 rounded focus:outline-none focus:border-[#2563EB] focus:ring-1 focus:ring-[#2563EB]"
+                        className="w-full px-4 py-2 border border-[#E5E7EB] rounded focus:outline-none focus:border-[#2563EB] focus:ring-1 focus:ring-[#2563EB] text-[#111111]"
                     />
-                    <p className="text-xs text-gray-500 mt-1">Manual publication date/time.</p>
+                    <p className="text-[#666666] text-[13px] mt-2">Manual publication date/time.</p>
                 </div>
 
                 <div>
-                    <label className="block text-sm font-medium text-[#666666] mb-1">Content</label>
+                    <label className="block text-sm font-medium text-[#111111] mb-2">Content</label>
                     <TiptapEditor content={content} onChange={setContent} />
                 </div>
 
-                <div className="pt-4 border-t border-[#E5E7EB]">
+                <div className="pt-6 mt-6 border-t border-[#E5E7EB]">
                     <button
                         onClick={handleSave}
                         disabled={loading}
-                        className="bg-[#2563EB] text-white px-6 py-2 rounded font-medium hover:bg-blue-700 disabled:opacity-50 transition-colors"
+                        className="bg-[#111111] text-white px-6 py-2.5 rounded hover:bg-[#2563EB] disabled:opacity-50 transition-colors font-medium w-full sm:w-auto"
                     >
                         {loading ? 'Saving...' : 'Save Changes'}
                     </button>

@@ -1,6 +1,8 @@
-import { createClient } from '@/lib/supabase/server'
+import { createPublicClient } from '@/lib/supabase/server'
 import type { Metadata } from 'next'
 import { GuestbookClient, GuestbookMessage } from '@/components/guestbook/GuestbookClient'
+
+export const revalidate = 60;
 
 export const metadata: Metadata = {
     title: 'Guestbook',
@@ -8,7 +10,7 @@ export const metadata: Metadata = {
 }
 
 export default async function GuestbookPage() {
-    const supabase = createClient()
+    const supabase = createPublicClient()
 
     const { data: entries } = await supabase
         .from('guestbook')

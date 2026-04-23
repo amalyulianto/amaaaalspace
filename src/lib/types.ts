@@ -31,7 +31,9 @@ export type PortfolioItem = {
   project_url: string | null
   github_url: string | null
   display_order: number
+  category_id: string | null
   created_at: string
+  category?: Category
 }
 
 export type LinkItem = {
