@@ -53,4 +53,16 @@
     right: -6px;
     cursor: se-resize;
   }
+
+  /* Tiptap Editor Aesthetics */
+  .ProseMirror:focus {
+    outline: none;
+  }
+
+  /* Fix for empty paragraphs/line breaks not showing in published posts */
+  .prose p:empty::after,
+  .prose p>br::after {
+    content: "\00a0";
+    display: block;
+  }
 }
