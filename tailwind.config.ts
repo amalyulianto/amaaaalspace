@@ -23,6 +23,11 @@ const config: Config = {
             '.text-center': { textAlign: 'center' },
             '.text-right': { textAlign: 'right' },
             '.text-justify': { textAlign: 'justify' },
+            'p:empty': {
+              marginTop: '0',
+              marginBottom: '0',
+              minHeight: '1.5em',
+            },
             'p:empty::after': {
               content: '"\\00a0"',
               display: 'block',
