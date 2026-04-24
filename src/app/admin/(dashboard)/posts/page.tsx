@@ -19,7 +19,7 @@ export default function AdminPostsPage() {
         const { data } = await supabase
             .from('posts')
             .select('*, category:categories(id, name, slug)')
-            .order('created_at', { ascending: false })
+            .order('published_at', { ascending: false, nullsFirst: false })
 
         if (data) {
             setPosts(data as unknown as Post[])
@@ -69,7 +69,8 @@ export default function AdminPostsPage() {
                                 <th className="px-4 py-3 font-medium">Title</th>
                                 <th className="px-4 py-3 font-medium">Category</th>
                                 <th className="px-4 py-3 font-medium">Status</th>
-                                <th className="px-4 py-3 font-medium">Date</th>
+                                <th className="px-4 py-3 font-medium">Created</th>
+                                <th className="px-4 py-3 font-medium">Published</th>
                                 <th className="px-4 py-3 font-medium text-right">Actions</th>
                             </tr>
                         </thead>
@@ -83,12 +84,15 @@ export default function AdminPostsPage() {
                                         {post.category?.name || '—'}
                                     </td>
                                     <td className="px-4 py-3.5">
-                                        <span className={post.status === 'published' ? 'text-[#111111]' : 'text-[#666666]'}>
+                                        <span className={post.status === 'published' ? 'text-green-600 font-medium' : 'text-[#666666]'}>
                                             {post.status === 'published' ? 'Published' : 'Draft'}
                                         </span>
                                     </td>
-                                    <td className="px-4 py-3.5 text-[#666666]">
+                                    <td className="px-4 py-3.5 text-[#666666] text-sm">
                                         {new Date(post.created_at).toLocaleDateString()}
+                                    </td>
+                                    <td className="px-4 py-3.5 text-[#666666] text-sm">
+                                        {post.published_at ? new Date(post.published_at).toLocaleDateString() : '—'}
                                     </td>
                                     <td className="px-4 py-3.5 text-right space-x-3">
                                         <Link href={`/admin/posts/${post.id}/edit`} className="text-[#2563EB] hover:text-[#111111] transition-colors">
