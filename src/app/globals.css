@@ -46,7 +46,26 @@
 
   /* Fix for empty paragraphs/line breaks not showing in published posts using Tailwind */
   .prose p:empty::after,
-  .prose p>br::after {
+  .prose p > br::after {
     @apply content-['\00a0'] block;
+  }
+
+  /* Ensure prose respects alignment */
+  .prose .text-left { @apply text-left; }
+  .prose .text-center { @apply text-center; }
+  .prose .text-right { @apply text-right; }
+  .prose .text-justify { @apply text-justify; }
+
+  /* Handle images in figures or with alignment */
+  .prose figure { @apply my-8; }
+  .prose figcaption { @apply text-center text-sm text-neutral-500 mt-2; }
+  
+  .prose .imageResize[data-align="center"],
+  .prose img[data-align="center"] {
+    @apply mx-auto block;
+  }
+  .prose .imageResize[data-align="right"],
+  .prose img[data-align="right"] {
+    @apply ml-auto mr-0 block;
   }
 }

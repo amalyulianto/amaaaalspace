@@ -50,7 +50,7 @@ export default async function BlogPage() {
                 </div>
             </header>
 
-            <div className="divide-y divide-neutral-100 dark:divide-neutral-800">
+            <div className="divide-y divide-neutral-200 dark:divide-neutral-800">
                 {posts.length > 0 ? (
                     posts.map((post) => (
                         <PostCard key={post.id} post={post} />

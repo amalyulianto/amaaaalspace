@@ -6,8 +6,10 @@ import Underline from '@tiptap/extension-underline'
 import Link from '@tiptap/extension-link'
 import ResizeImage from 'tiptap-extension-resize-image'
 import Placeholder from '@tiptap/extension-placeholder'
+import TextAlign from '@tiptap/extension-text-align'
 import { createBrowserClient } from '@supabase/ssr'
 import { useRef } from 'react'
+import { AlignLeft, AlignCenter, AlignRight, AlignJustify } from 'lucide-react'
 
 interface TiptapEditorProps {
     content: string
@@ -24,6 +26,9 @@ export default function TiptapEditor({ content, onChange }: TiptapEditorProps) {
             Link.configure({ openOnClick: false }),
             ResizeImage.configure({
                 inline: false,
+            }),
+            TextAlign.configure({
+                types: ['heading', 'paragraph', 'imageResize'],
             }),
             Placeholder.configure({ placeholder: 'Start writing...' }),
         ],
@@ -117,6 +122,17 @@ export default function TiptapEditor({ content, onChange }: TiptapEditorProps) {
                 <span className="w-px h-4 bg-gray-300 mx-1"></span>
                 <ToolbarButton onClick={() => fileInputRef.current?.click()}>Image</ToolbarButton>
                 <input type="file" accept="image/*" ref={fileInputRef} onChange={addImage} className="hidden" />
+                <ToolbarButton onClick={() => {
+                    const caption = window.prompt('Enter image caption:')
+                    if (caption) {
+                        editor.chain().focus().insertContent(`<p class="text-center text-sm text-neutral-500 mt-2 italic">${caption}</p>`).run()
+                    }
+                }}>Caption</ToolbarButton>
+                <span className="w-px h-4 bg-gray-300 mx-1"></span>
+                <ToolbarButton onClick={() => editor.chain().focus().setTextAlign('left').run()} isActive={editor.isActive({ textAlign: 'left' })}><AlignLeft className="w-4 h-4" /></ToolbarButton>
+                <ToolbarButton onClick={() => editor.chain().focus().setTextAlign('center').run()} isActive={editor.isActive({ textAlign: 'center' })}><AlignCenter className="w-4 h-4" /></ToolbarButton>
+                <ToolbarButton onClick={() => editor.chain().focus().setTextAlign('right').run()} isActive={editor.isActive({ textAlign: 'right' })}><AlignRight className="w-4 h-4" /></ToolbarButton>
+                <ToolbarButton onClick={() => editor.chain().focus().setTextAlign('justify').run()} isActive={editor.isActive({ textAlign: 'justify' })}><AlignJustify className="w-4 h-4" /></ToolbarButton>
                 <span className="w-px h-4 bg-gray-300 mx-1"></span>
                 <ToolbarButton onClick={() => editor.chain().focus().undo().run()}>Undo</ToolbarButton>
                 <ToolbarButton onClick={() => editor.chain().focus().redo().run()}>Redo</ToolbarButton>
