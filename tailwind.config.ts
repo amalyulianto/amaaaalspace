@@ -7,6 +7,12 @@ const config: Config = {
     "./src/components/**/*.{js,ts,jsx,tsx,mdx}",
     "./src/app/**/*.{js,ts,jsx,tsx,mdx}",
   ],
+  safelist: [
+    'text-left',
+    'text-center',
+    'text-right',
+    'text-justify',
+  ],
   plugins: [
     require('@tailwindcss/typography'),
   ],
@@ -26,15 +32,14 @@ const config: Config = {
             'p:empty': {
               marginTop: '0',
               marginBottom: '0',
-              minHeight: '1.5em',
+              minHeight: '0',
+              height: '1.25rem',
             },
             'p:empty::after': {
               content: '"\\00a0"',
-              display: 'block',
             },
             'p > br::after': {
               content: '"\\00a0"',
-              display: 'block',
             },
             'figure': {
               marginTop: '2rem',
@@ -42,7 +47,7 @@ const config: Config = {
             },
             'figcaption': {
               textAlign: 'center',
-              fontSize: '0.875rem',
+              fontSize: '0.75rem',
               color: '#666666',
               marginTop: '0.5rem',
               fontStyle: 'italic',

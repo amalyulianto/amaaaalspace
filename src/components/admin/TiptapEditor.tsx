@@ -29,6 +29,8 @@ export default function TiptapEditor({ content, onChange }: TiptapEditorProps) {
             }),
             TextAlign.configure({
                 types: ['heading', 'paragraph', 'imageResize'],
+                alignments: ['left', 'center', 'right', 'justify'],
+                defaultAlignment: 'left',
             }),
             Placeholder.configure({ placeholder: 'Start writing...' }),
         ],
@@ -125,7 +127,7 @@ export default function TiptapEditor({ content, onChange }: TiptapEditorProps) {
                 <ToolbarButton onClick={() => {
                     const caption = window.prompt('Enter image caption:')
                     if (caption) {
-                        editor.chain().focus().insertContent(`<p class="text-center text-sm text-neutral-500 mt-2 italic">${caption}</p>`).run()
+                        editor.chain().focus().insertContent(`<p class="text-center text-xs text-neutral-500 mt-2 italic">${caption}</p>`).run()
                     }
                 }}>Caption</ToolbarButton>
                 <span className="w-px h-4 bg-gray-300 mx-1"></span>
