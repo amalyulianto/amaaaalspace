@@ -25,42 +25,15 @@ const config: Config = {
       typography: {
         DEFAULT: {
           css: {
+            /* Allow alignment classes to work inside prose */
             '.text-left': { textAlign: 'left' },
             '.text-center': { textAlign: 'center' },
             '.text-right': { textAlign: 'right' },
             '.text-justify': { textAlign: 'justify' },
+            /* Empty paragraphs (Enter key) take up one visible line */
             'p:empty': {
-              marginTop: '0',
-              marginBottom: '0',
-              minHeight: '0',
-              height: '1.25rem',
-            },
-            'p:empty::after': {
-              content: '"\\00a0"',
-            },
-            'p > br::after': {
-              content: '"\\00a0"',
-            },
-            'figure': {
-              marginTop: '2rem',
-              marginBottom: '2rem',
-            },
-            'figcaption': {
-              textAlign: 'center',
-              fontSize: '0.75rem',
-              color: '#666666',
-              marginTop: '0.5rem',
-              fontStyle: 'italic',
-            },
-            'img[data-align="center"]': {
-              marginLeft: 'auto',
-              marginRight: 'auto',
-              display: 'block',
-            },
-            'img[data-align="right"]': {
-              marginLeft: 'auto',
-              marginRight: '0',
-              display: 'block',
+              margin: '0',
+              minHeight: '1.2em',
             },
           },
         },

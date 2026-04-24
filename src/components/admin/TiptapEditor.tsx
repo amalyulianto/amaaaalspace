@@ -24,7 +24,15 @@ export default function TiptapEditor({ content, onChange }: TiptapEditorProps) {
             StarterKit,
             Underline,
             Link.configure({ openOnClick: false }),
-            ResizeImage.configure({
+            ResizeImage.extend({
+                // Override renderHTML so containerStyle (which includes margin alignment)
+                // gets serialized into the published <img> tag's style attribute.
+                renderHTML({ HTMLAttributes }) {
+                    const { containerStyle, wrapperStyle, ...rest } = HTMLAttributes
+                    const style = containerStyle ?? ''
+                    return ['img', { ...rest, style }]
+                },
+            }).configure({
                 inline: false,
             }),
             TextAlign.configure({

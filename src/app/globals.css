@@ -9,7 +9,6 @@
 }
 
 @layer components {
-
   /* Tiptap Image Resizing */
   .ProseMirror .resizer {
     @apply relative inline-block leading-[0];
