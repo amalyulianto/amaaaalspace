@@ -2,6 +2,7 @@ import { createPublicClient } from '@/lib/supabase/server'
 import ProjectCard from '@/components/portfolio/ProjectCard'
 import { PortfolioItem } from '@/lib/types'
 import type { Metadata } from 'next'
+import { SectionHeading } from '@/components/ui/SectionHeading'
 
 export const revalidate = 60;
 
@@ -42,9 +43,9 @@ export default async function PortfolioPage() {
 
     return (
         <div className="space-y-12 animate-in fade-in duration-500">
-            <header className="space-y-4 border-b border-neutral-100 pb-8">
-                <h1 className="text-3xl font-bold tracking-tight">Karya</h1>
-                <p className="text-lg text-neutral-600 max-w-2xl">
+            <header className="space-y-4 border-b border-neutral-100 dark:border-neutral-800 pb-8">
+                <h1 className="text-3xl font-bold tracking-tight text-neutral-900 dark:text-neutral-100">Karya</h1>
+                <p className="text-lg text-neutral-600 dark:text-neutral-400 max-w-2xl">
                     Karya-karya yang pernah dibuat yang berani dipublikasikan. Tidak semua bagus, tapi ada yang bagus, kok...
                 </p>
             </header>
@@ -53,9 +54,9 @@ export default async function PortfolioPage() {
                 {sortedGroups.length > 0 ? (
                     sortedGroups.map(([categoryName, categoryItems]) => (
                         <section key={categoryName}>
-                            <h2 className="text-xl font-bold tracking-tight text-neutral-900 mb-6 border-b border-neutral-100 pb-2">
+                            <SectionHeading className="border-b border-neutral-100 dark:border-neutral-800 pb-2">
                                 {categoryName}
-                            </h2>
+                            </SectionHeading>
                             <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
                                 {categoryItems.map((item) => (
                                     <ProjectCard key={item.id} item={item} />
@@ -64,7 +65,7 @@ export default async function PortfolioPage() {
                         </section>
                     ))
                 ) : (
-                    <p className="text-neutral-500">Belum ada karya.</p>
+                    <p className="text-neutral-500 dark:text-neutral-400">Belum ada karya.</p>
                 )}
             </div>
         </div>

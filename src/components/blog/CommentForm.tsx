@@ -45,7 +45,7 @@ export default function CommentForm({ postId }: CommentFormProps) {
             <h3 className="text-[1rem] font-semibold mb-4">Tinggalkan Komengtar</h3>
 
             {status === 'success' ? (
-                <p className="text-[#666666] text-[0.95rem]">
+                <p className="text-neutral-500 dark:text-neutral-400 text-[0.95rem]">
                     Makasih udah komeng. Kalau mood, nanti kutampilin di sini.
                 </p>
             ) : (
@@ -60,7 +60,7 @@ export default function CommentForm({ postId }: CommentFormProps) {
                     />
 
                     <div>
-                        <label htmlFor="comment-name" className="block text-[0.9rem] font-medium mb-1">
+                        <label htmlFor="comment-name" className="block text-[0.9rem] font-medium mb-1 text-neutral-800 dark:text-neutral-200">
                             Nama
                         </label>
                         <input
@@ -68,12 +68,12 @@ export default function CommentForm({ postId }: CommentFormProps) {
                             type="text"
                             name="author_name"
                             required
-                            className="w-full border border-gray-200 rounded px-3 py-2 text-[0.95rem] focus:outline-none focus:border-blue-600"
+                            className="w-full bg-white dark:bg-neutral-900 border border-neutral-200 dark:border-neutral-800 rounded px-3 py-2 text-[0.95rem] text-neutral-900 dark:text-neutral-100 focus:outline-none focus:border-blue-600 dark:focus:border-blue-500 transition-colors"
                         />
                     </div>
 
                     <div>
-                        <label htmlFor="comment-content" className="block text-[0.9rem] font-medium mb-1">
+                        <label htmlFor="comment-content" className="block text-[0.9rem] font-medium mb-1 text-neutral-800 dark:text-neutral-200">
                             Komengmu
                         </label>
                         <textarea
@@ -81,12 +81,12 @@ export default function CommentForm({ postId }: CommentFormProps) {
                             name="content"
                             required
                             rows={4}
-                            className="w-full border border-gray-200 rounded px-3 py-2 text-[0.95rem] focus:outline-none focus:border-blue-600 resize-y"
+                            className="w-full bg-white dark:bg-neutral-900 border border-neutral-200 dark:border-neutral-800 rounded px-3 py-2 text-[0.95rem] text-neutral-900 dark:text-neutral-100 focus:outline-none focus:border-blue-600 dark:focus:border-blue-500 transition-colors resize-y"
                         />
                     </div>
 
                     {status === 'error' && (
-                        <p className="text-red-600 text-[0.9rem]">
+                        <p className="text-red-600 dark:text-red-400 text-[0.9rem]">
                             Hmm ada yang salah. Maap lah ya.
                         </p>
                     )}
@@ -94,7 +94,7 @@ export default function CommentForm({ postId }: CommentFormProps) {
                     <button
                         type="submit"
                         disabled={status === 'loading'}
-                        className="bg-blue-600 text-white px-4 py-2 rounded text-[0.9rem] hover:bg-blue-700 disabled:opacity-60 disabled:cursor-not-allowed"
+                        className="bg-blue-600 dark:bg-blue-500 text-white px-4 py-2 rounded text-[0.9rem] font-medium hover:bg-blue-700 dark:hover:bg-blue-600 transition-colors disabled:opacity-60 disabled:cursor-not-allowed"
                     >
                         {status === 'loading' ? 'Posting...' : 'Post comment'}
                     </button>

@@ -44,9 +44,9 @@ export default function AdminNav() {
     ]
 
     return (
-        <div className="w-[240px] bg-white flex flex-col min-h-screen flex-shrink-0">
+        <div className="w-[240px] bg-white dark:bg-[#111111] flex flex-col min-h-screen flex-shrink-0 border-r border-[#E5E7EB] dark:border-neutral-800 transition-colors">
             <div className="p-8 pb-4">
-                <Link href="/" className="text-[17px] tracking-tight font-bold text-[#111111] hover:text-[#2563EB] transition-colors">
+                <Link href="/" className="text-[17px] tracking-tight font-bold text-[#111111] dark:text-[#FFFFFF] hover:text-[#2563EB] dark:hover:text-blue-400 transition-colors">
                     Alapakadala <span className="opacity-50 font-normal">&rarr;</span>
                 </Link>
             </div>
@@ -60,8 +60,8 @@ export default function AdminNav() {
                                 <Link
                                     href={link.href}
                                     className={`block px-3 py-2 rounded-md text-[14px] transition-all font-medium ${isActive
-                                        ? 'bg-[#F3F4F6] text-[#111111]'
-                                        : 'text-[#666666] hover:bg-[#F9FAFB] hover:text-[#111111]'
+                                        ? 'bg-[#F3F4F6] dark:bg-neutral-800 text-[#111111] dark:text-[#FFFFFF]'
+                                        : 'text-[#666666] dark:text-neutral-400 hover:bg-[#F9FAFB] dark:hover:bg-neutral-800/50 hover:text-[#111111] dark:hover:text-[#FFFFFF]'
                                         }`}
                                 >
                                     {link.name}
@@ -73,10 +73,10 @@ export default function AdminNav() {
             </nav>
 
             <div className="p-8 pt-4">
-                <div className="text-[#666666] text-[13px] truncate mb-3">{email || 'User'}</div>
+                <div className="text-[#666666] dark:text-neutral-400 text-[13px] truncate mb-3">{email || 'User'}</div>
                 <button
                     onClick={handleSignOut}
-                    className="text-[#666666] hover:text-[#111111] text-[14px] font-medium block w-full text-left transition-colors"
+                    className="text-[#666666] dark:text-neutral-400 hover:text-[#111111] dark:hover:text-[#FFFFFF] text-[14px] font-medium block w-full text-left transition-colors"
                 >
                     Sign Out &rarr;
                 </button>

@@ -11,6 +11,17 @@ type Props = {
     params: { slug: string }
 }
 
+export async function generateStaticParams() {
+    const supabase = createPublicClient()
+    const { data: categories } = await supabase
+        .from('categories')
+        .select('slug')
+
+    return categories?.map((category) => ({
+        slug: category.slug,
+    })) || []
+}
+
 export async function generateMetadata({ params }: Props): Promise<Metadata> {
     const supabase = createPublicClient()
     const { data: category } = await supabase
@@ -64,11 +75,11 @@ export default async function CategoryPage({ params }: Props) {
 
     return (
         <div className="space-y-12 animate-in fade-in duration-500">
-            <header className="space-y-4 border-b border-neutral-100 pb-8">
-                <h1 className="text-3xl font-bold tracking-tight">
+            <header className="space-y-4 border-b border-neutral-100 dark:border-neutral-800 pb-8">
+                <h1 className="text-3xl font-bold tracking-tight text-neutral-900 dark:text-neutral-100">
                     Tulisan: {category.name}
                 </h1>
-                <p className="text-lg text-neutral-600 max-w-2xl">
+                <p className="text-lg text-neutral-600 dark:text-neutral-400 max-w-2xl">
                     Blog pribadi. Setiap tulisannya dihasilkan setiap kurasa ingin menulis, dan diunggah kalau ingin diunggah. Tentang apa saja.
                 </p>
 
@@ -83,7 +94,7 @@ export default async function CategoryPage({ params }: Props) {
                         <PostCard key={post.id} post={post} />
                     ))
                 ) : (
-                    <p className="text-neutral-500">No posts found in this category.</p>
+                    <p className="text-neutral-500 dark:text-neutral-400">No posts found in this category.</p>
                 )}
             </div>
         </div>

@@ -27,7 +27,7 @@ export default async function CommentList({ postId }: CommentListProps) {
 
     if (comments.length === 0) {
         return (
-            <p className="text-[#666666] text-[0.95rem]">
+            <p className="text-neutral-500 dark:text-neutral-400 text-[0.95rem]">
                 Belum ada komeng. Sule aja kali ya?
             </p>
         )
@@ -36,12 +36,12 @@ export default async function CommentList({ postId }: CommentListProps) {
     return (
         <div className="space-y-6">
             {comments.map((comment) => (
-                <div key={comment.id} className="border-b border-gray-200 pb-6 last:border-0">
+                <div key={comment.id} className="border-b border-neutral-100 dark:border-neutral-800 pb-6 last:border-0">
                     <div className="flex items-center gap-3 mb-2">
-                        <span className="font-semibold text-[0.95rem]">{comment.author_name}</span>
-                        <span className="text-[0.8rem] text-[#666666]">{formatDate(comment.created_at)}</span>
+                        <span className="font-semibold text-[0.95rem] text-neutral-900 dark:text-neutral-100">{comment.author_name}</span>
+                        <span className="text-[0.8rem] text-neutral-500 dark:text-neutral-400">{formatDate(comment.created_at)}</span>
                     </div>
-                    <p className="text-[0.95rem] text-[#111111] m-0">{comment.content}</p>
+                    <p className="text-[0.95rem] text-neutral-800 dark:text-neutral-300 m-0">{comment.content}</p>
                 </div>
             ))}
         </div>

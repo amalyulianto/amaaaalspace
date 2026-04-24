@@ -38,7 +38,7 @@ export default function GuestbookForm() {
     return (
         <div>
             {status === 'success' ? (
-                <p className="text-[#111111] font-bold text-[1.2rem] py-4">
+                <p className="text-neutral-900 dark:text-neutral-100 font-bold text-[1.2rem] py-4">
                     Makasih dah ngisi. Nanti kutampilin kalo mood.
                 </p>
             ) : (
@@ -59,7 +59,7 @@ export default function GuestbookForm() {
                             name="author_name"
                             required
                             placeholder="Jok Mobil"
-                            className="w-full bg-transparent border-0 border-b-2 border-[#E5E7EB] focus:border-[#111111] px-0 py-3 text-[1.2rem] focus:outline-none focus:ring-0 transition-colors placeholder:text-[#999999] font-medium"
+                            className="w-full bg-transparent border-0 border-b-2 border-neutral-200 dark:border-neutral-800 focus:border-neutral-900 dark:focus:border-neutral-100 px-0 py-3 text-[1.2rem] focus:outline-none focus:ring-0 transition-colors placeholder:text-neutral-400 dark:placeholder:text-neutral-600 font-medium text-neutral-900 dark:text-neutral-100"
                         />
                     </div>
 
@@ -70,12 +70,12 @@ export default function GuestbookForm() {
                             required
                             rows={2}
                             placeholder="Tulis di sini"
-                            className="w-full bg-transparent border-0 border-b-2 border-[#E5E7EB] focus:border-[#111111] px-0 py-3 text-[1.2rem] focus:outline-none focus:ring-0 resize-none transition-colors placeholder:text-[#999999] font-medium"
+                            className="w-full bg-transparent border-0 border-b-2 border-neutral-200 dark:border-neutral-800 focus:border-neutral-900 dark:focus:border-neutral-100 px-0 py-3 text-[1.2rem] focus:outline-none focus:ring-0 resize-none transition-colors placeholder:text-neutral-400 dark:placeholder:text-neutral-600 font-medium text-neutral-900 dark:text-neutral-100"
                         />
                     </div>
 
                     {status === 'error' && (
-                        <p className="text-red-600 font-medium">
+                        <p className="text-red-600 dark:text-red-400 font-medium">
                             Hmm ada yang salah. Yaudah maap.
                         </p>
                     )}
@@ -83,7 +83,7 @@ export default function GuestbookForm() {
                     <button
                         type="submit"
                         disabled={status === 'loading'}
-                        className="bg-neutral-900 text-white px-8 py-3 rounded-full font-medium tracking-wide text-sm hover:bg-black hover:scale-[1.02] active:scale-[0.98] transition-all disabled:opacity-60 disabled:cursor-not-allowed inline-flex items-center"
+                        className="bg-neutral-900 dark:bg-neutral-100 text-white dark:text-neutral-900 px-8 py-3 rounded-full font-medium tracking-wide text-sm hover:bg-black dark:hover:bg-white hover:scale-[1.02] active:scale-[0.98] transition-all disabled:opacity-60 disabled:cursor-not-allowed inline-flex items-center"
                     >
                         {status === 'loading' ? 'Signing...' : 'Leave a Note'}
                     </button>

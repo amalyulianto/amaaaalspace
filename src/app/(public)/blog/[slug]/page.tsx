@@ -12,6 +12,18 @@ type Props = {
     params: { slug: string }
 }
 
+export async function generateStaticParams() {
+    const supabase = createPublicClient()
+    const { data: posts } = await supabase
+        .from('posts')
+        .select('slug')
+        .eq('status', 'published')
+
+    return posts?.map((post) => ({
+        slug: post.slug,
+    })) || []
+}
+
 export async function generateMetadata({ params }: Props): Promise<Metadata> {
     const supabase = createPublicClient()
     const { data: post } = await supabase
@@ -60,13 +72,13 @@ export default async function BlogPostPage({ params }: Props) {
         <article className="animate-in fade-in duration-500 max-w-2xl mx-auto">
             <Link
                 href="/blog"
-                className="inline-flex items-center gap-2 text-sm text-neutral-500 hover:text-neutral-900 mb-8 transition-colors no-underline"
+                className="inline-flex items-center gap-2 text-sm text-neutral-500 hover:text-neutral-900 dark:hover:text-neutral-100 mb-8 transition-colors no-underline"
             >
                 <ArrowLeft className="w-4 h-4" /> Kembali ke Tulisan
             </Link>
 
             <header className="mb-10 space-y-4 text-center">
-                <div className="flex items-center justify-center gap-3 text-sm font-medium text-neutral-500 mb-6">
+                <div className="flex items-center justify-center gap-3 text-sm font-medium text-neutral-500 dark:text-neutral-400 mb-6">
                     <time dateTime={postData.published_at || ''}>
                         {new Date(postData.published_at || '').toLocaleDateString("en-US", {
                             month: "long",
@@ -76,10 +88,10 @@ export default async function BlogPostPage({ params }: Props) {
                     </time>
                     {category && (
                         <>
-                            <span className="w-1 h-1 rounded-full bg-neutral-300" />
+                            <span className="w-1 h-1 rounded-full bg-neutral-300 dark:bg-neutral-700" />
                             <Link
                                 href={`/blog/category/${category.slug}`}
-                                className="hover:text-neutral-900 transition-colors uppercase tracking-wider text-xs no-underline"
+                                className="hover:text-neutral-900 dark:hover:text-neutral-100 transition-colors uppercase tracking-wider text-xs no-underline"
                             >
                                 {category.name}
                             </Link>
@@ -87,19 +99,19 @@ export default async function BlogPostPage({ params }: Props) {
                     )}
                 </div>
 
-                <h1 className="text-3xl sm:text-4xl md:text-5xl font-bold tracking-tight text-neutral-900 leading-tight">
+                <h1 className="text-3xl sm:text-4xl md:text-5xl font-bold tracking-tight text-neutral-900 dark:text-neutral-100 leading-tight">
                     {postData.title}
                 </h1>
 
                 {postData.excerpt && (
-                    <p className="text-xl text-neutral-500 max-w-xl mx-auto italic">
+                    <p className="text-xl text-neutral-500 dark:text-neutral-400 max-w-xl mx-auto italic">
                         {postData.excerpt}
                     </p>
                 )}
             </header>
 
             {postData.cover_image_url && (
-                <figure className="mb-12 rounded-xl overflow-hidden bg-neutral-100 border border-neutral-200 aspect-video relative">
+                <figure className="mb-12 rounded-xl overflow-hidden bg-neutral-100 dark:bg-neutral-900 border border-neutral-200 dark:border-neutral-800 aspect-video relative">
                     <img
                         src={postData.cover_image_url}
                         alt={`Cover for ${postData.title}`}
@@ -111,12 +123,12 @@ export default async function BlogPostPage({ params }: Props) {
             {/* Post Content */}
             {postData.content && (
                 <div
-                    className="prose prose-neutral prose-lg max-w-none prose-p:leading-relaxed prose-headings:font-bold prose-a:text-blue-600 hover:prose-a:text-blue-500"
+                    className="prose prose-neutral dark:prose-invert prose-lg max-w-none prose-p:leading-relaxed prose-headings:font-bold prose-a:text-blue-600 dark:prose-a:text-blue-400 hover:prose-a:text-blue-500 dark:hover:prose-a:text-blue-300"
                     dangerouslySetInnerHTML={{ __html: postData.content }}
                 />
             )}
 
-            <hr className="my-16 border-neutral-200" />
+            <hr className="my-16 border-neutral-200 dark:border-neutral-800" />
 
             <CommentClient postId={postData.id} initialComments={initialComments} />
         </article>
