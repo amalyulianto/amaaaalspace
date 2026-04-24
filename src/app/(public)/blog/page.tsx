@@ -50,13 +50,13 @@ export default async function BlogPage() {
                 </div>
             </header>
 
-            <div className="space-y-12">
+            <div className="divide-y divide-neutral-100 dark:divide-neutral-800">
                 {posts.length > 0 ? (
                     posts.map((post) => (
                         <PostCard key={post.id} post={post} />
                     ))
                 ) : (
-                    <p className="text-neutral-500 dark:text-neutral-400">No posts found in this category.</p>
+                    <p className="text-neutral-500 dark:text-neutral-400 py-12">No posts found in this category.</p>
                 )}
             </div>
         </div>

@@ -8,7 +8,10 @@ interface PostCardProps {
 export default function PostCard({ post }: PostCardProps) {
     return (
         <article className="group">
-            <Link href={`/blog/${post.slug}`} className="block space-y-2 no-underline">
+            <Link
+                href={`/blog/${post.slug}`}
+                className="block py-8 space-y-2 no-underline transition-all duration-300 group-hover:translate-x-1"
+            >
                 <div className="flex items-center gap-3 text-sm mb-1">
                     <time className="text-neutral-500 dark:text-neutral-400 tabular-nums">
                         {new Date(post.published_at || "").toLocaleDateString("en-US", {
