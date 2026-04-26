@@ -59,7 +59,7 @@ export default function GuestbookForm() {
                             name="author_name"
                             required
                             placeholder="Jok Mobil"
-                            className="w-full bg-transparent border-0 border-b-2 border-neutral-200 dark:border-neutral-800 focus:border-neutral-900 dark:focus:border-neutral-100 px-0 py-3 text-[1.2rem] focus:outline-none focus:ring-0 transition-colors placeholder:text-neutral-400 dark:placeholder:text-neutral-600 font-medium text-neutral-900 dark:text-neutral-100"
+                            className="w-full bg-transparent border-0 border-b border-neutral-200 dark:border-neutral-800 focus:border-neutral-900 dark:focus:border-neutral-300 px-0 py-3 text-[1.2rem] focus:outline-none focus:ring-0 transition-colors placeholder:text-neutral-400 dark:placeholder:text-neutral-600 font-medium text-neutral-900 dark:text-neutral-100"
                         />
                     </div>
 
@@ -70,7 +70,7 @@ export default function GuestbookForm() {
                             required
                             rows={2}
                             placeholder="Tulis di sini"
-                            className="w-full bg-transparent border-0 border-b-2 border-neutral-200 dark:border-neutral-800 focus:border-neutral-900 dark:focus:border-neutral-100 px-0 py-3 text-[1.2rem] focus:outline-none focus:ring-0 resize-none transition-colors placeholder:text-neutral-400 dark:placeholder:text-neutral-600 font-medium text-neutral-900 dark:text-neutral-100"
+                            className="w-full bg-transparent border-0 border-b border-neutral-200 dark:border-neutral-800 focus:border-neutral-900 dark:focus:border-neutral-300 px-0 py-3 text-[1.2rem] focus:outline-none focus:ring-0 resize-none transition-colors placeholder:text-neutral-400 dark:placeholder:text-neutral-600 font-medium text-neutral-900 dark:text-neutral-100"
                         />
                     </div>
 

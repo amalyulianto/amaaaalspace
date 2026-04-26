@@ -30,10 +30,15 @@ const config: Config = {
             '.text-center': { textAlign: 'center' },
             '.text-right': { textAlign: 'right' },
             '.text-justify': { textAlign: 'justify' },
-            /* Empty paragraphs (Enter key) take up one visible line */
+            /* Make all paragraphs have 0 margin, so Enter == Shift+Enter */
+            'p': {
+              marginTop: '0',
+              marginBottom: '0',
+            },
+            /* Empty paragraphs (Enter key) still need some height to exist */
             'p:empty': {
               margin: '0',
-              minHeight: '1.2em',
+              minHeight: '1.5em',
             },
           },
         },

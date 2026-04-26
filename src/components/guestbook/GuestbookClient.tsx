@@ -1,6 +1,6 @@
 "use client";
 
-import { useState } from "react";
+import { useState, useEffect } from "react";
 import Masonry, { ResponsiveMasonry } from "react-responsive-masonry";
 import { PenLine, X } from "lucide-react";
 import { PALESTINE_NAMES } from "@/lib/constants";
@@ -14,6 +14,11 @@ export interface GuestbookMessage {
 
 export function GuestbookClient({ initialMessages }: { initialMessages: GuestbookMessage[] }) {
     const [messages] = useState<GuestbookMessage[]>(initialMessages);
+    const [isMounted, setIsMounted] = useState(false);
+
+    useEffect(() => {
+        setIsMounted(true);
+    }, []);
 
     const [isFormOpen, setIsFormOpen] = useState(false);
     const [form, setForm] = useState({ name: "", message: "", honeypot: "" });
@@ -161,46 +166,48 @@ export function GuestbookClient({ initialMessages }: { initialMessages: Guestboo
 
             {/* Masonry Grid for Messages */}
             <div className="w-full">
-                {messages.length > 0 ? (
-                    <ResponsiveMasonry columnsCountBreakPoints={{ 350: 1, 600: 2 }}>
-                        <Masonry gutter="1.5rem">
-                            {messages.map((msg, index) => {
-                                const rotations = ["-rotate-1", "rotate-0", "rotate-1", "-rotate-2", "rotate-2"];
-                                const randomRotation = rotations[index % rotations.length];
+                {isMounted ? (
+                    messages.length > 0 ? (
+                        <ResponsiveMasonry columnsCountBreakPoints={{ 350: 1, 600: 2 }}>
+                            <Masonry gutter="1.5rem">
+                                {messages.map((msg, index) => {
+                                    const rotations = ["-rotate-1", "rotate-0", "rotate-1", "-rotate-2", "rotate-2"];
+                                    const randomRotation = rotations[index % rotations.length];
 
-                                return (
-                                    <div
-                                        key={msg.id}
-                                        className={`bg-white p-6 rounded-2xl border border-neutral-200 shadow-sm hover:shadow-md transition-all duration-300 ${randomRotation} hover:rotate-0 hover:-translate-y-1 w-full`}
-                                    >
-                                        <p className="text-neutral-800 text-lg leading-relaxed mb-6 font-medium">
-                                            "{msg.message}"
-                                        </p>
-                                        <div className="flex items-center gap-3 mt-auto pt-4 border-t border-neutral-100">
-                                            <div className="w-8 h-8 rounded-full bg-neutral-100 flex items-center justify-center text-neutral-600 font-bold text-sm p-0 m-0 shrink-0">
-                                                {msg.name ? msg.name.charAt(0).toUpperCase() : '?'}
-                                            </div>
-                                            <div className="flex flex-col m-0 p-0 leading-tight min-w-0">
-                                                <h3 className="font-semibold text-sm text-neutral-900 m-0 p-0 truncate">{msg.name}</h3>
-                                                <span className="text-xs font-medium text-neutral-400 m-0 p-0 mt-0.5">
-                                                    {new Date(msg.date).toLocaleDateString("en-US", {
-                                                        month: "short",
-                                                        day: "numeric",
-                                                        year: "numeric"
-                                                    })}
-                                                </span>
+                                    return (
+                                        <div
+                                            key={msg.id}
+                                            className={`bg-white p-6 rounded-2xl border border-neutral-200 shadow-sm hover:shadow-md transition-all duration-300 ${randomRotation} hover:rotate-0 hover:-translate-y-1 w-full`}
+                                        >
+                                            <p className="text-neutral-800 text-lg leading-relaxed mb-6 font-medium">
+                                                "{msg.message}"
+                                            </p>
+                                            <div className="flex items-center gap-3 mt-auto pt-4 border-t border-neutral-100">
+                                                <div className="w-8 h-8 rounded-full bg-neutral-100 flex items-center justify-center text-neutral-600 font-bold text-sm p-0 m-0 shrink-0">
+                                                    {msg.name ? msg.name.charAt(0).toUpperCase() : '?'}
+                                                </div>
+                                                <div className="flex flex-col m-0 p-0 leading-tight min-w-0">
+                                                    <h3 className="font-semibold text-sm text-neutral-900 m-0 p-0 truncate">{msg.name}</h3>
+                                                    <span className="text-xs font-medium text-neutral-400 m-0 p-0 mt-0.5">
+                                                        {new Date(msg.date).toLocaleDateString("en-US", {
+                                                            month: "short",
+                                                            day: "numeric",
+                                                            year: "numeric"
+                                                        })}
+                                                    </span>
+                                                </div>
                                             </div>
                                         </div>
-                                    </div>
-                                );
-                            })}
-                        </Masonry>
-                    </ResponsiveMasonry>
-                ) : (
-                    <div className="text-center py-20 border-2 border-dashed border-neutral-200 rounded-2xl w-full">
-                        <p className="text-neutral-500">Buku Tamu masih kosong. Emang siapa juga mau ke sini...</p>
-                    </div>
-                )}
+                                    );
+                                })}
+                            </Masonry>
+                        </ResponsiveMasonry>
+                    ) : (
+                        <div className="text-center py-20 border-2 border-dashed border-neutral-200 rounded-2xl w-full">
+                            <p className="text-neutral-500">Buku Tamu masih kosong. Emang siapa juga mau ke sini...</p>
+                        </div>
+                    )
+                ) : null}
             </div>
         </div>
     );

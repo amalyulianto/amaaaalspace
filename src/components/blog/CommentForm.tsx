@@ -42,7 +42,7 @@ export default function CommentForm({ postId }: CommentFormProps) {
 
     return (
         <div>
-            <h3 className="text-[1rem] font-semibold mb-4">Tinggalkan Komengtar</h3>
+            <h3 className="text-[1rem] font-semibold mb-4 text-neutral-900 dark:text-neutral-100">Tinggalkan Komengtar</h3>
 
             {status === 'success' ? (
                 <p className="text-neutral-500 dark:text-neutral-400 text-[0.95rem]">
@@ -68,7 +68,7 @@ export default function CommentForm({ postId }: CommentFormProps) {
                             type="text"
                             name="author_name"
                             required
-                            className="w-full bg-white dark:bg-neutral-900 border border-neutral-200 dark:border-neutral-800 rounded px-3 py-2 text-[0.95rem] text-neutral-900 dark:text-neutral-100 focus:outline-none focus:border-blue-600 dark:focus:border-blue-500 transition-colors"
+                            className="w-full bg-white dark:bg-neutral-900/40 border border-neutral-200 dark:border-neutral-800 rounded px-3 py-2 text-[0.95rem] text-neutral-900 dark:text-neutral-100 focus:outline-none focus:border-blue-600 dark:focus:border-blue-500 transition-colors"
                         />
                     </div>
 
@@ -81,7 +81,7 @@ export default function CommentForm({ postId }: CommentFormProps) {
                             name="content"
                             required
                             rows={4}
-                            className="w-full bg-white dark:bg-neutral-900 border border-neutral-200 dark:border-neutral-800 rounded px-3 py-2 text-[0.95rem] text-neutral-900 dark:text-neutral-100 focus:outline-none focus:border-blue-600 dark:focus:border-blue-500 transition-colors resize-y"
+                            className="w-full bg-white dark:bg-neutral-900/40 border border-neutral-200 dark:border-neutral-800 rounded px-3 py-2 text-[0.95rem] text-neutral-900 dark:text-neutral-100 focus:outline-none focus:border-blue-600 dark:focus:border-blue-500 transition-colors resize-y"
                         />
                     </div>
 

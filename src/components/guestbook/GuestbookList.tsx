@@ -45,12 +45,12 @@ export default async function GuestbookList() {
                         &quot;{entry.message}&quot;
                     </p>
                     <div className="flex items-center gap-3">
-                        <div className="w-10 h-10 rounded-full bg-neutral-100 dark:bg-neutral-800 flex items-center justify-center text-sm font-bold text-neutral-600 dark:text-neutral-400 shrink-0">
+                        <div className="w-10 h-10 rounded-full bg-neutral-100 dark:bg-neutral-800/80 flex items-center justify-center text-sm font-bold text-neutral-600 dark:text-neutral-400 shrink-0">
                             {getInitials(entry.author_name)}
                         </div>
                         <div className="flex flex-col">
                             <span className="font-bold text-[0.95rem] text-neutral-900 dark:text-neutral-100 leading-tight mb-0.5">{entry.author_name}</span>
-                            <span className="text-[0.75rem] text-neutral-500 dark:text-neutral-400 leading-tight">{formatDate(entry.created_at)}</span>
+                            <span className="text-[0.75rem] text-neutral-500 dark:text-neutral-500 leading-tight">{formatDate(entry.created_at)}</span>
                         </div>
                     </div>
                 </Card>

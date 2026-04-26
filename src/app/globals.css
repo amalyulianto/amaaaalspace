@@ -9,6 +9,7 @@
 }
 
 @layer components {
+
   /* Tiptap Image Resizing */
   .ProseMirror .resizer {
     @apply relative inline-block leading-[0];
@@ -41,5 +42,12 @@
   /* Tiptap Editor Aesthetics */
   .ProseMirror:focus {
     @apply outline-none;
+  }
+
+  /* Equalize Enter and Shift+Enter spacing */
+  .prose p,
+  .ProseMirror p {
+    margin-top: 0 !important;
+    margin-bottom: 0 !important;
   }
 }
