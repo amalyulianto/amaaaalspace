@@ -25,6 +25,23 @@ export default function TiptapEditor({ content, onChange }: TiptapEditorProps) {
             Underline,
             Link.configure({ openOnClick: false }),
             ResizeImage.extend({
+                addAttributes() {
+                    return {
+                        ...this.parent?.(),
+                        class: {
+                            default: null,
+                            parseHTML: element => element.getAttribute('class'),
+                            renderHTML: attributes => {
+                                if (!attributes.class) {
+                                    return {}
+                                }
+                                return {
+                                    class: attributes.class,
+                                }
+                            },
+                        },
+                    }
+                },
                 // Override renderHTML so containerStyle (which includes margin alignment)
                 // gets serialized into the published <img> tag's style attribute.
                 renderHTML({ HTMLAttributes }) {
@@ -33,7 +50,7 @@ export default function TiptapEditor({ content, onChange }: TiptapEditorProps) {
                     return ['img', { ...rest, style }]
                 },
             }).configure({
-                inline: false,
+                inline: true,
             }),
             TextAlign.configure({
                 types: ['heading', 'paragraph', 'imageResize'],
@@ -139,6 +156,11 @@ export default function TiptapEditor({ content, onChange }: TiptapEditorProps) {
                     }
                 }}>Caption</ToolbarButton>
                 <span className="w-px h-4 bg-gray-300 mx-1"></span>
+                <ToolbarButton onClick={() => editor.chain().focus().updateAttributes('imageResize', { class: 'float-left-img' }).run()} isActive={editor.isActive('imageResize', { class: 'float-left-img' })}>Img Float L</ToolbarButton>
+                <ToolbarButton onClick={() => editor.chain().focus().updateAttributes('imageResize', { class: 'inline-img' }).run()} isActive={editor.isActive('imageResize', { class: 'inline-img' })}>Img Inline</ToolbarButton>
+                <ToolbarButton onClick={() => editor.chain().focus().updateAttributes('imageResize', { class: 'float-right-img' }).run()} isActive={editor.isActive('imageResize', { class: 'float-right-img' })}>Img Float R</ToolbarButton>
+                <ToolbarButton onClick={() => editor.chain().focus().updateAttributes('imageResize', { class: null }).run()} isActive={editor.isActive('imageResize') && !editor.isActive('imageResize', { class: 'float-left-img' }) && !editor.isActive('imageResize', { class: 'inline-img' }) && !editor.isActive('imageResize', { class: 'float-right-img' })}>Img Block</ToolbarButton>
+                <span className="w-px h-4 bg-gray-300 mx-1"></span>
                 <ToolbarButton onClick={() => editor.chain().focus().setTextAlign('left').run()} isActive={editor.isActive({ textAlign: 'left' })}><AlignLeft className="w-4 h-4" /></ToolbarButton>
                 <ToolbarButton onClick={() => editor.chain().focus().setTextAlign('center').run()} isActive={editor.isActive({ textAlign: 'center' })}><AlignCenter className="w-4 h-4" /></ToolbarButton>
                 <ToolbarButton onClick={() => editor.chain().focus().setTextAlign('right').run()} isActive={editor.isActive({ textAlign: 'right' })}><AlignRight className="w-4 h-4" /></ToolbarButton>
@@ -153,7 +175,7 @@ export default function TiptapEditor({ content, onChange }: TiptapEditorProps) {
             >
                 <EditorContent
                     editor={editor}
-                    className="prose-content min-h-[400px] outline-none [&_.ProseMirror]:min-h-[400px]"
+                    className="max-w-2xl mx-auto min-h-[400px] [&_.ProseMirror]:min-h-[400px] [&_.ProseMirror]:outline-none"
                 />
             </div>
         </div>

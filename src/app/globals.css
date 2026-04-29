@@ -10,44 +10,146 @@
 
 @layer components {
 
-  /* Tiptap Image Resizing */
+  /* =============================================
+     TIPTAP EDITOR: Image Resizer
+     ============================================= */
+
   .ProseMirror .resizer {
-    @apply relative inline-block leading-[0];
+    @apply relative inline-block;
+    line-height: 0; /* no line-height space around image */
   }
 
+  /* Image inside resizer: kill ALL spacing so the
+     selection box hugs the image pixel-perfect */
   .ProseMirror .resizer img {
-    @apply cursor-default;
+    @apply block cursor-default;
+    margin: 0;
+    padding: 0;
+    vertical-align: bottom;
+    line-height: 0;
   }
 
   .ProseMirror .resizer .resizer-handle {
     @apply absolute w-3 h-3 bg-[#2563EB] border border-white z-10;
   }
+  .ProseMirror .resizer .resizer-handle-nw { @apply -top-[6px] -left-[6px] cursor-[nw-resize]; }
+  .ProseMirror .resizer .resizer-handle-ne { @apply -top-[6px] -right-[6px] cursor-[ne-resize]; }
+  .ProseMirror .resizer .resizer-handle-sw { @apply -bottom-[6px] -left-[6px] cursor-[sw-resize]; }
+  .ProseMirror .resizer .resizer-handle-se { @apply -bottom-[6px] -right-[6px] cursor-[se-resize]; }
 
-  .ProseMirror .resizer .resizer-handle-nw {
-    @apply -top-[6px] -left-[6px] cursor-[nw-resize];
-  }
+  /* =============================================
+     TIPTAP EDITOR: Typography
+     (replaces prose plugin in the editor area so
+      there are zero conflicts with its img rules)
+     ============================================= */
 
-  .ProseMirror .resizer .resizer-handle-ne {
-    @apply -top-[6px] -right-[6px] cursor-[ne-resize];
-  }
-
-  .ProseMirror .resizer .resizer-handle-sw {
-    @apply -bottom-[6px] -left-[6px] cursor-[sw-resize];
-  }
-
-  .ProseMirror .resizer .resizer-handle-se {
-    @apply -bottom-[6px] -right-[6px] cursor-[se-resize];
-  }
-
-  /* Tiptap Editor Aesthetics */
   .ProseMirror:focus {
     @apply outline-none;
   }
 
-  /* Equalize Enter and Shift+Enter spacing */
-  .prose p,
+  /* Paragraphs — same line-height as prose-lg */
   .ProseMirror p {
-    margin-top: 0 !important;
-    margin-bottom: 0 !important;
+    @apply leading-relaxed;
+    margin-top: 0;
+    margin-bottom: 0;
+  }
+
+  /* Empty paragraphs used as line breaks */
+  .ProseMirror p:empty {
+    min-height: 1.7em;
+  }
+
+  /* Headings */
+  .ProseMirror h2 {
+    @apply text-3xl font-bold mt-8 mb-3 text-neutral-900 dark:text-neutral-100;
+  }
+  .ProseMirror h3 {
+    @apply text-2xl font-bold mt-6 mb-2 text-neutral-900 dark:text-neutral-100;
+  }
+
+  /* Lists */
+  .ProseMirror ul {
+    @apply list-disc pl-6 my-4 space-y-1;
+  }
+  .ProseMirror ol {
+    @apply list-decimal pl-6 my-4 space-y-1;
+  }
+
+  /* Blockquote */
+  .ProseMirror blockquote {
+    @apply border-l-4 border-neutral-300 dark:border-neutral-600 pl-4 italic text-neutral-600 dark:text-neutral-400 my-4;
+  }
+
+  /* Links */
+  .ProseMirror a {
+    @apply text-blue-600 dark:text-blue-400 underline;
+  }
+
+  /* Code */
+  .ProseMirror code {
+    @apply bg-neutral-100 dark:bg-neutral-800 rounded px-1 text-sm font-mono;
+  }
+
+  /* =============================================
+     GLOBAL: Equalize prose page paragraph spacing
+     (public blog/portfolio pages)
+     ============================================= */
+
+  .prose p {
+    margin-top: 0;
+    margin-bottom: 0;
+  }
+
+  /* =============================================
+     IMAGE LAYOUT CLASSES
+     On public pages: applied directly to <img>
+     In editor:       applied to <img> inside .resizer — 
+                      the float/margin is transferred to 
+                      .resizer wrapper via :has() below
+     ============================================= */
+
+  .float-left-img {
+    float: left;
+    margin-right: 1.5rem;
+    margin-bottom: 1rem;
+  }
+
+  .float-right-img {
+    float: right;
+    margin-left: 1.5rem;
+    margin-bottom: 1rem;
+  }
+
+  .inline-img {
+    display: inline-block;
+    vertical-align: top;
+    margin: 0.5rem;
+  }
+
+  /* In the editor, lift float/margin to the .resizer wrapper
+     so the selection handles hug the image, not the spaced-out box */
+  .ProseMirror .resizer:has(img.float-left-img) {
+    float: left;
+    margin-right: 1.5rem;
+    margin-bottom: 1rem;
+  }
+  .ProseMirror .resizer:has(img.float-right-img) {
+    float: right;
+    margin-left: 1.5rem;
+    margin-bottom: 1rem;
+  }
+  .ProseMirror .resizer:has(img.inline-img) {
+    display: inline-block;
+    vertical-align: top;
+    margin: 0.5rem;
+  }
+
+  /* Strip float/margin from the img itself in the editor
+     (the .resizer handles it above) */
+  .ProseMirror .resizer img.float-left-img,
+  .ProseMirror .resizer img.float-right-img,
+  .ProseMirror .resizer img.inline-img {
+    float: none;
+    margin: 0;
   }
 }

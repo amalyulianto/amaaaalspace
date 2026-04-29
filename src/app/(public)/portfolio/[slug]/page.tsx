@@ -5,6 +5,8 @@ import { ArrowLeft, ExternalLink, Code } from 'lucide-react'
 import type { Metadata } from 'next'
 import { Badge } from '@/components/ui/Badge'
 
+export const revalidate = 60;
+
 type Props = {
     params: { slug: string }
 }

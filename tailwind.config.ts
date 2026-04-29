@@ -38,7 +38,16 @@ const config: Config = {
             /* Empty paragraphs (Enter key) still need some height to exist */
             'p:empty': {
               margin: '0',
-              minHeight: '1.5em',
+              minHeight: '1.7em',
+            },
+            /* Remove default margins for images */
+            'figure': {
+              marginTop: '0',
+              marginBottom: '0',
+            },
+            'img': {
+              marginTop: '0',
+              marginBottom: '0',
             },
           },
         },
