@@ -42,29 +42,17 @@ export default async function PortfolioPage({ searchParams }: { searchParams: { 
     const selectedItems = items.filter(i => i.is_selected)
     const otherItems = items.filter(i => !i.is_selected)
 
-    const groupedItems = otherItems.reduce((acc, item) => {
-        const categories = item.portfolio_categories && item.portfolio_categories.length > 0
-            ? item.portfolio_categories
-            : [{ name: 'Karya lainnya' } as any]
-
-        categories.forEach((cat: any) => {
-            const categoryName = cat.name
-            if (!acc[categoryName]) acc[categoryName] = []
-            acc[categoryName].push(item)
-        })
-
-        return acc
-    }, {} as Record<string, PortfolioItem[]>)
+    const groupedItems: Record<string, PortfolioItem[]> = {}
 
     if (selectedItems.length > 0) {
         groupedItems['Highlighted Karya'] = selectedItems
     }
 
-    const sortedGroups = Object.entries(groupedItems).sort(([a], [b]) => {
-        if (a === 'Highlighted Karya') return -1
-        if (b === 'Highlighted Karya') return 1
-        return a.localeCompare(b)
-    })
+    if (otherItems.length > 0) {
+        groupedItems['Karya Lainnya'] = otherItems
+    }
+
+    const sortedGroups = Object.entries(groupedItems)
 
     return (
         <div className="space-y-2 animate-in fade-in duration-500">
