@@ -5,6 +5,13 @@ export type Category = {
   created_at: string
 }
 
+export type PortfolioCategory = {
+  id: string
+  name: string
+  slug: string
+  created_at: string
+}
+
 export type Post = {
   id: string
   title: string
@@ -31,9 +38,9 @@ export type PortfolioItem = {
   project_url: string | null
   github_url: string | null
   display_order: number
-  category_id: string | null
+  is_selected: boolean
   created_at: string
-  category?: Category
+  portfolio_categories?: PortfolioCategory[]
 }
 
 export type LinkItem = {

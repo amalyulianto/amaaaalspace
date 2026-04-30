@@ -23,9 +23,18 @@ export default function ProjectCard({ item }: ProjectCardProps) {
                 </div>
             )}
             <div className="p-6 flex flex-col flex-1">
-                <Link href={`/portfolio/${item.slug}`} className="hover:opacity-75 transition-opacity">
-                    <h2 className="text-xl font-bold mb-3 text-neutral-900 dark:text-neutral-100 uppercase">{item.title}</h2>
-                </Link>
+                <div className="flex flex-wrap items-start justify-between gap-x-4 gap-y-2 mb-4">
+                    <Link href={`/portfolio/${item.slug}`} className="hover:opacity-75 transition-opacity inline-block">
+                        <h2 className="text-xl font-bold text-neutral-900 dark:text-neutral-100 uppercase">{item.title}</h2>
+                    </Link>
+                    {item.portfolio_categories && item.portfolio_categories.length > 0 && (
+                        <div className="flex flex-wrap gap-2">
+                            {item.portfolio_categories.map((cat) => (
+                                <Badge key={cat.id} className="bg-neutral-100/80 dark:bg-neutral-800/80 text-[10px] py-0.5 px-2 font-semibold">{cat.name}</Badge>
+                            ))}
+                        </div>
+                    )}
+                </div>
                 {item.description && (
                     <p className="text-neutral-600 dark:text-neutral-400 leading-relaxed mb-6 flex-grow whitespace-pre-wrap">
                         {item.description}
@@ -33,18 +42,16 @@ export default function ProjectCard({ item }: ProjectCardProps) {
                 )}
 
                 <div className="space-y-6 mt-auto">
-                    {item.tech_stack && item.tech_stack.length > 0 && (
-                        <div>
-                            <h3 className="text-xs font-semibold text-neutral-400 uppercase tracking-wider mb-2">
-                                Tech Stack
-                            </h3>
+                    <div className="flex flex-col gap-3">
+
+                        {item.tech_stack && item.tech_stack.length > 0 && (
                             <div className="flex flex-wrap gap-2">
                                 {item.tech_stack.map((tech) => (
                                     <Badge key={tech}>{tech}</Badge>
                                 ))}
                             </div>
-                        </div>
-                    )}
+                        )}
+                    </div>
 
                     <div className="flex flex-wrap items-center justify-between gap-4 pt-4 border-t border-neutral-100 dark:border-neutral-800">
                         <div className="flex items-center gap-4">

@@ -42,7 +42,10 @@ export default async function PortfolioDetailPage({ params }: Props) {
     // Fetch portfolio item
     const { data: item } = await supabase
         .from('portfolio')
-        .select('*')
+        .select(`
+            *,
+            portfolio_categories!portfolio_category_mapping(id, name, slug)
+        `)
         .eq('slug', params.slug)
         .single()
 
@@ -70,16 +73,26 @@ export default async function PortfolioDetailPage({ params }: Props) {
                     </p>
                 )}
 
-                <div className="flex flex-wrap items-center justify-center gap-3 pt-4">
+                <div className="flex flex-col items-center gap-4 pt-4">
+                    {item.portfolio_categories && item.portfolio_categories.length > 0 && (
+                        <div className="flex flex-wrap items-center justify-center gap-2">
+                            <span className="text-sm font-medium text-neutral-500">Kategori:</span>
+                            {item.portfolio_categories.map((cat: any) => (
+                                <Badge key={cat.id}>{cat.name}</Badge>
+                            ))}
+                        </div>
+                    )}
+                    
                     {item.tech_stack && item.tech_stack.length > 0 && (
-                        <div className="flex flex-wrap items-center justify-center gap-2 mr-4">
+                        <div className="flex flex-wrap items-center justify-center gap-2">
+                            <span className="text-sm font-medium text-neutral-500">Tech:</span>
                             {item.tech_stack.map((tech: string) => (
                                 <Badge key={tech}>{tech}</Badge>
                             ))}
                         </div>
                     )}
 
-                    <div className="flex items-center gap-4 border-l border-neutral-200 dark:border-neutral-800 pl-4">
+                    <div className="flex items-center gap-4 border-t sm:border-t-0 sm:border-l border-neutral-200 dark:border-neutral-800 pt-4 sm:pt-0 sm:pl-4 mt-2 sm:mt-0">
                         {item.project_url && (
                             <a
                                 href={item.project_url}

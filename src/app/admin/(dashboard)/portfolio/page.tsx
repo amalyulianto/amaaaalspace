@@ -20,7 +20,7 @@ export default function AdminPortfolioPage() {
             .from('portfolio')
             .select(`
                 *,
-                category:categories(id, name, slug)
+                portfolio_categories!portfolio_category_mapping(id, name, slug)
             `)
             .order('display_order', { ascending: true })
             .order('created_at', { ascending: false })
@@ -75,8 +75,17 @@ export default function AdminPortfolioPage() {
                         <tbody className="divide-y divide-[#E5E7EB]">
                             {items.map(item => (
                                 <tr key={item.id} className="hover:bg-[#F9FAFB] text-[15px] transition-colors">
-                                    <td className="px-4 py-3.5 text-[#111111] font-medium">{item.title}</td>
-                                    <td className="px-4 py-3.5 text-[#666666]">{item.category?.name || '—'}</td>
+                                    <td className="px-4 py-3.5 text-[#111111] font-medium">
+                                        {item.title}
+                                        {item.is_selected && (
+                                            <span className="ml-2 inline-block px-2 py-0.5 bg-blue-100 text-blue-800 text-[11px] rounded-full font-medium">
+                                                Selected
+                                            </span>
+                                        )}
+                                    </td>
+                                    <td className="px-4 py-3.5 text-[#666666]">
+                                        {item.portfolio_categories?.map(c => c.name).join(', ') || '—'}
+                                    </td>
                                     <td className="px-4 py-3.5 text-[#666666]">
                                         {item.tech_stack?.join(', ') || '—'}
                                     </td>
@@ -93,7 +102,7 @@ export default function AdminPortfolioPage() {
                             ))}
                             {items.length === 0 && (
                                 <tr>
-                                    <td colSpan={4} className="px-4 py-8 text-center text-[#666666]">
+                                    <td colSpan={5} className="px-4 py-8 text-center text-[#666666]">
                                         No portfolio items found.
                                     </td>
                                 </tr>
