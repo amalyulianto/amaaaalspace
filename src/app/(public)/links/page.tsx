@@ -1,5 +1,6 @@
 import { createPublicClient } from '@/lib/supabase/server'
 import type { Metadata } from 'next'
+import Image from 'next/image'
 import { LinkItem } from '@/lib/types'
 import {
     Link2, Mail, Globe, Book, Briefcase, FileText, Code,
@@ -9,7 +10,7 @@ import {
 export const revalidate = 60;
 
 export const metadata: Metadata = {
-    title: 'Links | Alapakadala',
+    title: 'Links | Amal Yulianto',
     description: 'All my important links in one place.',
 }
 
@@ -35,11 +36,17 @@ export default async function LinksPage() {
     return (
         <div className="max-w-xl mx-auto pt-8 pb-16 animate-in fade-in duration-500">
             <header className="text-center mb-12">
-                <div className="w-20 h-20 bg-neutral-100 dark:bg-neutral-800 rounded-full mx-auto mb-6 flex items-center justify-center border border-neutral-200 dark:border-neutral-700 shadow-sm overflow-hidden text-2xl font-bold text-neutral-400 dark:text-neutral-500">
-                    A
+                <div className="w-20 h-20 bg-neutral-100 dark:bg-neutral-800 rounded-full mx-auto mb-6 flex items-center justify-center border border-neutral-200 dark:border-neutral-700 shadow-sm overflow-hidden text-2xl font-bold text-neutral-400 dark:text-neutral-500 relative">
+                    <Image
+                        src="/profile.png"
+                        alt="Amal Yulianto"
+                        fill
+                        className="object-cover"
+                        priority
+                    />
                 </div>
-                <h1 className="text-2xl font-bold text-neutral-900 dark:text-neutral-100 mb-2">Alapakadala</h1>
-                <p className="text-neutral-500 dark:text-neutral-400">Developer & Designer</p>
+                <h1 className="text-2xl font-bold text-neutral-900 dark:text-neutral-100 mb-2">Amal Yulianto</h1>
+                <p className="text-neutral-500 dark:text-neutral-400">I'm Batman.</p>
             </header>
 
             <div className="space-y-4">
