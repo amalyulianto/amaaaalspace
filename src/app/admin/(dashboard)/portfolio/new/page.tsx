@@ -204,6 +204,7 @@ export default function NewPortfolioPage() {
                         </div>
                     </div>
                 </div>
+            </div>
 
                 <div className="flex items-center gap-3">
                     <input
