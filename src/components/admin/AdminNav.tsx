@@ -41,6 +41,7 @@ export default function AdminNav() {
         { name: 'Comments', href: '/admin/comments' },
         { name: 'Guestbook', href: '/admin/guestbook' },
         { name: 'Links', href: '/admin/links' },
+        { name: 'Short Links', href: '/admin/short-links' },
     ]
 
     return (

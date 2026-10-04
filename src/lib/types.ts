@@ -90,3 +90,12 @@ export type GuestbookEntry = {
   approved: boolean
   created_at: string
 }
+
+export type ShortLink = {
+  id: string
+  slug: string
+  destination_url: string
+  clicks: number
+  created_at: string
+  updated_at: string
+}
