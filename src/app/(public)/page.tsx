@@ -1,56 +1,37 @@
 import Link from 'next/link'
-import { ArrowRight, BookOpen, Briefcase, FileText, MessageSquare, Link2 } from 'lucide-react'
+import { ArrowRight, Hammer } from 'lucide-react'
 
-import { Card } from '@/components/ui/Card'
-
-export default function HomePage() {
-
-    const navItems = [
-        { title: "Tulisan", path: "/blog", desc: "Blog pribadi karena suka nulis. Tulisan tentang apa saja.", icon: BookOpen },
-        { title: "Karya", path: "/portfolio", desc: "Karya-karya yang pernah dibuat yang berani dipublikasikan. Tidak semua bagus, tapi ada yang bagus, kok...", icon: Briefcase },
-        { title: "Resume", path: "/resume", desc: "Lihat pengalaman dan rekam jejak saya.", icon: FileText },
-        { title: "Buku Tamu", path: "/guestbook", desc: "Tinggalkan jejak, kayak di Kaskus.", icon: MessageSquare },
-        { title: "Links", path: "/links", desc: "Semua link penting tentang achu.", icon: Link2 },
-    ];
-
+export default function StudioHomePage() {
     return (
-        <div className="space-y-16 animate-in fade-in duration-500">
-            {/* Hero Section */}
-            <section className="space-y-6 pt-8">
-                <h1 className="text-4xl sm:text-5xl md:text-6xl font-bold tracking-tight text-neutral-900 dark:text-neutral-100 leading-tight">
-                    Halo, ini Amal.
+        <div className="min-h-[70vh] flex flex-col items-center justify-center text-center px-4 animate-in fade-in duration-500">
+            <div className="space-y-6 max-w-xl">
+                {/* Construction badge */}
+                <div className="inline-flex items-center gap-2 px-3 py-1.5 rounded-full text-xs font-medium tracking-wide uppercase bg-neutral-100 dark:bg-neutral-800 text-neutral-600 dark:text-neutral-400 border border-neutral-200 dark:border-neutral-700">
+                    <Hammer className="w-3.5 h-3.5" />
+                    <span>Site Under Construction</span>
+                </div>
+
+                {/* Studio Title */}
+                <h1 className="text-4xl sm:text-5xl md:text-6xl font-extrabold tracking-tight text-neutral-900 dark:text-neutral-100">
+                    Alapakadala Studio
                 </h1>
-                <p className="text-xl sm:text-2xl text-neutral-600 dark:text-neutral-400 leading-relaxed max-w-2xl font-light">
-                    Saya orang. Suka menulis. Menulis kode, menulis blog, menulis cerita pendek, menulis apa saja kalau lagi pengen. Suka main catur juga walaupun yang ini agak sedikit bodoh dan tidak mahir, add amalyulianto di chess.com. Akhir-akhir ini juga lagi hobi Stand Up Comedy.
+
+                {/* Subtext */}
+                <p className="text-lg sm:text-xl text-neutral-600 dark:text-neutral-400 font-light leading-relaxed">
+                    Visit a man&apos;s personal site instead
                 </p>
-            </section>
 
-            {/* Navigation Grid */}
-            <nav className="grid sm:grid-cols-2 md:grid-cols-3 gap-4 md:gap-6 pt-2">
-                {navItems.map(item => (
+                {/* CTA Button */}
+                <div className="pt-4 flex justify-center">
                     <Link
-                        key={item.path}
-                        href={item.path}
-                        className="group no-underline"
+                        href="/me"
+                        className="inline-flex items-center gap-2 px-6 py-3 rounded-lg text-base font-medium bg-[#111111] dark:bg-white text-white dark:text-[#111111] hover:bg-neutral-800 dark:hover:bg-neutral-200 transition-all duration-200 shadow-sm hover:shadow"
                     >
-                        <Card className="p-6 h-full hover:border-neutral-900 dark:hover:border-neutral-100 transition-all duration-300 relative overflow-hidden flex flex-col group">
-                            {/* Subtle background highlight on hover */}
-                            <div className="absolute inset-0 bg-neutral-50 dark:bg-neutral-800/50 translate-y-full group-hover:translate-y-0 transition-transform duration-300 ease-out pointer-events-none" />
-
-                            <div className="relative z-10 flex flex-col h-full">
-                                <div className="flex items-center justify-between mb-8">
-                                    <div className="w-10 h-10 rounded-full bg-neutral-100 dark:bg-neutral-800 flex items-center justify-center group-hover:bg-white dark:group-hover:bg-neutral-900 transition-colors duration-300 border border-transparent group-hover:border-neutral-200 dark:group-hover:border-neutral-700">
-                                        <item.icon className="w-5 h-5 text-neutral-700 dark:text-neutral-300 group-hover:text-neutral-900 dark:group-hover:text-neutral-100" />
-                                    </div>
-                                    <ArrowRight className="w-5 h-5 text-neutral-300 dark:text-neutral-700 group-hover:text-neutral-900 dark:group-hover:text-neutral-100 group-hover:-rotate-45 transition-all duration-300" />
-                                </div>
-                                <h2 className="text-xl font-bold text-neutral-900 dark:text-neutral-100 mb-2">{item.title}</h2>
-                                <p className="text-neutral-500 dark:text-neutral-400 text-sm leading-relaxed flex-grow">{item.desc}</p>
-                            </div>
-                        </Card>
+                        <span>Visit Personal Site</span>
+                        <ArrowRight className="w-4 h-4" />
                     </Link>
-                ))}
-            </nav>
+                </div>
+            </div>
         </div>
-    );
+    )
 }

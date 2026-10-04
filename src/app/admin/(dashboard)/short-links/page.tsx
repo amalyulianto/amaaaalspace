@@ -11,6 +11,7 @@ const RESERVED_SLUGS = [
     'resume',
     'guestbook',
     'links',
+    'me',
     'admin',
     'api',
     'robots.txt',

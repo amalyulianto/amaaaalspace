@@ -1,5 +1,6 @@
-import { notFound, redirect } from 'next/navigation'
+import { notFound } from 'next/navigation'
 import { createClient } from '@/lib/supabase/server'
+import RedirectScreen from '@/components/ui/RedirectScreen'
 
 interface ShortLinkPageProps {
     params: {
@@ -13,6 +14,7 @@ const RESERVED_SLUGS = new Set([
     'resume',
     'guestbook',
     'links',
+    'me',
     'admin',
     'api',
     'robots.txt',
@@ -39,12 +41,12 @@ export default async function ShortLinkPage({ params }: ShortLinkPageProps) {
         notFound()
     }
 
-    // Increment click count atomically (non-blocking failure tolerance)
+    // Increment click count atomically
     try {
         await supabase.rpc('increment_link_clicks', { link_slug: rawSlug })
     } catch {
-        // Continue redirection even if click increment encounters an error
+        // Continue even if RPC encounters an error
     }
 
-    redirect(link.destination_url)
+    return <RedirectScreen destinationUrl={link.destination_url} />
 }
