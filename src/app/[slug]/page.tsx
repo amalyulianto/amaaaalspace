@@ -45,7 +45,7 @@ export default async function ShortLinkPage({ params }: ShortLinkPageProps) {
     try {
         await supabase.rpc('increment_link_clicks', { link_slug: rawSlug })
     } catch {
-        // Continue even if RPC encounters an error
+        // Continue redirection even if RPC encounters an error
     }
 
     return <RedirectScreen destinationUrl={link.destination_url} />
