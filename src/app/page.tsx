@@ -3,19 +3,6 @@ import Link from 'next/link'
 export default function StudioLandingPage() {
     return (
         <div className="min-h-screen bg-[#0a0a0a] text-neutral-100 flex flex-col justify-between p-6 sm:p-12 antialiased selection:bg-neutral-800 selection:text-white">
-            {/* Top Bar / Status */}
-            <header className="w-full max-w-3xl mx-auto flex items-center justify-between pt-2 sm:pt-4">
-                <span className="text-[11px] uppercase tracking-widest font-mono text-neutral-400">
-                    alapakadala
-                </span>
-                <div className="flex items-center gap-2 text-[11px] font-mono text-neutral-400">
-                    <span className="relative flex h-2 w-2">
-                        <span className="animate-ping absolute inline-flex h-full w-full rounded-full bg-amber-400 opacity-75"></span>
-                        <span className="relative inline-flex rounded-full h-2 w-2 bg-amber-500"></span>
-                    </span>
-                    <span>WIP</span>
-                </div>
-            </header>
 
             {/* Main Information */}
             <main className="w-full max-w-3xl mx-auto my-auto py-16 flex flex-col items-center text-center">
