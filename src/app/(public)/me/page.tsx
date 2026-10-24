@@ -1,55 +1,64 @@
 import Link from 'next/link'
-import { ArrowRight, BookOpen, Briefcase, FileText, MessageSquare, Link2 } from 'lucide-react'
-
-import { Card } from '@/components/ui/Card'
 
 export default function PersonalHomePage() {
     const navItems = [
-        { title: "Tulisan", path: "/blog", desc: "Blog pribadi karena suka nulis. Tulisan tentang apa saja.", icon: BookOpen },
-        { title: "Karya", path: "/portfolio", desc: "Karya-karya yang pernah dibuat yang berani dipublikasikan. Tidak semua bagus, tapi ada yang bagus, kok...", icon: Briefcase },
-        { title: "Resume", path: "/resume", desc: "Lihat pengalaman dan rekam jejak saya.", icon: FileText },
-        { title: "Buku Tamu", path: "/guestbook", desc: "Tinggalkan jejak, kayak di Kaskus.", icon: MessageSquare },
-        { title: "Links", path: "/links", desc: "Semua link penting tentang achu.", icon: Link2 },
+        { title: 'Tulisan', path: '/blog', category: 'Blog' },
+        { title: 'Karya', path: '/portfolio', category: 'Portfolio' },
+        { title: 'Resume', path: '/resume', category: 'CV' },
+        { title: 'Buku Tamu', path: '/guestbook', category: 'Guestbook' },
+        { title: 'Links', path: '/links', category: 'Tautan' },
     ]
 
     return (
-        <div className="space-y-16 animate-in fade-in duration-500">
+        <div className="space-y-12 animate-in fade-in duration-500 pt-4">
             {/* Hero Section */}
-            <section className="space-y-6 pt-8">
-                <h1 className="text-4xl sm:text-5xl md:text-6xl font-bold tracking-tight text-neutral-900 dark:text-neutral-100 leading-tight">
+            <section className="space-y-4">
+                <h1 className="text-3xl sm:text-4xl font-bold tracking-tight text-neutral-900 dark:text-neutral-100">
                     Halo, ini Amal.
                 </h1>
-                <p className="text-xl sm:text-2xl text-neutral-600 dark:text-neutral-400 leading-relaxed max-w-2xl font-light">
+                <p className="text-base sm:text-lg text-neutral-600 dark:text-neutral-400 leading-relaxed max-w-2xl font-normal">
                     Saya orang. Suka menulis. Menulis kode, menulis blog, menulis cerita pendek, menulis apa saja kalau lagi pengen. Suka main catur juga walaupun yang ini agak sedikit bodoh dan tidak mahir, add amalyulianto di chess.com. Akhir-akhir ini juga lagi hobi Stand Up Comedy.
                 </p>
             </section>
 
-            {/* Navigation Grid */}
-            <nav className="grid sm:grid-cols-2 md:grid-cols-3 gap-4 md:gap-6 pt-2">
-                {navItems.map(item => (
-                    <Link
-                        key={item.path}
-                        href={item.path}
-                        className="group no-underline"
-                    >
-                        <Card className="p-6 h-full hover:border-neutral-900 dark:hover:border-neutral-100 transition-all duration-300 relative overflow-hidden flex flex-col group">
-                            {/* Subtle background highlight on hover */}
-                            <div className="absolute inset-0 bg-neutral-50 dark:bg-neutral-800/50 translate-y-full group-hover:translate-y-0 transition-transform duration-300 ease-out pointer-events-none" />
+            {/* Minimalist List Navigation */}
+            <section className="pt-2 max-w-md">
+                {/* Header matching reference */}
+                <div className="mb-6 space-y-0.5">
+                    <h2 className="text-lg font-bold tracking-tight text-neutral-900 dark:text-neutral-100">
+                        Direktori
+                    </h2>
+                    <p className="text-sm text-neutral-500 dark:text-neutral-400 font-normal">
+                        5 halaman
+                    </p>
+                </div>
 
-                            <div className="relative z-10 flex flex-col h-full">
-                                <div className="flex items-center justify-between mb-8">
-                                    <div className="w-10 h-10 rounded-full bg-neutral-100 dark:bg-neutral-800 flex items-center justify-center group-hover:bg-white dark:group-hover:bg-neutral-900 transition-colors duration-300 border border-transparent group-hover:border-neutral-200 dark:group-hover:border-neutral-700">
-                                        <item.icon className="w-5 h-5 text-neutral-700 dark:text-neutral-300 group-hover:text-neutral-900 dark:group-hover:text-neutral-100" />
-                                    </div>
-                                    <ArrowRight className="w-5 h-5 text-neutral-300 dark:text-neutral-700 group-hover:text-neutral-900 dark:group-hover:text-neutral-100 group-hover:-rotate-45 transition-all duration-300" />
-                                </div>
-                                <h2 className="text-xl font-bold text-neutral-900 dark:text-neutral-100 mb-2">{item.title}</h2>
-                                <p className="text-neutral-500 dark:text-neutral-400 text-sm leading-relaxed flex-grow">{item.desc}</p>
-                            </div>
-                        </Card>
-                    </Link>
-                ))}
-            </nav>
+                {/* List items */}
+                <ul className="space-y-3.5">
+                    {navItems.map((item) => (
+                        <li key={item.path}>
+                            <Link
+                                href={item.path}
+                                className="group flex items-baseline justify-between py-1 text-neutral-900 dark:text-neutral-100 hover:text-blue-600 dark:hover:text-blue-400 transition-colors"
+                            >
+                                <span className="font-semibold text-base tracking-tight group-hover:underline">
+                                    {item.title}
+                                </span>
+                                <span className="text-sm font-normal text-neutral-500 dark:text-neutral-400">
+                                    {item.category}
+                                </span>
+                            </Link>
+                        </li>
+                    ))}
+                </ul>
+
+                {/* Bottom subtle prompt */}
+                <div className="pt-6">
+                    <span className="text-sm text-neutral-400 dark:text-neutral-500 font-normal select-none">
+                        Mampir dan baca-baca...
+                    </span>
+                </div>
+            </section>
         </div>
     )
 }
