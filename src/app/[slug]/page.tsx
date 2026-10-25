@@ -1,5 +1,6 @@
 import { notFound } from 'next/navigation'
 import { createPublicClient } from '@/lib/supabase/server'
+import { createAdminClient } from '@/lib/supabase/admin'
 import RedirectScreen from '@/components/ui/RedirectScreen'
 import { sanitizeUrl } from '@/lib/security'
 
@@ -44,9 +45,10 @@ export default async function ShortLinkPage({ params }: ShortLinkPageProps) {
         notFound()
     }
 
-    // Increment click count atomically
+    // Increment click count atomically using server-only admin client
     try {
-        await supabase.rpc('increment_link_clicks', { link_slug: rawSlug })
+        const adminSupabase = createAdminClient()
+        await adminSupabase.rpc('increment_link_clicks', { link_slug: rawSlug })
     } catch {
         // Continue redirection even if RPC encounters an error
     }

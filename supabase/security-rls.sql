@@ -7,11 +7,25 @@
 --   2. Paste and run this entire script in Supabase Dashboard -> SQL Editor.
 -- =============================================================================
 
+-- 0. Lock search_path on existing update_updated_at trigger function (if present)
+DO $$
+BEGIN
+  IF EXISTS (
+    SELECT 1
+    FROM pg_proc p
+    JOIN pg_namespace n ON p.pronamespace = n.oid
+    WHERE n.nspname = 'public' AND p.proname = 'update_updated_at'
+  ) THEN
+    EXECUTE 'ALTER FUNCTION public.update_updated_at() SET search_path = public';
+  END IF;
+END $$;
+
 -- 1. Helper function to verify the authenticated user is the site administrator
+--    Uses SECURITY INVOKER so Supabase Security Advisor does not flag it.
 CREATE OR REPLACE FUNCTION public.is_admin()
 RETURNS boolean
 LANGUAGE sql
-SECURITY DEFINER
+SECURITY INVOKER
 SET search_path = public
 STABLE
 AS $$
@@ -33,7 +47,7 @@ ALTER TABLE IF EXISTS public.guestbook ENABLE ROW LEVEL SECURITY;
 ALTER TABLE IF EXISTS public.links ENABLE ROW LEVEL SECURITY;
 ALTER TABLE IF EXISTS public.short_links ENABLE ROW LEVEL SECURITY;
 
--- 3. Drop any existing overly-permissive policies so this script is idempotent
+-- 3. Drop any existing policies so this script is idempotent
 DO $$
 DECLARE
   pol record;
@@ -62,7 +76,6 @@ END $$;
 -- =============================================================================
 -- TABLE: posts
 -- Public can ONLY read published posts whose published_at is in the past/now.
--- Drafts and future-scheduled posts are completely hidden from anon.
 -- =============================================================================
 CREATE POLICY "posts_public_select_published"
   ON public.posts
@@ -83,8 +96,6 @@ CREATE POLICY "posts_admin_all"
 -- =============================================================================
 -- TABLE: comments
 -- Public can ONLY read approved comments.
--- Direct anon INSERT is blocked so all submissions must pass through
--- Next.js /api/comments (honeypot, rate-limit, length & published-post checks).
 -- =============================================================================
 CREATE POLICY "comments_public_select_approved"
   ON public.comments
@@ -102,8 +113,6 @@ CREATE POLICY "comments_admin_all"
 -- =============================================================================
 -- TABLE: guestbook
 -- Public can ONLY read approved entries.
--- Direct anon INSERT is blocked so all submissions must pass through
--- Next.js /api/guestbook (honeypot, rate-limit, length checks).
 -- =============================================================================
 CREATE POLICY "guestbook_public_select_approved"
   ON public.guestbook
@@ -121,7 +130,6 @@ CREATE POLICY "guestbook_admin_all"
 -- =============================================================================
 -- TABLES: categories, portfolio, portfolio_categories,
 --         portfolio_category_mapping, resume, links, short_links
--- Public can SELECT; only verified admin can INSERT, UPDATE, or DELETE.
 -- =============================================================================
 
 -- categories
@@ -166,7 +174,7 @@ CREATE POLICY "links_admin_all"
   ON public.links FOR ALL TO authenticated
   USING (public.is_admin()) WITH CHECK (public.is_admin());
 
--- short_links (enforce http/https constraint at DB level too)
+-- short_links
 ALTER TABLE public.short_links
   DROP CONSTRAINT IF EXISTS short_links_destination_url_protocol_check;
 ALTER TABLE public.short_links
@@ -181,7 +189,7 @@ CREATE POLICY "short_links_admin_all"
 
 -- =============================================================================
 -- RPC: increment_link_clicks
--- Locked down with explicit search_path so it only increments clicks by 1.
+-- Restricted to service_role ONLY (called by Next.js server in /[slug]/page.tsx).
 -- =============================================================================
 CREATE OR REPLACE FUNCTION public.increment_link_clicks(link_slug text)
 RETURNS void
@@ -201,12 +209,14 @@ BEGIN
 END;
 $$;
 
-GRANT EXECUTE ON FUNCTION public.increment_link_clicks(text) TO anon, authenticated;
+REVOKE ALL ON FUNCTION public.increment_link_clicks(text) FROM PUBLIC, anon, authenticated;
+GRANT EXECUTE ON FUNCTION public.increment_link_clicks(text) TO service_role;
 
 -- =============================================================================
 -- STORAGE: 'images' bucket policies
--- Public can view images; only verified admin can upload/update/delete,
--- and only safe raster image MIME types (no SVG) <= 5 MB are allowed.
+-- Direct public URLs (/storage/v1/object/public/images/...) work automatically
+-- because bucket public = true, while SELECT policy is restricted to admin
+-- so strangers cannot list all files in the bucket.
 -- =============================================================================
 UPDATE storage.buckets
 SET public = true,
@@ -215,14 +225,15 @@ SET public = true,
 WHERE id = 'images';
 
 DROP POLICY IF EXISTS "images_public_select" ON storage.objects;
+DROP POLICY IF EXISTS "images_admin_select" ON storage.objects;
 DROP POLICY IF EXISTS "images_admin_insert" ON storage.objects;
 DROP POLICY IF EXISTS "images_admin_update" ON storage.objects;
 DROP POLICY IF EXISTS "images_admin_delete" ON storage.objects;
 
-CREATE POLICY "images_public_select"
+CREATE POLICY "images_admin_select"
   ON storage.objects FOR SELECT
-  TO anon, authenticated
-  USING (bucket_id = 'images');
+  TO authenticated
+  USING (bucket_id = 'images' AND public.is_admin());
 
 CREATE POLICY "images_admin_insert"
   ON storage.objects FOR INSERT
