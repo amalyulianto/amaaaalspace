@@ -41,7 +41,7 @@ export default async function LinksPage() {
                 </p>
             </header>
 
-            <div className="space-y-1.5 pt-1">
+            <div className="space-y-4 pt-1">
                 {links.length > 0 ? (
                     links.map((link) => (
                         <a
@@ -49,13 +49,13 @@ export default async function LinksPage() {
                             href={link.url}
                             target="_blank"
                             rel="noopener noreferrer"
-                            className="group -mx-3 px-3 py-2.5 rounded-xl flex items-center justify-between gap-4 border border-transparent hover:bg-surface/70 hover:border-border no-underline transition-all duration-200"
+                            className="group flex items-center justify-between gap-4 py-1.5 no-underline transition-colors"
                         >
-                            <span className="text-base sm:text-[17px] font-medium text-foreground group-hover:translate-x-0.5 transition-transform duration-200 truncate">
+                            <span className="text-base sm:text-[17px] font-medium text-foreground group-hover:underline underline-offset-4 truncate">
                                 {link.title}
                             </span>
 
-                            <ArrowUpRight className="w-4 h-4 text-muted group-hover:text-foreground group-hover:translate-x-0.5 group-hover:-translate-y-0.5 transition-all duration-200 shrink-0" />
+                            <ArrowUpRight className="w-4 h-4 text-muted group-hover:text-foreground transition-colors shrink-0" />
                         </a>
                     ))
                 ) : (

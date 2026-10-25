@@ -98,7 +98,7 @@ export default async function CategoryPage({ params }: Props) {
                 </div>
             </header>
 
-            <div className="space-y-1.5 pt-1">
+            <div className="space-y-4 pt-1">
                 {posts.length > 0 ? (
                     posts.map((post) => (
                         <PostCard key={post.id} post={post} />

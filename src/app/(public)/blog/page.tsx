@@ -69,7 +69,7 @@ export default async function BlogPage({
                 </div>
             </header>
 
-            <div key={activeSlug || 'all'} className="space-y-1.5 pt-1 animate-in duration-200">
+            <div key={activeSlug || 'all'} className="space-y-4 pt-1 animate-in duration-200">
                 {posts.length > 0 ? (
                     posts.map((post) => (
                         <PostCard key={post.id} post={post} />

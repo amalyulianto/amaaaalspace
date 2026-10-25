@@ -31,19 +31,16 @@ export default function PersonalHomePage() {
                 </div>
             </header>
 
-            <nav className="pt-1">
-                <ul className="space-y-1.5">
+            <nav className="pt-2">
+                <ul className="space-y-3.5">
                     {navItems.map((item) => (
                         <li key={item.path}>
                             <Link
                                 href={item.path}
-                                className="group -mx-3 px-3 py-2 rounded-xl flex items-center justify-between text-base sm:text-[17px] font-medium text-foreground border border-transparent hover:bg-surface/70 hover:border-border transition-all duration-200 no-underline"
+                                className="group inline-flex items-center text-base sm:text-[17px] font-medium text-foreground transition-colors no-underline"
                             >
-                                <span className="group-hover:translate-x-0.5 transition-transform duration-200">
+                                <span className="group-hover:underline underline-offset-4">
                                     {item.title}
-                                </span>
-                                <span className="text-xs font-mono text-muted opacity-0 -translate-x-1 group-hover:opacity-100 group-hover:translate-x-0 transition-all duration-200">
-                                    &rarr;
                                 </span>
                             </Link>
                         </li>

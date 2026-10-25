@@ -75,7 +75,7 @@ export default async function PortfolioPage({ searchParams }: { searchParams: { 
                             <SectionHeading>
                                 <T section="portfolio" k={group.titleKey} />
                             </SectionHeading>
-                            <div className="space-y-1.5">
+                            <div className="space-y-4">
                                 {group.items.map((item) => (
                                     <ProjectCard key={item.id} item={item} />
                                 ))}
