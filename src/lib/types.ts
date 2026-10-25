@@ -86,19 +86,23 @@ export type ResumeAchievement = {
   description?: string
 }
 
+export type ResumeExperience = {
+  company: string
+  role: string
+  period: string
+  description: string
+}
+
+export type ResumeEducation = {
+  institution: string
+  degree: string
+  period: string
+}
+
 export type ResumeData = {
   summary: string
-  experience: {
-    company: string
-    role: string
-    period: string
-    description: string
-  }[]
-  education: {
-    institution: string
-    degree: string
-    period: string
-  }[]
+  experience: ResumeExperience[]
+  education: ResumeEducation[]
   organisational?: ResumeOrganisation[]
   projects?: ResumeProject[]
   achievements?: ResumeAchievement[]
