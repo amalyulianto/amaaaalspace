@@ -56,6 +56,36 @@ export type LinkItem = {
   created_at: string
 }
 
+export type ResumeSectionKey =
+  | 'experience'
+  | 'education'
+  | 'organisational'
+  | 'projects'
+  | 'achievements'
+  | 'skills'
+
+export type ResumeOrganisation = {
+  organization: string
+  role: string
+  period: string
+  description: string
+}
+
+export type ResumeProject = {
+  title: string
+  role?: string
+  period: string
+  description: string
+  url?: string
+}
+
+export type ResumeAchievement = {
+  title: string
+  issuer: string
+  period: string
+  description?: string
+}
+
 export type ResumeData = {
   summary: string
   experience: {
@@ -69,7 +99,11 @@ export type ResumeData = {
     degree: string
     period: string
   }[]
+  organisational?: ResumeOrganisation[]
+  projects?: ResumeProject[]
+  achievements?: ResumeAchievement[]
   skills: string[]
+  section_order?: ResumeSectionKey[]
 }
 
 export type Resume = {

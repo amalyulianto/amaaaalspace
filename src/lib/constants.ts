@@ -82,6 +82,17 @@ export const TRANSLATIONS = {
             closeButton: 'Tutup',
             empty: 'Buku Tamu masih kosong. Emang siapa juga mau ke sini...',
         },
+        resume: {
+            title: 'Resume 📃',
+            unavailable: 'Saat ini belum tersedia.',
+            summaryTitle: 'Ringkasan 📝',
+            experienceTitle: 'Experience 💼',
+            educationTitle: 'Education 🎓',
+            organisationalTitle: 'Organisational Activities 🏛️',
+            projectsTitle: 'Featured Projects 🚀',
+            achievementsTitle: 'Achievements & Awards 🏆',
+            skillsTitle: 'Skills 🛠️',
+        },
     },
     EN: {
         header: {
@@ -147,6 +158,17 @@ export const TRANSLATIONS = {
             thanksSubtitle: 'Your message has been submitted and is awaiting approval. Now shoo.',
             closeButton: 'Close',
             empty: 'Guestbook is still empty. Who would even come here anyway...',
+        },
+        resume: {
+            title: 'Resume 📃',
+            unavailable: 'Currently unavailable.',
+            summaryTitle: 'Summary 📝',
+            experienceTitle: 'Experience 💼',
+            educationTitle: 'Education 🎓',
+            organisationalTitle: 'Organisational Activities 🏛️',
+            projectsTitle: 'Featured Projects 🚀',
+            achievementsTitle: 'Achievements & Awards 🏆',
+            skillsTitle: 'Skills 🛠️',
         },
     },
 } as const
