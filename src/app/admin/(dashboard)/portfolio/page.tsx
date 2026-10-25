@@ -47,24 +47,33 @@ export default function AdminPortfolioPage() {
     }
 
     return (
-        <div>
-            <div className="flex justify-between items-end mb-8 border-b border-[#E5E7EB] pb-4">
-                <h1 className="text-xl font-bold text-[#111111]">Portfolio</h1>
+        <div className="space-y-8 animate-in fade-in duration-300">
+            <div className="flex flex-col sm:flex-row sm:justify-between sm:items-end gap-4 border-b border-border pb-5">
+                <div className="space-y-1">
+                    <h1 className="text-2xl font-bold tracking-tight text-foreground">
+                        Portfolio 🪄
+                    </h1>
+                    <p className="text-xs sm:text-sm text-secondary">
+                        Manage your published works, categories, and display order.
+                    </p>
+                </div>
                 <Link
                     href="/admin/portfolio/new"
-                    className="text-[#111111] hover:text-[#2563EB] text-[15px] font-medium transition-colors"
+                    className="inline-flex items-center justify-center bg-foreground text-background hover:opacity-90 px-4 py-2 rounded-lg text-xs sm:text-sm font-medium transition-opacity no-underline self-start sm:self-auto"
                 >
                     + New Project
                 </Link>
             </div>
 
             {loading ? (
-                <div className="py-12 text-[#666666] animate-pulse">Loading portfolio...</div>
+                <div className="py-12 text-muted text-sm font-mono animate-pulse">
+                    Loading portfolio...
+                </div>
             ) : (
-                <div className="bg-white border-y sm:border border-[#E5E7EB] sm:rounded overflow-x-auto">
-                    <table className="w-full text-left border-collapse">
+                <div className="bg-surface/20 border border-border rounded-xl overflow-x-auto">
+                    <table className="w-full text-left border-collapse text-sm">
                         <thead>
-                            <tr className="bg-[#F3F4F6] border-b border-[#E5E7EB] text-[13px] uppercase tracking-wider text-[#666666]">
+                            <tr className="bg-surface/70 border-b border-border text-xs font-mono uppercase tracking-wider text-muted">
                                 <th className="px-4 py-3 font-medium">Title</th>
                                 <th className="px-4 py-3 font-medium">Category</th>
                                 <th className="px-4 py-3 font-medium">Tech Stack</th>
@@ -72,29 +81,44 @@ export default function AdminPortfolioPage() {
                                 <th className="px-4 py-3 font-medium text-right">Actions</th>
                             </tr>
                         </thead>
-                        <tbody className="divide-y divide-[#E5E7EB]">
-                            {items.map(item => (
-                                <tr key={item.id} className="hover:bg-[#F9FAFB] text-[15px] transition-colors">
-                                    <td className="px-4 py-3.5 text-[#111111] font-medium">
-                                        {item.title}
+                        <tbody className="divide-y divide-border">
+                            {items.map((item) => (
+                                <tr
+                                    key={item.id}
+                                    className="hover:bg-surface/50 transition-colors"
+                                >
+                                    <td className="px-4 py-3.5 text-foreground font-medium">
+                                        <span>{item.title}</span>
                                         {item.is_selected && (
-                                            <span className="ml-2 inline-block px-2 py-0.5 bg-blue-100 text-blue-800 text-[11px] rounded-full font-medium">
-                                                Selected
+                                            <span className="ml-2 inline-block px-2 py-0.5 bg-surface text-foreground border border-border text-[11px] rounded-md font-medium">
+                                                ⭐ Highlighted
                                             </span>
                                         )}
                                     </td>
-                                    <td className="px-4 py-3.5 text-[#666666]">
-                                        {item.portfolio_categories?.map(c => c.name).join(', ') || '—'}
+                                    <td className="px-4 py-3.5 text-secondary text-xs sm:text-sm">
+                                        {item.portfolio_categories?.map((c) => c.name).join(', ') || (
+                                            <span className="text-muted">—</span>
+                                        )}
                                     </td>
-                                    <td className="px-4 py-3.5 text-[#666666]">
-                                        {item.tech_stack?.join(', ') || '—'}
+                                    <td className="px-4 py-3.5 text-secondary text-xs">
+                                        {item.tech_stack?.join(', ') || (
+                                            <span className="text-muted">—</span>
+                                        )}
                                     </td>
-                                    <td className="px-4 py-3.5 text-[#666666]">{item.display_order}</td>
-                                    <td className="px-4 py-3.5 text-right space-x-3">
-                                        <Link href={`/admin/portfolio/${item.id}/edit`} className="text-[#2563EB] hover:text-[#111111] transition-colors">
+                                    <td className="px-4 py-3.5 text-muted font-mono text-xs">
+                                        {item.display_order}
+                                    </td>
+                                    <td className="px-4 py-3.5 text-right space-x-3 text-xs sm:text-sm whitespace-nowrap">
+                                        <Link
+                                            href={`/admin/portfolio/${item.id}/edit`}
+                                            className="text-foreground hover:underline underline-offset-4 font-medium transition-colors"
+                                        >
                                             Edit
                                         </Link>
-                                        <button onClick={() => handleDelete(item.id)} className="text-[#666666] hover:text-red-600 transition-colors">
+                                        <button
+                                            onClick={() => handleDelete(item.id)}
+                                            className="text-muted hover:text-red-500 transition-colors"
+                                        >
                                             Delete
                                         </button>
                                     </td>
@@ -102,7 +126,10 @@ export default function AdminPortfolioPage() {
                             ))}
                             {items.length === 0 && (
                                 <tr>
-                                    <td colSpan={5} className="px-4 py-8 text-center text-[#666666]">
+                                    <td
+                                        colSpan={5}
+                                        className="px-4 py-10 text-center text-muted text-sm"
+                                    >
                                         No portfolio items found.
                                     </td>
                                 </tr>

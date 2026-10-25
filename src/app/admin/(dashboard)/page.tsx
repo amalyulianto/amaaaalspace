@@ -43,53 +43,85 @@ export default function AdminDashboard() {
 
     if (loading) {
         return (
-            <div className="py-12 text-[#666666] animate-pulse">
+            <div className="py-12 text-muted text-sm font-mono animate-pulse">
                 Loading dashboard data...
             </div>
         )
     }
 
     const statBoxes = [
-        { label: 'Total Posts', value: stats.totalPosts },
-        { label: 'Published Posts', value: stats.publishedPosts },
-        { label: 'Pending Comments', value: stats.pendingComments },
-        { label: 'Pending Guestbook', value: stats.pendingGuestbook },
+        { label: 'Total Posts', value: stats.totalPosts, href: '/admin/posts' },
+        { label: 'Published Posts', value: stats.publishedPosts, href: '/admin/posts' },
+        { label: 'Pending Comments', value: stats.pendingComments, href: '/admin/comments' },
+        { label: 'Pending Guestbook', value: stats.pendingGuestbook, href: '/admin/guestbook' },
     ]
 
     const quickLinks = [
-        { name: 'New Post', href: '/admin/posts/new' },
-        { name: 'Manage Posts', href: '/admin/posts' },
-        { name: 'Manage Portfolio', href: '/admin/portfolio' },
-        { name: 'Update Resume', href: '/admin/resume' },
-        { name: 'Review Comments', href: '/admin/comments' },
-        { name: 'Review Guestbook', href: '/admin/guestbook' },
+        { name: 'Write New Post ✍️', desc: 'Create a new blog post or story', href: '/admin/posts/new' },
+        { name: 'Add New Project 🪄', desc: 'Publish a new portfolio item', href: '/admin/portfolio/new' },
+        { name: 'Manage Posts', desc: 'Edit or remove existing posts', href: '/admin/posts' },
+        { name: 'Manage Portfolio', desc: 'Update projects & display order', href: '/admin/portfolio' },
+        { name: 'Update Resume 📃', desc: 'Edit summary, experience & skills', href: '/admin/resume' },
+        { name: 'Review Comments', desc: 'Approve or delete reader comments', href: '/admin/comments' },
+        { name: 'Review Guestbook 📔', desc: 'Moderate visitor guestbook notes', href: '/admin/guestbook' },
+        { name: 'Important Links 🔗', desc: 'Manage links on /links page', href: '/admin/links' },
+        { name: 'Short Links', desc: 'Create custom short URLs', href: '/admin/short-links' },
     ]
 
     return (
-        <div>
-            <h1 className="text-xl font-bold text-[#111111] mb-8">Dashboard Overview</h1>
+        <div className="space-y-10 animate-in fade-in duration-300">
+            <header className="space-y-1.5 border-b border-border pb-5">
+                <h1 className="text-2xl font-bold tracking-tight text-foreground">
+                    Dashboard 👋🏼
+                </h1>
+                <p className="text-xs sm:text-sm text-secondary">
+                    Overview of your content and pending moderation items.
+                </p>
+            </header>
 
-            <div className="grid grid-cols-2 md:grid-cols-4 gap-4 mb-12">
+            <section className="grid grid-cols-2 lg:grid-cols-4 gap-4">
                 {statBoxes.map((box, i) => (
-                    <div key={i} className="bg-white border border-[#E5E7EB] rounded p-5">
-                        <div className="text-[#666666] text-sm mb-1">{box.label}</div>
-                        <div className="text-2xl font-bold text-[#111111]">{box.value}</div>
-                    </div>
-                ))}
-            </div>
-
-            <h2 className="text-lg font-bold text-[#111111] mb-4">Quick Links</h2>
-            <div className="grid grid-cols-2 md:grid-cols-3 gap-4">
-                {quickLinks.map((link, i) => (
                     <Link
                         key={i}
-                        href={link.href}
-                        className="block border border-[#E5E7EB] p-4 rounded text-[#111111] font-medium hover:bg-[#F3F4F6] hover:border-[#111111] transition-all"
+                        href={box.href}
+                        className="group bg-surface/40 hover:bg-surface border border-border rounded-xl p-5 transition-colors no-underline"
                     >
-                        {link.name} &#8594;
+                        <div className="text-secondary text-xs font-medium mb-2 group-hover:text-foreground transition-colors">
+                            {box.label}
+                        </div>
+                        <div className="text-2xl sm:text-3xl font-bold font-mono text-foreground">
+                            {box.value}
+                        </div>
                     </Link>
                 ))}
-            </div>
+            </section>
+
+            <section className="space-y-4">
+                <h2 className="text-xs font-mono uppercase tracking-wider text-muted">
+                    Quick Actions
+                </h2>
+                <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-3.5">
+                    {quickLinks.map((link, i) => (
+                        <Link
+                            key={i}
+                            href={link.href}
+                            className="group flex flex-col justify-between border border-border bg-surface/20 hover:bg-surface/70 hover:border-foreground/20 p-4 rounded-xl transition-all no-underline"
+                        >
+                            <div className="space-y-1">
+                                <div className="text-sm font-semibold text-foreground flex items-center justify-between">
+                                    <span>{link.name}</span>
+                                    <span className="text-muted group-hover:text-foreground group-hover:translate-x-0.5 transition-all">
+                                        &rarr;
+                                    </span>
+                                </div>
+                                <p className="text-xs text-secondary leading-relaxed">
+                                    {link.desc}
+                                </p>
+                            </div>
+                        </Link>
+                    ))}
+                </div>
+            </section>
         </div>
     )
 }

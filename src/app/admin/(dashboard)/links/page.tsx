@@ -74,7 +74,6 @@ export default function AdminLinksPage() {
         setFormLoading(true)
 
         if (editingId) {
-            // Update
             const { error: updateError } = await supabase
                 .from('links')
                 .update({ title: title.trim(), url: safeUrl, icon })
@@ -86,7 +85,6 @@ export default function AdminLinksPage() {
                 fetchLinks()
             }
         } else {
-            // Insert
             const display_order = links.length > 0 ? links[links.length - 1].display_order + 1 : 0
             const { error: insertError } = await supabase
                 .from('links')
@@ -118,87 +116,113 @@ export default function AdminLinksPage() {
         const newLinks = [...links]
         const swapIndex = direction === 'up' ? index - 1 : index + 1
 
-        // Swap array items
         const temp = newLinks[index]
         newLinks[index] = newLinks[swapIndex]
         newLinks[swapIndex] = temp
 
-        // Overwrite display_orders optimally 1 by 1 based on array order
         const updates = newLinks.map((link, i) => ({
             ...link,
             display_order: i
         }))
 
-        // Optimistically update UI
         setLinks(updates)
 
-        // Sync to DB
-        // Workaround since upsert causes full object overwrites.
         for (const update of updates) {
             await supabase.from('links').update({ display_order: update.display_order }).eq('id', update.id)
         }
     }
 
     return (
-        <div className="max-w-4xl">
-            <h1 className="text-2xl font-bold text-[#111111] mb-8">Manage Links</h1>
+        <div className="space-y-8 animate-in fade-in duration-300">
+            <div className="border-b border-border pb-5 space-y-1">
+                <h1 className="text-2xl font-bold tracking-tight text-foreground">
+                    Important Links 🔗
+                </h1>
+                <p className="text-xs sm:text-sm text-secondary">
+                    Add, reorder, or edit external links displayed on your public /links page.
+                </p>
+            </div>
 
-            {error && <div className="bg-red-50 text-red-600 p-4 rounded mb-6 border border-red-200">{error}</div>}
+            {error && (
+                <div className="bg-red-500/10 text-red-600 dark:text-red-400 p-4 rounded-xl border border-red-500/20 text-xs sm:text-sm">
+                    {error}
+                </div>
+            )}
 
-            <div className="grid grid-cols-1 md:grid-cols-3 gap-8">
+            <div className="grid grid-cols-1 lg:grid-cols-3 gap-6">
                 {/* Form Column */}
-                <div className="md:col-span-1">
-                    <div className="bg-white p-6 rounded border border-[#E5E7EB] sticky top-6">
-                        <h2 className="text-lg font-bold mb-4">{editingId ? 'Edit Link' : 'Add New Link'}</h2>
+                <div className="lg:col-span-1">
+                    <div className="bg-surface/40 p-5 rounded-xl border border-border sticky top-6 space-y-4">
+                        <h2 className="text-sm font-bold text-foreground">
+                            {editingId ? 'Edit Link' : 'Add New Link'}
+                        </h2>
                         <form onSubmit={handleSave} className="space-y-4">
-                            <div>
-                                <label className="block text-sm font-medium text-[#666666] mb-1">Title</label>
+                            <div className="space-y-1.5">
+                                <label className="block text-xs font-medium text-secondary">
+                                    Title
+                                </label>
                                 <input
                                     type="text"
                                     required
                                     value={title}
                                     onChange={(e) => setTitle(e.target.value)}
                                     placeholder="GitHub"
-                                    className="w-full px-3 py-2 border border-gray-300 rounded focus:outline-none focus:border-[#2563EB] focus:ring-1 focus:ring-[#2563EB]"
+                                    className="w-full px-3.5 py-2 bg-background border border-border rounded-lg text-sm text-foreground placeholder:text-muted/60 focus:outline-none focus:border-foreground/50 transition-colors"
                                 />
                             </div>
-                            <div>
-                                <label className="block text-sm font-medium text-[#666666] mb-1">URL</label>
+                            <div className="space-y-1.5">
+                                <label className="block text-xs font-medium text-secondary">
+                                    URL
+                                </label>
                                 <input
                                     type="url"
                                     required
                                     value={url}
                                     onChange={(e) => setUrl(e.target.value)}
                                     placeholder="https://"
-                                    className="w-full px-3 py-2 border border-gray-300 rounded focus:outline-none focus:border-[#2563EB] focus:ring-1 focus:ring-[#2563EB]"
+                                    className="w-full px-3.5 py-2 bg-background border border-border rounded-lg text-sm text-foreground placeholder:text-muted/60 focus:outline-none focus:border-foreground/50 transition-colors"
                                 />
                             </div>
-                            <div>
-                                <label className="block text-sm font-medium text-[#666666] mb-1">Icon</label>
+                            <div className="space-y-1.5">
+                                <label className="block text-xs font-medium text-secondary">
+                                    Icon
+                                </label>
                                 <select
                                     value={icon}
                                     onChange={(e) => setIcon(e.target.value)}
-                                    className="w-full px-3 py-2 border border-gray-300 rounded focus:outline-none focus:border-[#2563EB] focus:ring-1 focus:ring-[#2563EB]"
+                                    className="w-full px-3.5 py-2 bg-background border border-border rounded-lg text-sm text-foreground focus:outline-none focus:border-foreground/50 transition-colors"
                                 >
-                                    {ICON_OPTIONS.map(opt => (
-                                        <option key={opt} value={opt}>{opt}</option>
+                                    {ICON_OPTIONS.map((opt) => (
+                                        <option key={opt} value={opt}>
+                                            {opt}
+                                        </option>
                                     ))}
                                 </select>
                             </div>
 
-                            <div className="pt-4 flex gap-2">
+                            <div className="pt-2 flex gap-2">
                                 <button
                                     type="submit"
                                     disabled={formLoading}
-                                    className="flex-1 bg-[#2563EB] text-white px-4 py-2 rounded font-medium hover:bg-blue-700 disabled:opacity-50 transition-colors flex items-center justify-center gap-1"
+                                    className="flex-1 bg-foreground text-background px-4 py-2 rounded-lg text-xs sm:text-sm font-medium hover:opacity-90 disabled:opacity-50 transition-opacity flex items-center justify-center gap-1.5"
                                 >
-                                    {formLoading ? 'Saving...' : editingId ? <><Edit2 className="w-4 h-4" /> Save</> : <><Plus className="w-4 h-4" /> Add</>}
+                                    {formLoading ? (
+                                        'Saving...'
+                                    ) : editingId ? (
+                                        <>
+                                            <Edit2 className="w-3.5 h-3.5" /> Save
+                                        </>
+                                    ) : (
+                                        <>
+                                            <Plus className="w-3.5 h-3.5" /> Add Link
+                                        </>
+                                    )}
                                 </button>
                                 {editingId && (
                                     <button
                                         type="button"
                                         onClick={resetForm}
-                                        className="px-4 py-2 bg-gray-100 text-gray-700 rounded font-medium hover:bg-gray-200"
+                                        className="px-3.5 py-2 bg-surface text-secondary hover:text-foreground border border-border rounded-lg text-xs sm:text-sm font-medium transition-colors"
                                     >
                                         Cancel
                                     </button>
@@ -209,77 +233,88 @@ export default function AdminLinksPage() {
                 </div>
 
                 {/* List Column */}
-                <div className="md:col-span-2">
-                    <div className="bg-white rounded border border-[#E5E7EB] overflow-hidden">
-                        <table className="w-full text-left border-collapse">
+                <div className="lg:col-span-2">
+                    <div className="bg-surface/20 rounded-xl border border-border overflow-hidden">
+                        <table className="w-full text-left border-collapse text-sm">
                             <thead>
-                                <tr className="bg-gray-50 border-b border-[#E5E7EB] text-sm text-[#666666]">
-                                    <th className="py-3 px-4 font-medium w-16">Icon</th>
+                                <tr className="bg-surface/70 border-b border-border text-xs font-mono uppercase tracking-wider text-muted">
+                                    <th className="py-3 px-4 font-medium w-20">Icon</th>
                                     <th className="py-3 px-4 font-medium">Link Details</th>
                                     <th className="py-3 px-4 font-medium w-24 text-center">Order</th>
                                     <th className="py-3 px-4 font-medium text-right w-24">Actions</th>
                                 </tr>
                             </thead>
-                            <tbody>
+                            <tbody className="divide-y divide-border">
                                 {loading ? (
                                     <tr>
-                                        <td colSpan={4} className="py-8 text-center text-[#666666]">Loading links...</td>
+                                        <td colSpan={4} className="py-10 text-center text-muted font-mono text-sm animate-pulse">
+                                            Loading links...
+                                        </td>
                                     </tr>
                                 ) : links.length === 0 ? (
                                     <tr>
-                                        <td colSpan={4} className="py-8 text-center text-[#666666]">No links found. Create one.</td>
+                                        <td colSpan={4} className="py-10 text-center text-muted text-sm">
+                                            No links found. Create one.
+                                        </td>
                                     </tr>
                                 ) : (
                                     links.map((link, index) => {
                                         const safeLinkUrl = sanitizeUrl(link.url, true)
                                         return (
-                                            <tr key={link.id} className="border-b border-[#E5E7EB] last:border-0 hover:bg-gray-50">
-                                                <td className="py-3 px-4 text-center">
-                                                    <span className="inline-block p-2 bg-neutral-100 rounded text-neutral-600 text-xs">
+                                            <tr key={link.id} className="hover:bg-surface/50 transition-colors">
+                                                <td className="py-3.5 px-4">
+                                                    <span className="inline-block px-2 py-1 bg-surface border border-border rounded-md text-secondary font-mono text-[11px]">
                                                         {link.icon || 'Link2'}
                                                     </span>
                                                 </td>
-                                                <td className="py-3 px-4">
-                                                    <div className="font-medium text-[#111111]">{link.title}</div>
+                                                <td className="py-3.5 px-4">
+                                                    <div className="font-medium text-foreground">{link.title}</div>
                                                     {safeLinkUrl ? (
-                                                        <a href={safeLinkUrl} target="_blank" rel="noopener noreferrer" className="text-xs text-blue-600 truncate max-w-[200px] inline-block hover:underline">
+                                                        <a
+                                                            href={safeLinkUrl}
+                                                            target="_blank"
+                                                            rel="noopener noreferrer"
+                                                            className="text-xs text-muted hover:text-foreground truncate max-w-[240px] inline-block hover:underline underline-offset-4"
+                                                        >
                                                             {safeLinkUrl}
                                                         </a>
                                                     ) : (
                                                         <span className="text-xs text-red-500">Invalid URL</span>
                                                     )}
                                                 </td>
-                                                <td className="py-3 px-4">
+                                                <td className="py-3.5 px-4">
                                                     <div className="flex items-center justify-center gap-1">
                                                         <button
                                                             onClick={() => handleMove(index, 'up')}
                                                             disabled={index === 0}
-                                                            className="p-1 text-gray-500 hover:text-gray-900 disabled:opacity-30 disabled:cursor-not-allowed"
+                                                            className="p-1.5 rounded-md text-secondary hover:text-foreground hover:bg-surface disabled:opacity-30 disabled:cursor-not-allowed transition-colors"
                                                         >
-                                                            <ArrowUp className="w-4 h-4" />
+                                                            <ArrowUp className="w-3.5 h-3.5" />
                                                         </button>
                                                         <button
                                                             onClick={() => handleMove(index, 'down')}
                                                             disabled={index === links.length - 1}
-                                                            className="p-1 text-gray-500 hover:text-gray-900 disabled:opacity-30 disabled:cursor-not-allowed"
+                                                            className="p-1.5 rounded-md text-secondary hover:text-foreground hover:bg-surface disabled:opacity-30 disabled:cursor-not-allowed transition-colors"
                                                         >
-                                                            <ArrowDown className="w-4 h-4" />
+                                                            <ArrowDown className="w-3.5 h-3.5" />
                                                         </button>
                                                     </div>
                                                 </td>
-                                                <td className="py-3 px-4 text-right">
-                                                    <div className="flex items-center justify-end gap-2">
+                                                <td className="py-3.5 px-4 text-right">
+                                                    <div className="flex items-center justify-end gap-1.5">
                                                         <button
                                                             onClick={() => handleEdit(link)}
-                                                            className="text-blue-600 hover:text-blue-800 p-1"
+                                                            className="text-secondary hover:text-foreground p-1.5 rounded-md hover:bg-surface transition-colors"
+                                                            title="Edit"
                                                         >
-                                                            <Edit2 className="w-4 h-4" />
+                                                            <Edit2 className="w-3.5 h-3.5" />
                                                         </button>
                                                         <button
                                                             onClick={() => handleDelete(link.id)}
-                                                            className="text-red-500 hover:text-red-700 p-1"
+                                                            className="text-muted hover:text-red-500 p-1.5 rounded-md hover:bg-surface transition-colors"
+                                                            title="Delete"
                                                         >
-                                                            <Trash2 className="w-4 h-4" />
+                                                            <Trash2 className="w-3.5 h-3.5" />
                                                         </button>
                                                     </div>
                                                 </td>

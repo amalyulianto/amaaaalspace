@@ -5,6 +5,7 @@ import { ThemeProvider as NextThemesProvider } from 'next-themes'
 import { type ThemeProviderProps } from 'next-themes'
 import { Language, TRANSLATIONS } from '@/lib/constants'
 import { formatDate, formatDateShort } from '@/lib/utils'
+import { Category } from '@/lib/types'
 
 interface LanguageContextType {
     lang: Language
@@ -65,6 +66,28 @@ export function T<S extends keyof (typeof TRANSLATIONS)['ID']>({
     const { t } = useLanguage()
     const sectionObj = t[section] as Record<string, string>
     return <>{sectionObj[k as string] ?? ''}</>
+}
+
+export function CategoryDescription({ category }: { category?: Category | null }) {
+    const { lang } = useLanguage()
+
+    if (!category) {
+        return null
+    }
+
+    const idDesc = category.description?.trim() || ''
+    const enDesc = category.description_en?.trim() || ''
+    const activeDesc = lang === 'EN' ? enDesc || idDesc : idDesc || enDesc
+
+    if (!activeDesc) {
+        return null
+    }
+
+    return (
+        <p className="text-xs sm:text-sm text-muted leading-relaxed m-0 animate-in fade-in duration-200">
+            <span className="capitalize not-italic">{category.name}</span>: <span className="italic">{activeDesc}</span>
+        </p>
+    )
 }
 
 export function LocalizedDate({

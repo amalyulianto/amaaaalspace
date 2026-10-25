@@ -1,8 +1,9 @@
 import { createPublicClient } from '@/lib/supabase/server'
 import type { Metadata } from 'next'
-import { GuestbookClient, GuestbookMessage } from '@/components/guestbook/GuestbookClient'
+import { GuestbookClient } from '@/components/guestbook/GuestbookClient'
+import { GuestbookEntry } from '@/lib/types'
 
-export const revalidate = 60;
+export const revalidate = 60
 
 export const metadata: Metadata = {
     title: 'Guestbook',
@@ -18,12 +19,7 @@ export default async function GuestbookPage() {
         .eq('approved', true)
         .order('created_at', { ascending: false })
 
-    const formattedMessages: GuestbookMessage[] = (entries ?? []).map((entry) => ({
-        id: entry.id,
-        name: entry.author_name,
-        message: entry.message,
-        date: entry.created_at,
-    }))
+    const initialEntries: GuestbookEntry[] = (entries ?? []) as GuestbookEntry[]
 
-    return <GuestbookClient initialMessages={formattedMessages} />
+    return <GuestbookClient initialEntries={initialEntries} />
 }

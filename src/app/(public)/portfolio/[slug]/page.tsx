@@ -75,12 +75,12 @@ export default async function PortfolioDetailPage({ params }: Props) {
     return (
         <article className="space-y-8 animate-in fade-in duration-500">
             <header className="space-y-3 border-b border-border pb-6">
-                <h1 className="text-[28px] sm:text-[32px] font-bold tracking-tight text-foreground leading-tight m-0">
+                <h1 className="text-[28px] sm:text-[34px] font-bold tracking-tight text-foreground leading-tight m-0">
                     {item.title}
                 </h1>
 
                 {item.description && (
-                    <p className="text-sm sm:text-[15px] text-secondary leading-relaxed m-0">
+                    <p className="text-base sm:text-[17px] text-secondary leading-relaxed m-0">
                         {item.description}
                     </p>
                 )}
@@ -105,17 +105,17 @@ export default async function PortfolioDetailPage({ params }: Props) {
                 </div>
 
                 {externalLinks.length > 0 && (
-                    <div className="flex flex-wrap items-center gap-5 pt-2">
+                    <div className="flex flex-wrap items-center gap-3 pt-2">
                         {externalLinks.map((link) => (
                             <a
                                 key={link.label}
                                 href={link.url}
                                 target="_blank"
                                 rel="noopener noreferrer"
-                                className="inline-flex items-center gap-1 text-xs sm:text-[13px] font-medium text-foreground hover:opacity-75 underline underline-offset-4 transition-opacity"
+                                className="group inline-flex items-center gap-1.5 px-3 py-1.5 rounded-lg border border-border bg-surface/40 hover:bg-surface hover:border-foreground/20 text-xs sm:text-[13px] font-medium text-foreground no-underline transition-all duration-200"
                             >
                                 <span>{link.label}</span>
-                                <ArrowUpRight className="w-3.5 h-3.5" />
+                                <ArrowUpRight className="w-3.5 h-3.5 text-muted group-hover:text-foreground group-hover:translate-x-0.5 group-hover:-translate-y-0.5 transition-all duration-200" />
                             </a>
                         ))}
                     </div>
@@ -134,11 +134,11 @@ export default async function PortfolioDetailPage({ params }: Props) {
 
             {safeHtmlContent ? (
                 <div
-                    className="prose prose-neutral dark:prose-invert max-w-none text-sm sm:text-[15px] leading-[1.8] text-secondary prose-p:text-sm sm:prose-p:text-[15px] prose-p:leading-[1.8] prose-p:text-secondary prose-headings:tracking-tight prose-headings:font-bold prose-headings:text-foreground prose-h2:text-lg sm:prose-h2:text-xl prose-h2:mt-8 prose-h2:mb-3 prose-h3:text-base sm:prose-h3:text-[17px] prose-h3:mt-6 prose-h3:mb-2 prose-li:text-sm sm:prose-li:text-[15px] prose-li:leading-[1.8] prose-li:text-secondary prose-a:text-foreground prose-a:underline prose-a:underline-offset-4 prose-strong:text-foreground prose-blockquote:text-sm sm:prose-blockquote:text-[15px] prose-blockquote:not-italic prose-blockquote:text-muted prose-blockquote:border-border prose-img:rounded-xl prose-img:border prose-img:border-border prose-img:bg-surface"
+                    className="prose prose-neutral dark:prose-invert max-w-none text-base sm:text-[17px] leading-[1.8] text-secondary prose-p:text-base sm:prose-p:text-[17px] prose-p:leading-[1.8] prose-p:text-secondary prose-headings:tracking-tight prose-headings:font-bold prose-headings:text-foreground prose-h2:text-xl sm:prose-h2:text-2xl prose-h2:mt-8 prose-h2:mb-3 prose-h3:text-lg sm:prose-h3:text-xl prose-h3:mt-6 prose-h3:mb-2 prose-li:text-base sm:prose-li:text-[17px] prose-li:leading-[1.8] prose-li:text-secondary prose-a:text-foreground prose-a:underline prose-a:underline-offset-4 prose-strong:text-foreground prose-blockquote:text-base sm:prose-blockquote:text-[17px] prose-blockquote:not-italic prose-blockquote:text-muted prose-blockquote:border-border prose-img:rounded-xl prose-img:border prose-img:border-border prose-img:bg-surface"
                     dangerouslySetInnerHTML={{ __html: safeHtmlContent }}
                 />
             ) : (
-                <p className="text-sm text-muted py-4">
+                <p className="text-base text-muted py-4">
                     <T section="portfolio" k="noDescription" />
                 </p>
             )}

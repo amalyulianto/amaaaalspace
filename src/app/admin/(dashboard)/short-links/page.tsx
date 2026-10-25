@@ -92,18 +92,15 @@ export default function AdminShortLinksPage() {
             return
         }
 
-        // Auto-generate if empty
         if (!trimmedSlug) {
             trimmedSlug = generateRandomSlug()
         }
 
-        // Check against reserved slugs
         if (RESERVED_SLUGS.includes(trimmedSlug)) {
             setError(`"${trimmedSlug}" is a reserved system path and cannot be used as a short link.`)
             return
         }
 
-        // Validate slug characters
         if (!/^[a-zA-Z0-9-_]+$/.test(trimmedSlug)) {
             setError('Slug can only contain letters, numbers, hyphens (-), and underscores (_).')
             return
@@ -156,29 +153,31 @@ export default function AdminShortLinksPage() {
     }
 
     return (
-        <div className="max-w-4xl">
-            <div className="flex justify-between items-center mb-8 border-b border-[#E5E7EB] dark:border-neutral-800 pb-4">
-                <div>
-                    <h1 className="text-xl font-bold text-[#111111] dark:text-white">Short Links</h1>
-                    <p className="text-sm text-[#666666] dark:text-neutral-400 mt-1">
-                        Create custom or random short URLs that redirect to external destinations.
-                    </p>
-                </div>
+        <div className="space-y-8 animate-in fade-in duration-300">
+            <div className="border-b border-border pb-5 space-y-1">
+                <h1 className="text-2xl font-bold tracking-tight text-foreground">
+                    Short Links ⚡
+                </h1>
+                <p className="text-xs sm:text-sm text-secondary">
+                    Create custom or random short URLs that redirect to external destinations.
+                </p>
             </div>
 
             {error && (
-                <div className="bg-red-50 dark:bg-red-950/30 text-red-600 dark:text-red-400 p-4 rounded mb-6 border border-red-200 dark:border-red-900/40 text-sm">
+                <div className="bg-red-500/10 text-red-600 dark:text-red-400 p-4 rounded-xl border border-red-500/20 text-xs sm:text-sm">
                     {error}
                 </div>
             )}
 
             {/* Create Form */}
-            <div className="bg-white dark:bg-[#161616] p-6 rounded border border-[#E5E7EB] dark:border-neutral-800 mb-8">
-                <h2 className="text-base font-bold text-[#111111] dark:text-white mb-4">Create New Short Link</h2>
+            <div className="bg-surface/40 p-6 rounded-xl border border-border">
+                <h2 className="text-sm font-bold text-foreground mb-4">
+                    Create New Short Link
+                </h2>
                 <form onSubmit={handleCreateLink} className="space-y-4">
                     <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
-                        <div>
-                            <label className="block text-sm font-medium text-[#666666] dark:text-neutral-400 mb-1">
+                        <div className="space-y-1.5">
+                            <label className="block text-xs font-medium text-secondary">
                                 Destination URL <span className="text-red-500">*</span>
                             </label>
                             <input
@@ -187,33 +186,33 @@ export default function AdminShortLinksPage() {
                                 value={destinationUrl}
                                 onChange={(e) => setDestinationUrl(e.target.value)}
                                 placeholder="https://example.com/very/long/url"
-                                className="w-full px-3 py-2 bg-transparent border border-gray-300 dark:border-neutral-700 rounded text-sm text-[#111111] dark:text-white placeholder-gray-400 focus:outline-none focus:border-[#2563EB] focus:ring-1 focus:ring-[#2563EB]"
+                                className="w-full px-3.5 py-2 bg-background border border-border rounded-lg text-sm text-foreground placeholder:text-muted/60 focus:outline-none focus:border-foreground/50 transition-colors"
                             />
                         </div>
 
-                        <div>
-                            <div className="flex justify-between items-center mb-1">
-                                <label className="block text-sm font-medium text-[#666666] dark:text-neutral-400">
+                        <div className="space-y-1.5">
+                            <div className="flex justify-between items-center">
+                                <label className="block text-xs font-medium text-secondary">
                                     Custom Slug (optional)
                                 </label>
                                 <button
                                     type="button"
                                     onClick={handleGenerateSlug}
-                                    className="text-xs text-[#2563EB] hover:underline flex items-center gap-1 font-medium"
+                                    className="text-xs text-secondary hover:text-foreground underline underline-offset-4 flex items-center gap-1 font-medium transition-colors"
                                 >
                                     <RefreshCw className="w-3 h-3" /> Random
                                 </button>
                             </div>
                             <div className="flex items-center">
-                                <span className="inline-flex items-center px-3 py-2 rounded-l border border-r-0 border-gray-300 dark:border-neutral-700 bg-gray-50 dark:bg-neutral-800 text-xs text-[#666666] dark:text-neutral-400 select-none">
-                                    /{''}
+                                <span className="inline-flex items-center px-3 py-2 rounded-l-lg border border-r-0 border-border bg-surface text-xs font-mono text-muted select-none">
+                                    /
                                 </span>
                                 <input
                                     type="text"
                                     value={slug}
                                     onChange={(e) => setSlug(e.target.value)}
-                                    placeholder="e.g. 3dmath (or leave empty for random)"
-                                    className="w-full px-3 py-2 bg-transparent border border-gray-300 dark:border-neutral-700 rounded-r text-sm text-[#111111] dark:text-white placeholder-gray-400 focus:outline-none focus:border-[#2563EB] focus:ring-1 focus:ring-[#2563EB]"
+                                    placeholder="e.g. 3dmath (or leave empty)"
+                                    className="w-full px-3.5 py-2 bg-background border border-border rounded-r-lg text-sm text-foreground placeholder:text-muted/60 focus:outline-none focus:border-foreground/50 transition-colors"
                                 />
                             </div>
                         </div>
@@ -223,9 +222,9 @@ export default function AdminShortLinksPage() {
                         <button
                             type="submit"
                             disabled={formLoading}
-                            className="bg-[#2563EB] text-white px-5 py-2 rounded text-sm font-medium hover:bg-blue-700 disabled:opacity-50 transition-colors flex items-center gap-1.5"
+                            className="bg-foreground text-background px-4 py-2 rounded-lg text-xs sm:text-sm font-medium hover:opacity-90 disabled:opacity-50 transition-opacity flex items-center gap-1.5"
                         >
-                            <Plus className="w-4 h-4" />
+                            <Plus className="w-3.5 h-3.5" />
                             {formLoading ? 'Creating...' : 'Create Short Link'}
                         </button>
                     </div>
@@ -234,14 +233,14 @@ export default function AdminShortLinksPage() {
 
             {/* Links Table */}
             {loading ? (
-                <div className="py-12 text-[#666666] dark:text-neutral-400 text-sm animate-pulse">
+                <div className="py-12 text-muted font-mono text-sm animate-pulse">
                     Loading short links...
                 </div>
             ) : (
-                <div className="bg-white dark:bg-[#161616] border border-[#E5E7EB] dark:border-neutral-800 rounded overflow-hidden">
+                <div className="bg-surface/20 border border-border rounded-xl overflow-x-auto">
                     <table className="w-full text-left border-collapse text-sm">
                         <thead>
-                            <tr className="bg-[#F3F4F6] dark:bg-neutral-800/60 border-b border-[#E5E7EB] dark:border-neutral-800 text-xs uppercase tracking-wider text-[#666666] dark:text-neutral-400">
+                            <tr className="bg-surface/70 border-b border-border text-xs font-mono uppercase tracking-wider text-muted">
                                 <th className="px-4 py-3 font-medium">Short URL</th>
                                 <th className="px-4 py-3 font-medium">Destination</th>
                                 <th className="px-4 py-3 font-medium text-center w-24">Clicks</th>
@@ -249,24 +248,24 @@ export default function AdminShortLinksPage() {
                                 <th className="px-4 py-3 font-medium text-right w-20">Actions</th>
                             </tr>
                         </thead>
-                        <tbody className="divide-y divide-[#E5E7EB] dark:divide-neutral-800">
+                        <tbody className="divide-y divide-border">
                             {links.map((item) => {
                                 const safeItemUrl = sanitizeUrl(item.destination_url)
                                 return (
-                                    <tr key={item.id} className="hover:bg-[#F9FAFB] dark:hover:bg-neutral-800/30 transition-colors">
+                                    <tr key={item.id} className="hover:bg-surface/50 transition-colors">
                                         <td className="px-4 py-3.5">
                                             <div className="flex items-center gap-2">
-                                                <span className="font-semibold text-[#111111] dark:text-white">
+                                                <span className="font-mono font-semibold text-foreground text-xs sm:text-sm">
                                                     /{item.slug}
                                                 </span>
                                                 <button
                                                     type="button"
                                                     onClick={() => handleCopy(item.slug)}
                                                     title="Copy short link"
-                                                    className="text-[#666666] dark:text-neutral-400 hover:text-[#2563EB] p-1 rounded transition-colors"
+                                                    className="text-secondary hover:text-foreground p-1 rounded-md hover:bg-surface transition-colors"
                                                 >
                                                     {copiedSlug === item.slug ? (
-                                                        <Check className="w-3.5 h-3.5 text-green-600" />
+                                                        <Check className="w-3.5 h-3.5 text-emerald-500" />
                                                     ) : (
                                                         <Copy className="w-3.5 h-3.5" />
                                                     )}
@@ -279,7 +278,7 @@ export default function AdminShortLinksPage() {
                                                     href={safeItemUrl}
                                                     target="_blank"
                                                     rel="noopener noreferrer"
-                                                    className="text-xs text-[#2563EB] hover:underline flex items-center gap-1 truncate"
+                                                    className="text-xs text-secondary hover:text-foreground hover:underline underline-offset-4 flex items-center gap-1 truncate transition-colors"
                                                     title={safeItemUrl}
                                                 >
                                                     <span className="truncate">{safeItemUrl}</span>
@@ -290,11 +289,11 @@ export default function AdminShortLinksPage() {
                                             )}
                                         </td>
                                         <td className="px-4 py-3.5 text-center">
-                                            <span className="inline-block px-2 py-0.5 rounded text-xs font-semibold bg-gray-100 dark:bg-neutral-800 text-[#111111] dark:text-neutral-200">
+                                            <span className="inline-block px-2 py-0.5 rounded-md text-xs font-mono font-semibold bg-surface border border-border text-foreground">
                                                 {item.clicks || 0}
                                             </span>
                                         </td>
-                                        <td className="px-4 py-3.5 text-xs text-[#666666] dark:text-neutral-400">
+                                        <td className="px-4 py-3.5 text-xs font-mono text-muted">
                                             {new Date(item.created_at).toLocaleDateString()}
                                         </td>
                                         <td className="px-4 py-3.5 text-right">
@@ -302,9 +301,9 @@ export default function AdminShortLinksPage() {
                                                 type="button"
                                                 onClick={() => handleDelete(item.id, item.slug)}
                                                 title="Delete link"
-                                                className="text-[#666666] dark:text-neutral-400 hover:text-red-600 p-1 rounded transition-colors"
+                                                className="text-muted hover:text-red-500 p-1.5 rounded-md hover:bg-surface transition-colors"
                                             >
-                                                <Trash2 className="w-4 h-4" />
+                                                <Trash2 className="w-3.5 h-3.5" />
                                             </button>
                                         </td>
                                     </tr>
@@ -312,7 +311,7 @@ export default function AdminShortLinksPage() {
                             })}
                             {links.length === 0 && (
                                 <tr>
-                                    <td colSpan={5} className="px-4 py-10 text-center text-[#666666] dark:text-neutral-400 text-sm">
+                                    <td colSpan={5} className="px-4 py-10 text-center text-muted text-sm">
                                         No short links created yet.
                                     </td>
                                 </tr>

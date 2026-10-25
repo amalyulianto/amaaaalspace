@@ -27,7 +27,7 @@ export default function CategoryFilter({ categories, activeSlug }: CategoryFilte
             {categories.map((category) => (
                 <Link
                     key={category.id}
-                    href={`/blog/category/${category.slug}`}
+                    href={`/blog?category=${category.slug}`}
                     className={`text-sm sm:text-[15px] capitalize transition-colors ${
                         activeSlug === category.slug
                             ? 'font-medium text-foreground underline underline-offset-4'

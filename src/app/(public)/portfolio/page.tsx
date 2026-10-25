@@ -71,11 +71,11 @@ export default async function PortfolioPage({ searchParams }: { searchParams: { 
             <div className="space-y-8 pt-1">
                 {groupedItems.length > 0 ? (
                     groupedItems.map((group) => (
-                        <section key={group.titleKey} className="space-y-4">
+                        <section key={group.titleKey} className="space-y-3">
                             <SectionHeading>
                                 <T section="portfolio" k={group.titleKey} />
                             </SectionHeading>
-                            <div className="space-y-4">
+                            <div className="space-y-1.5">
                                 {group.items.map((item) => (
                                     <ProjectCard key={item.id} item={item} />
                                 ))}

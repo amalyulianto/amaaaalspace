@@ -1,7 +1,7 @@
 import { createPublicClient } from '@/lib/supabase/server'
 import PostCard from '@/components/blog/PostCard'
 import CategoryFilter from '@/components/blog/CategoryFilter'
-import { T } from '@/components/layout/ThemeProvider'
+import { T, CategoryDescription } from '@/components/layout/ThemeProvider'
 import { Post, Category } from '@/lib/types'
 import { notFound } from 'next/navigation'
 import type { Metadata } from 'next'
@@ -27,28 +27,33 @@ export async function generateMetadata({ params }: Props): Promise<Metadata> {
     const supabase = createPublicClient()
     const { data: category } = await supabase
         .from('categories')
-        .select('name')
+        .select('*')
         .eq('slug', params.slug)
         .single()
 
     return {
         title: category ? `Writing in ${category.name}` : 'Category Not Found',
-        description: `Posts categorized under ${category?.name}`,
+        description:
+            category?.description ||
+            category?.description_en ||
+            `Posts categorized under ${category?.name}`,
     }
 }
 
 export default async function CategoryPage({ params }: Props) {
     const supabase = createPublicClient()
 
-    const { data: category } = await supabase
+    const { data: categoryData } = await supabase
         .from('categories')
         .select('*')
         .eq('slug', params.slug)
         .single()
 
-    if (!category) {
+    if (!categoryData) {
         notFound()
     }
+
+    const category = categoryData as Category
 
     const { data: postsData } = await supabase
         .from('posts')
@@ -81,16 +86,19 @@ export default async function CategoryPage({ params }: Props) {
                     <T section="blog" k="title" />
                 </h1>
 
-                <p className="text-sm sm:text-[15px] text-secondary leading-relaxed m-0">
-                    <T section="blog" k="subtitle" />
-                </p>
+                <div className="space-y-0.5">
+                    <p className="text-sm sm:text-[15px] text-secondary leading-relaxed m-0">
+                        <T section="blog" k="subtitle" />
+                    </p>
+                    <CategoryDescription category={category} />
+                </div>
 
                 <div className="pt-1">
                     <CategoryFilter categories={allCategories} activeSlug={params.slug} />
                 </div>
             </header>
 
-            <div className="space-y-4 pt-1">
+            <div className="space-y-1.5 pt-1">
                 {posts.length > 0 ? (
                     posts.map((post) => (
                         <PostCard key={post.id} post={post} />

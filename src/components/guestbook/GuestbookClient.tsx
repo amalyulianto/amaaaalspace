@@ -1,225 +1,251 @@
-"use client";
+'use client'
 
-import { useState } from "react";
-import { PALESTINE_NAMES } from "@/lib/constants";
-import { Card } from "@/components/ui/Card";
-import { formatDateShort } from "@/lib/utils";
-import { useLanguage } from "@/components/layout/ThemeProvider";
+import { useState } from 'react'
+import { GuestbookEntry } from '@/lib/types'
+import { useLanguage, LocalizedDate } from '@/components/layout/ThemeProvider'
+import { PALESTINE_NAMES } from '@/lib/constants'
 
-export interface GuestbookMessage {
-    id: string;
-    name: string;
-    message: string;
-    date: string;
+interface GuestbookClientProps {
+    initialEntries: GuestbookEntry[]
 }
 
-export function GuestbookClient({ initialMessages }: { initialMessages: GuestbookMessage[] }) {
-    const { lang, t } = useLanguage();
-    const [messages] = useState<GuestbookMessage[]>(initialMessages);
-    const [isFormOpen, setIsFormOpen] = useState(false);
-    const [form, setForm] = useState({ name: "", message: "", honeypot: "" });
-    const [isSubmitting, setIsSubmitting] = useState(false);
-    const [submitSuccess, setSubmitSuccess] = useState(false);
+export default function GuestbookClient({ initialEntries }: GuestbookClientProps) {
+    const { t } = useLanguage()
+    const [entries] = useState<GuestbookEntry[]>(initialEntries)
+    const [isFormOpen, setIsFormOpen] = useState(false)
+    const [authorName, setAuthorName] = useState('')
+    const [message, setMessage] = useState('')
+    const [honeypot, setHoneypot] = useState('')
+    const [submitting, setSubmitting] = useState(false)
+    const [successMessage, setSuccessMessage] = useState(false)
+    const [errorMessage, setErrorMessage] = useState('')
 
-    const generateRandomName = () => {
-        const randomIndex = Math.floor(Math.random() * PALESTINE_NAMES.length);
-        setForm({ ...form, name: PALESTINE_NAMES[randomIndex] });
-    };
+    const handleRandomName = () => {
+        const randomIndex = Math.floor(Math.random() * PALESTINE_NAMES.length)
+        setAuthorName(PALESTINE_NAMES[randomIndex])
+    }
 
     const handleSubmit = async (e: React.FormEvent) => {
-        e.preventDefault();
-        if (form.honeypot) return;
+        e.preventDefault()
 
-        setIsSubmitting(true);
+        if (honeypot) {
+            setSuccessMessage(true)
+            setIsFormOpen(false)
+            setAuthorName('')
+            setMessage('')
+            return
+        }
+
+        if (!authorName.trim() || !message.trim()) {
+            setErrorMessage('Please fill in both name and message.')
+            return
+        }
+
+        setSubmitting(true)
+        setErrorMessage('')
 
         try {
-            const body = {
-                author_name: form.name,
-                message: form.message,
-                website: form.honeypot,
-            };
-
             const res = await fetch('/api/guestbook', {
                 method: 'POST',
                 headers: { 'Content-Type': 'application/json' },
-                body: JSON.stringify(body),
-            });
+                body: JSON.stringify({
+                    author_name: authorName.trim(),
+                    message: message.trim(),
+                    website: honeypot,
+                }),
+            })
 
             if (res.ok) {
-                setSubmitSuccess(true);
-                setIsSubmitting(false);
-                setForm({ name: "", message: "", honeypot: "" });
+                setSuccessMessage(true)
+                setIsFormOpen(false)
+                setAuthorName('')
+                setMessage('')
             } else {
-                setIsSubmitting(false);
+                setErrorMessage('Failed to submit message. Please try again.')
             }
         } catch {
-            setIsSubmitting(false);
+            setErrorMessage('Something went wrong. Please try again.')
+        } finally {
+            setSubmitting(false)
         }
-    };
-
-    const handleCloseSuccess = () => {
-        setSubmitSuccess(false);
-        setIsFormOpen(false);
-    };
+    }
 
     return (
         <div className="space-y-8 animate-in fade-in duration-500">
-            <header className="space-y-5">
-                <h1 className="text-[32px] sm:text-[36px] font-bold tracking-tight text-foreground leading-tight m-0">
-                    {t.guestbook.title}
-                </h1>
+            <header className="space-y-4">
+                <div className="flex flex-col sm:flex-row sm:items-center sm:justify-between gap-4">
+                    <h1 className="text-[32px] sm:text-[36px] font-bold tracking-tight text-foreground leading-tight m-0">
+                        {t.guestbook.title}
+                    </h1>
+
+                    {!isFormOpen && (
+                        <button
+                            type="button"
+                            onClick={() => setIsFormOpen(true)}
+                            className="inline-flex items-center justify-center bg-foreground text-background hover:opacity-90 px-4 py-2 rounded-lg text-xs sm:text-sm font-medium transition-opacity self-start sm:self-auto"
+                        >
+                            {t.guestbook.openFormButton}
+                        </button>
+                    )}
+                </div>
 
                 <p className="text-sm sm:text-[15px] text-secondary leading-relaxed m-0">
                     {t.guestbook.subtitle}
                 </p>
+            </header>
 
-                {!isFormOpen && (
-                    <div className="pt-1">
+            {/* Success Confirmation Banner */}
+            {successMessage && (
+                <div className="p-5 rounded-xl border border-border bg-surface/60 flex flex-col sm:flex-row sm:items-center sm:justify-between gap-4 animate-in slide-in-from-top-2 duration-300">
+                    <div className="space-y-1">
+                        <p className="text-sm font-semibold text-foreground m-0">
+                            {t.guestbook.thanksTitle}
+                        </p>
+                        <p className="text-xs sm:text-sm text-secondary m-0">
+                            {t.guestbook.thanksSubtitle}
+                        </p>
+                    </div>
+                    <button
+                        type="button"
+                        onClick={() => setSuccessMessage(false)}
+                        className="inline-flex items-center justify-center px-4 py-2 rounded-lg border border-border bg-background text-xs sm:text-sm font-medium text-foreground hover:border-foreground/30 transition-colors self-start sm:self-auto"
+                    >
+                        {t.guestbook.closeButton}
+                    </button>
+                </div>
+            )}
+
+            {/* Collapsible Editorial Composer */}
+            {isFormOpen && (
+                <div className="p-5 sm:p-6 rounded-xl border border-border bg-surface/40 space-y-4 animate-in slide-in-from-top-2 duration-300">
+                    <div className="flex items-center justify-between border-b border-border pb-3">
+                        <h2 className="text-base font-semibold text-foreground m-0">
+                            {t.guestbook.formHeader}
+                        </h2>
                         <button
                             type="button"
                             onClick={() => {
-                                setSubmitSuccess(false);
-                                setIsFormOpen(true);
+                                setIsFormOpen(false)
+                                setErrorMessage('')
                             }}
-                            className="inline-flex items-center gap-2 px-4 py-2 bg-foreground text-background text-xs sm:text-[13px] font-medium rounded-md hover:opacity-85 transition-opacity"
+                            className="text-xs text-muted hover:text-foreground transition-colors"
                         >
-                            <span>{t.guestbook.openFormButton}</span>
+                            {t.guestbook.cancelButton}
                         </button>
                     </div>
-                )}
-            </header>
 
-            {/* Expandable Form / Success Section */}
-            {isFormOpen && (
-                <Card className="p-5 animate-in fade-in duration-300">
-                    {submitSuccess ? (
-                        <div className="space-y-3 text-sm text-foreground">
-                            <div className="space-y-1">
-                                <p className="font-semibold text-foreground m-0">
-                                    {t.guestbook.thanksTitle}
-                                </p>
-                                <p className="text-xs sm:text-[13px] text-secondary leading-relaxed m-0">
-                                    {t.guestbook.thanksSubtitle}
-                                </p>
-                            </div>
-                            <div className="pt-1">
-                                <button
-                                    type="button"
-                                    onClick={handleCloseSuccess}
-                                    className="px-4 py-1.5 bg-foreground text-background text-xs font-medium rounded hover:opacity-85 transition-opacity"
+                    <form onSubmit={handleSubmit} className="space-y-4">
+                        {/* Honeypot field for spam prevention */}
+                        <input
+                            type="text"
+                            name="website"
+                            value={honeypot}
+                            onChange={(e) => setHoneypot(e.target.value)}
+                            style={{ display: 'none', visibility: 'hidden' }}
+                            tabIndex={-1}
+                            autoComplete="off"
+                        />
+
+                        <div className="space-y-1.5">
+                            <div className="flex items-center justify-between">
+                                <label
+                                    htmlFor="author_name"
+                                    className="text-xs font-medium text-secondary"
                                 >
-                                    {t.guestbook.closeButton}
-                                </button>
-                            </div>
-                        </div>
-                    ) : (
-                        <form onSubmit={handleSubmit} className="space-y-4">
-                            <div className="flex items-center justify-between pb-2 border-b border-border">
-                                <span className="text-xs font-semibold text-foreground">
-                                    {t.guestbook.formHeader}
-                                </span>
-                                <button
-                                    type="button"
-                                    onClick={() => setIsFormOpen(false)}
-                                    className="text-xs text-muted hover:text-foreground transition-colors"
-                                >
-                                    {t.guestbook.cancelButton}
-                                </button>
-                            </div>
-
-                            <input
-                                type="text"
-                                name="website"
-                                value={form.honeypot}
-                                onChange={(e) => setForm({ ...form, honeypot: e.target.value })}
-                                style={{ display: 'none', visibility: 'hidden' }}
-                                tabIndex={-1}
-                                autoComplete="off"
-                            />
-
-                            <div className="space-y-1.5">
-                                <div className="flex items-center justify-between">
-                                    <label htmlFor="guestbook-name" className="text-xs font-medium text-secondary">
-                                        {t.guestbook.nameLabel}
-                                    </label>
-                                    <button
-                                        type="button"
-                                        onClick={generateRandomName}
-                                        className="text-xs text-muted hover:text-foreground underline underline-offset-4 transition-colors"
-                                    >
-                                        {t.guestbook.randomName}
-                                    </button>
-                                </div>
-                                <input
-                                    id="guestbook-name"
-                                    type="text"
-                                    required
-                                    value={form.name}
-                                    onChange={(e) => setForm({ ...form, name: e.target.value })}
-                                    className="w-full px-3 py-2 text-sm bg-background border border-border rounded focus:border-foreground outline-none transition-colors placeholder:text-muted text-foreground"
-                                    placeholder={t.guestbook.namePlaceholder}
-                                />
-                            </div>
-
-                            <div className="space-y-1.5">
-                                <label htmlFor="guestbook-message" className="block text-xs font-medium text-secondary">
-                                    {t.guestbook.messageLabel}
+                                    {t.guestbook.nameLabel}
                                 </label>
-                                <textarea
-                                    id="guestbook-message"
-                                    required
-                                    rows={3}
-                                    value={form.message}
-                                    onChange={(e) => setForm({ ...form, message: e.target.value })}
-                                    className="w-full px-3 py-2 text-sm bg-background border border-border rounded focus:border-foreground outline-none transition-colors resize-none placeholder:text-muted text-foreground"
-                                    placeholder={t.guestbook.messagePlaceholder}
-                                />
-                            </div>
-
-                            <div className="flex justify-end">
                                 <button
-                                    type="submit"
-                                    disabled={isSubmitting || !form.name || !form.message}
-                                    className="px-4 py-1.5 bg-foreground text-background text-xs font-medium rounded hover:opacity-85 transition-opacity disabled:opacity-50 disabled:cursor-not-allowed"
+                                    type="button"
+                                    onClick={handleRandomName}
+                                    className="text-xs text-muted hover:text-foreground underline underline-offset-4 transition-colors"
                                 >
-                                    {isSubmitting ? t.guestbook.submitting : t.guestbook.submitButton}
+                                    {t.guestbook.randomName} 🎲
                                 </button>
                             </div>
-                        </form>
-                    )}
-                </Card>
+                            <input
+                                id="author_name"
+                                type="text"
+                                value={authorName}
+                                onChange={(e) => setAuthorName(e.target.value)}
+                                placeholder={t.guestbook.namePlaceholder}
+                                required
+                                className="w-full px-3.5 py-2 border border-border bg-background rounded-lg text-sm text-foreground placeholder:text-muted/60 focus:outline-none focus:border-foreground/50 transition-colors"
+                            />
+                        </div>
+
+                        <div className="space-y-1.5">
+                            <label
+                                htmlFor="message"
+                                className="text-xs font-medium text-secondary"
+                            >
+                                {t.guestbook.messageLabel}
+                            </label>
+                            <textarea
+                                id="message"
+                                rows={3}
+                                value={message}
+                                onChange={(e) => setMessage(e.target.value)}
+                                placeholder={t.guestbook.messagePlaceholder}
+                                required
+                                className="w-full px-3.5 py-2 border border-border bg-background rounded-lg text-sm text-foreground placeholder:text-muted/60 focus:outline-none focus:border-foreground/50 transition-colors leading-relaxed"
+                            />
+                        </div>
+
+                        {errorMessage && (
+                            <p className="text-xs text-red-500 m-0">{errorMessage}</p>
+                        )}
+
+                        <div className="flex justify-end gap-2.5 pt-1">
+                            <button
+                                type="button"
+                                onClick={() => setIsFormOpen(false)}
+                                className="inline-flex items-center justify-center px-4 py-2 rounded-lg border border-border bg-background text-xs sm:text-sm font-medium text-secondary hover:text-foreground transition-colors"
+                            >
+                                {t.guestbook.cancelButton}
+                            </button>
+                            <button
+                                type="submit"
+                                disabled={submitting}
+                                className="inline-flex items-center justify-center bg-foreground text-background hover:opacity-90 px-4 py-2 rounded-lg text-xs sm:text-sm font-medium disabled:opacity-50 transition-opacity"
+                            >
+                                {submitting ? t.guestbook.submitting : t.guestbook.submitButton}
+                            </button>
+                        </div>
+                    </form>
+                </div>
             )}
 
-            {/* Guestbook Note Cards Grid */}
-            <div className="pt-1">
-                {messages.length > 0 ? (
-                    <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
-                        {messages.map((msg) => (
-                            <Card
-                                key={msg.id}
-                                className="flex flex-col justify-between space-y-4"
-                            >
-                                <p className="text-sm text-foreground leading-relaxed whitespace-pre-wrap break-words m-0">
-                                    &ldquo;{msg.message}&rdquo;
-                                </p>
-
-                                <div className="flex items-center justify-between gap-2 pt-2 border-t border-border/70 text-xs text-muted">
-                                    <span className="font-semibold text-secondary truncate">
-                                        — {msg.name}
+            {/* Editorial Guestbook Stream (Single Column) */}
+            {entries.length > 0 ? (
+                <div className="divide-y divide-border/60 border-t border-border/60">
+                    {entries.map((entry) => (
+                        <article
+                            key={entry.id}
+                            className="py-4 -mx-3 px-3 rounded-xl hover:bg-surface/60 transition-colors duration-200 space-y-1.5"
+                        >
+                            <p className="text-base sm:text-[17px] text-foreground leading-relaxed m-0 break-words">
+                                {entry.message}
+                            </p>
+                            <div className="flex items-center gap-1.5 text-xs text-muted tabular-nums">
+                                <span>
+                                    From:{' '}
+                                    <span className="font-medium text-secondary">
+                                        {entry.author_name}
                                     </span>
-                                    <time dateTime={msg.date} className="shrink-0 tabular-nums">
-                                        {formatDateShort(msg.date, lang)}
-                                    </time>
-                                </div>
-                            </Card>
-                        ))}
-                    </div>
-                ) : (
-                    <p className="text-sm text-muted py-4">
-                        {t.guestbook.empty}
-                    </p>
-                )}
-            </div>
+                                </span>
+                                <span>•</span>
+                                <time dateTime={entry.created_at}>
+                                    <LocalizedDate date={entry.created_at} />
+                                </time>
+                            </div>
+                        </article>
+                    ))}
+                </div>
+            ) : (
+                <p className="text-sm text-muted py-6">{t.guestbook.empty}</p>
+            )}
         </div>
-    );
+    )
 }
+
+export { GuestbookClient }

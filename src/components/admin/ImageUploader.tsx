@@ -74,22 +74,26 @@ export default function ImageUploader({ onUpload, currentUrl, label = 'Cover Ima
     }
 
     return (
-        <div>
-            <label className="block text-sm font-medium text-[#666666] mb-2">{label}</label>
+        <div className="space-y-2.5">
+            <label className="block text-xs font-medium text-secondary">{label}</label>
 
             {previewUrl && (
-                <div className="mb-4">
+                <div className="mb-3 rounded-xl overflow-hidden border border-border bg-surface/50 inline-block">
                     {/* eslint-disable-next-line @next/next/no-img-element */}
-                    <img src={previewUrl} alt="Preview" className="max-w-full h-auto max-h-48 rounded border border-[#E5E7EB] object-cover" />
+                    <img
+                        src={previewUrl}
+                        alt="Preview"
+                        className="max-w-full h-auto max-h-48 object-cover block"
+                    />
                 </div>
             )}
 
-            <div className="flex items-center gap-4">
+            <div className="flex items-center gap-3">
                 <button
                     type="button"
                     onClick={() => fileInputRef.current?.click()}
                     disabled={uploading}
-                    className="bg-white border border-[#E5E7EB] text-[#111111] px-4 py-2 rounded text-sm hover:bg-gray-50 focus:outline-none disabled:opacity-50 transition-colors"
+                    className="bg-surface border border-border text-foreground px-3.5 py-2 rounded-lg text-xs font-medium hover:border-foreground/30 focus:outline-none disabled:opacity-50 transition-colors"
                 >
                     {uploading ? 'Uploading...' : 'Choose image'}
                 </button>
@@ -101,9 +105,13 @@ export default function ImageUploader({ onUpload, currentUrl, label = 'Cover Ima
                     className="hidden"
                 />
 
-                {uploadStatus === 'success' && <span className="text-green-600 text-sm font-medium">Upload complete</span>}
+                {uploadStatus === 'success' && (
+                    <span className="text-emerald-600 dark:text-emerald-400 text-xs font-medium">
+                        Upload complete
+                    </span>
+                )}
                 {uploadStatus === 'error' && (
-                    <span className="text-red-600 text-sm font-medium">
+                    <span className="text-red-500 text-xs font-medium">
                         {errorMessage || 'Upload failed. Try again.'}
                     </span>
                 )}

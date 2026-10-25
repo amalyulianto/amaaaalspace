@@ -1,6 +1,7 @@
 'use client'
 
 import { useEffect, useState } from 'react'
+import Link from 'next/link'
 import { useRouter } from 'next/navigation'
 import { createBrowserClient } from '@supabase/ssr'
 import TiptapEditor from '@/components/admin/TiptapEditor'
@@ -20,6 +21,13 @@ export default function NewPostPage() {
     const [status, setStatus] = useState<'draft' | 'published'>('draft')
     const [content, setContent] = useState('')
     const [newCategoryName, setNewCategoryName] = useState('')
+    const [newCategoryDescId, setNewCategoryDescId] = useState('')
+    const [newCategoryDescEn, setNewCategoryDescEn] = useState('')
+    const [showNewCatForm, setShowNewCatForm] = useState(false)
+    const [showEditCatForm, setShowEditCatForm] = useState(false)
+    const [editCategoryName, setEditCategoryName] = useState('')
+    const [editCategoryDescId, setEditCategoryDescId] = useState('')
+    const [editCategoryDescEn, setEditCategoryDescEn] = useState('')
     const [loading, setLoading] = useState(false)
     const [error, setError] = useState('')
     const [publishedAt, setPublishedAt] = useState('')
@@ -59,12 +67,63 @@ export default function NewPostPage() {
             process.env.NEXT_PUBLIC_SUPABASE_ANON_KEY!
         )
         const newSlug = generateSlug(newCategoryName)
-        const { error } = await supabase.from('categories').insert({ name: newCategoryName.trim(), slug: newSlug })
+        const { data, error } = await supabase
+            .from('categories')
+            .insert({
+                name: newCategoryName.trim(),
+                slug: newSlug,
+                description: newCategoryDescId.trim() || null,
+                description_en: newCategoryDescEn.trim() || null,
+            })
+            .select()
+            .single()
+
         if (error) {
-            alert('Failed to add category')
+            alert(`Failed to add category: ${error.message}`)
         } else {
             setNewCategoryName('')
-            fetchCategories()
+            setNewCategoryDescId('')
+            setNewCategoryDescEn('')
+            setShowNewCatForm(false)
+            await fetchCategories()
+            if (data?.id) {
+                setCategoryId(data.id)
+            }
+        }
+    }
+
+    const openEditSelectedCategory = () => {
+        const selectedCat = categories.find((c) => c.id === categoryId)
+        if (!selectedCat) return
+        setEditCategoryName(selectedCat.name)
+        setEditCategoryDescId(selectedCat.description || '')
+        setEditCategoryDescEn(selectedCat.description_en || '')
+        setShowNewCatForm(false)
+        setShowEditCatForm(true)
+    }
+
+    const handleUpdateSelectedCategory = async () => {
+        if (!categoryId || !editCategoryName.trim()) return
+        const supabase = createBrowserClient(
+            process.env.NEXT_PUBLIC_SUPABASE_URL!,
+            process.env.NEXT_PUBLIC_SUPABASE_ANON_KEY!
+        )
+        const newSlug = generateSlug(editCategoryName.trim())
+        const { error } = await supabase
+            .from('categories')
+            .update({
+                name: editCategoryName.trim(),
+                slug: newSlug,
+                description: editCategoryDescId.trim() || null,
+                description_en: editCategoryDescEn.trim() || null,
+            })
+            .eq('id', categoryId)
+
+        if (error) {
+            alert(`Failed to update category: ${error.message}`)
+        } else {
+            setShowEditCatForm(false)
+            await fetchCategories()
         }
     }
 
@@ -84,7 +143,9 @@ export default function NewPostPage() {
 
         const publishedAtISO = publishedAt
             ? new Date(publishedAt).toISOString()
-            : (status === 'published' ? new Date().toISOString() : null)
+            : status === 'published'
+              ? new Date().toISOString()
+              : null
 
         const { error: insertError } = await supabase.from('posts').insert({
             title: title.trim(),
@@ -107,114 +168,245 @@ export default function NewPostPage() {
     }
 
     return (
-        <div>
-            <div className="flex justify-between items-end mb-8 border-b border-[#E5E7EB] pb-4">
-                <h1 className="text-xl font-bold text-[#111111]">New Post</h1>
-            </div>
-
-            {error && <div className="bg-red-50 text-red-600 p-4 rounded mb-6 border border-red-200">{error}</div>}
-
-            <div className="space-y-6">
-                <div>
-                    <label className="block text-sm font-medium text-[#111111] mb-2">Title</label>
-                    <input
-                        type="text"
-                        value={title}
-                        onChange={handleTitleChange}
-                        className="w-full px-4 py-2 border border-[#E5E7EB] rounded focus:outline-none focus:border-[#2563EB] focus:ring-1 focus:ring-[#2563EB] text-[#111111] transition-colors"
-                    />
-                </div>
-
-                <div>
-                    <label className="block text-sm font-medium text-[#111111] mb-2">Slug</label>
-                    <input
-                        type="text"
-                        value={slug}
-                        onChange={(e) => setSlug(e.target.value)}
-                        className="w-full px-4 py-2 border border-[#E5E7EB] rounded focus:outline-none focus:border-[#2563EB] focus:ring-1 focus:ring-[#2563EB] text-[#111111] transition-colors"
-                    />
-                    <p className="text-[#666666] text-[13px] mt-2">Preview: /blog/{slug || '...'}</p>
-                </div>
-
-                <div>
-                    <label className="block text-sm font-medium text-[#111111] mb-2">Excerpt</label>
-                    <textarea
-                        value={excerpt}
-                        onChange={(e) => setExcerpt(e.target.value)}
-                        rows={3}
-                        className="w-full px-4 py-2 border border-[#E5E7EB] rounded focus:outline-none focus:border-[#2563EB] focus:ring-1 focus:ring-[#2563EB] text-[#111111] transition-colors"
-                    />
-                </div>
-
-                <div>
-                    <label className="block text-sm font-medium text-[#111111] mb-2">Category</label>
-                    <div className="flex gap-2 items-center">
-                        <select
-                            value={categoryId}
-                            onChange={(e) => setCategoryId(e.target.value)}
-                            className="flex-1 px-4 py-2 border border-[#E5E7EB] rounded focus:outline-none focus:border-[#2563EB] focus:ring-1 focus:ring-[#2563EB] bg-white text-[#111111]"
-                        >
-                            <option value="">No Category</option>
-                            {categories.map(c => (
-                                <option key={c.id} value={c.id}>{c.name}</option>
-                            ))}
-                        </select>
-                        <div className="flex items-center gap-2 border-l border-[#E5E7EB] pl-4">
-                            <input
-                                type="text"
-                                placeholder="New Category"
-                                value={newCategoryName}
-                                onChange={(e) => setNewCategoryName(e.target.value)}
-                                className="w-40 px-4 py-2 border border-[#E5E7EB] rounded focus:outline-none focus:border-[#2563EB] focus:ring-1 focus:ring-[#2563EB] text-[15px] text-[#111111]"
-                            />
-                            <button
-                                type="button"
-                                onClick={handleAddCategory}
-                                className="border border-[#E5E7EB] px-4 py-2 rounded text-[15px] text-[#111111] hover:bg-[#F3F4F6] transition-colors"
-                            >
-                                Add
-                            </button>
-                        </div>
-                    </div>
-                </div>
-
-                <div>
-                    <ImageUploader onUpload={setCoverImageUrl} currentUrl={coverImageUrl} />
-                </div>
-
-                <div>
-                    <label className="block text-sm font-medium text-[#111111] mb-2">Status</label>
-                    <select
-                        value={status}
-                        onChange={(e) => setStatus(e.target.value as 'draft' | 'published')}
-                        className="w-full px-4 py-2 border border-[#E5E7EB] rounded focus:outline-none focus:border-[#2563EB] focus:ring-1 focus:ring-[#2563EB] bg-white text-[#111111]"
-                    >
-                        <option value="draft">Draft</option>
-                        <option value="published">Published</option>
-                    </select>
-                </div>
-
-                <div>
-                    <label className="block text-sm font-medium text-[#111111] mb-2">Published Date</label>
-                    <input
-                        type="datetime-local"
-                        value={publishedAt}
-                        onChange={(e) => setPublishedAt(e.target.value)}
-                        className="w-full px-4 py-2 border border-[#E5E7EB] rounded focus:outline-none focus:border-[#2563EB] focus:ring-1 focus:ring-[#2563EB] text-[#111111]"
-                    />
-                    <p className="text-[#666666] text-[13px] mt-2">Leave blank to use current time when publishing.</p>
-                </div>
-
-                <div>
-                    <label className="block text-sm font-medium text-[#111111] mb-2">Content</label>
-                    <TiptapEditor content={content} onChange={setContent} />
-                </div>
-
-                <div className="pt-6 mt-6 border-t border-[#E5E7EB]">
+        <div className="space-y-8 animate-in fade-in duration-300">
+            <div className="space-y-3 border-b border-border pb-5">
+                <Link
+                    href="/admin/posts"
+                    className="inline-flex items-center text-xs text-secondary hover:text-foreground transition-colors no-underline"
+                >
+                    &larr; Back to Posts
+                </Link>
+                <div className="flex flex-col sm:flex-row sm:justify-between sm:items-center gap-4">
+                    <h1 className="text-2xl font-bold tracking-tight text-foreground">
+                        New Post ✍️
+                    </h1>
                     <button
                         onClick={handleSave}
                         disabled={loading}
-                        className="bg-[#111111] text-white px-6 py-2.5 rounded hover:bg-[#2563EB] disabled:opacity-50 transition-colors font-medium w-full sm:w-auto"
+                        className="bg-foreground text-background px-5 py-2 rounded-lg text-xs sm:text-sm font-medium hover:opacity-90 disabled:opacity-50 transition-opacity self-start sm:self-auto"
+                    >
+                        {loading ? 'Saving...' : 'Save Post'}
+                    </button>
+                </div>
+            </div>
+
+            {error && (
+                <div className="bg-red-500/10 text-red-600 dark:text-red-400 p-4 rounded-xl border border-red-500/20 text-xs sm:text-sm">
+                    {error}
+                </div>
+            )}
+
+            <div className="space-y-6">
+                <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+                    <div className="space-y-1.5">
+                        <label className="block text-xs font-medium text-secondary">Title</label>
+                        <input
+                            type="text"
+                            value={title}
+                            onChange={handleTitleChange}
+                            placeholder="Post title..."
+                            className="w-full px-3.5 py-2 border border-border bg-background rounded-lg text-sm text-foreground placeholder:text-muted/60 focus:outline-none focus:border-foreground/50 transition-colors"
+                        />
+                    </div>
+
+                    <div className="space-y-1.5">
+                        <label className="block text-xs font-medium text-secondary">Slug</label>
+                        <input
+                            type="text"
+                            value={slug}
+                            onChange={(e) => setSlug(e.target.value)}
+                            placeholder="post-slug"
+                            className="w-full px-3.5 py-2 border border-border bg-background rounded-lg text-sm font-mono text-foreground placeholder:text-muted/60 focus:outline-none focus:border-foreground/50 transition-colors"
+                        />
+                        <p className="text-muted font-mono text-[11px]">
+                            Preview: /blog/{slug || '...'}
+                        </p>
+                    </div>
+                </div>
+
+                <div className="space-y-1.5">
+                    <label className="block text-xs font-medium text-secondary">Excerpt</label>
+                    <textarea
+                        value={excerpt}
+                        onChange={(e) => setExcerpt(e.target.value)}
+                        rows={2}
+                        placeholder="Optional short summary..."
+                        className="w-full px-3.5 py-2 border border-border bg-background rounded-lg text-sm text-foreground placeholder:text-muted/60 focus:outline-none focus:border-foreground/50 transition-colors leading-relaxed"
+                    />
+                </div>
+
+                <div className="p-5 rounded-xl border border-border bg-surface/30 space-y-5">
+                    <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+                        <div className="space-y-1.5">
+                            <label className="block text-xs font-medium text-secondary">Status</label>
+                            <select
+                                value={status}
+                                onChange={(e) => setStatus(e.target.value as 'draft' | 'published')}
+                                className="w-full px-3.5 py-2 border border-border rounded-lg bg-background text-sm text-foreground focus:outline-none focus:border-foreground/50 transition-colors"
+                            >
+                                <option value="draft">Draft</option>
+                                <option value="published">Published</option>
+                            </select>
+                        </div>
+
+                        <div className="space-y-1.5">
+                            <label className="block text-xs font-medium text-secondary">Published Date</label>
+                            <input
+                                type="datetime-local"
+                                value={publishedAt}
+                                onChange={(e) => setPublishedAt(e.target.value)}
+                                className="w-full px-3.5 py-2 border border-border rounded-lg bg-background text-sm text-foreground focus:outline-none focus:border-foreground/50 transition-colors"
+                            />
+                            <p className="text-muted text-[11px]">
+                                Leave blank to use current time when publishing.
+                            </p>
+                        </div>
+                    </div>
+
+                    <div className="space-y-3 pt-2 border-t border-border/60">
+                        <div className="flex items-center justify-between">
+                            <label className="block text-xs font-medium text-secondary">Category</label>
+                            <div className="flex items-center gap-3">
+                                {categoryId && (
+                                    <button
+                                        type="button"
+                                        onClick={() => {
+                                            if (showEditCatForm) {
+                                                setShowEditCatForm(false)
+                                            } else {
+                                                openEditSelectedCategory()
+                                            }
+                                        }}
+                                        className="text-xs font-medium text-secondary hover:text-foreground underline underline-offset-4 transition-colors"
+                                    >
+                                        {showEditCatForm ? 'Cancel Edit' : 'Edit Selected Category'}
+                                    </button>
+                                )}
+                                <button
+                                    type="button"
+                                    onClick={() => {
+                                        setShowEditCatForm(false)
+                                        setShowNewCatForm(!showNewCatForm)
+                                    }}
+                                    className="text-xs font-medium text-foreground underline underline-offset-4 hover:opacity-80"
+                                >
+                                    {showNewCatForm ? 'Cancel' : '+ New Category'}
+                                </button>
+                            </div>
+                        </div>
+
+                        <select
+                            value={categoryId}
+                            onChange={(e) => {
+                                setCategoryId(e.target.value)
+                                setShowEditCatForm(false)
+                            }}
+                            className="w-full px-3.5 py-2 border border-border rounded-lg bg-background text-sm text-foreground focus:outline-none focus:border-foreground/50 transition-colors"
+                        >
+                            <option value="">No Category</option>
+                            {categories.map((c) => (
+                                <option key={c.id} value={c.id}>
+                                    {c.name}
+                                </option>
+                            ))}
+                        </select>
+
+                        {showEditCatForm && categoryId && (
+                            <div className="p-4 rounded-xl border border-border bg-background space-y-3 animate-in slide-in-from-top-2 duration-200">
+                                <div className="text-xs font-mono uppercase tracking-wider text-muted">
+                                    Edit Selected Category & Descriptions
+                                </div>
+                                <div className="grid grid-cols-1 md:grid-cols-3 gap-3">
+                                    <input
+                                        type="text"
+                                        placeholder="Category Name"
+                                        value={editCategoryName}
+                                        onChange={(e) => setEditCategoryName(e.target.value)}
+                                        className="px-3 py-2 border border-border bg-surface/40 rounded-lg text-xs text-foreground placeholder:text-muted/60 focus:outline-none focus:border-foreground/50"
+                                    />
+                                    <input
+                                        type="text"
+                                        placeholder="Description (ID)"
+                                        value={editCategoryDescId}
+                                        onChange={(e) => setEditCategoryDescId(e.target.value)}
+                                        className="px-3 py-2 border border-border bg-surface/40 rounded-lg text-xs text-foreground placeholder:text-muted/60 focus:outline-none focus:border-foreground/50"
+                                    />
+                                    <input
+                                        type="text"
+                                        placeholder="Description (EN)"
+                                        value={editCategoryDescEn}
+                                        onChange={(e) => setEditCategoryDescEn(e.target.value)}
+                                        className="px-3 py-2 border border-border bg-surface/40 rounded-lg text-xs text-foreground placeholder:text-muted/60 focus:outline-none focus:border-foreground/50"
+                                    />
+                                </div>
+                                <div className="flex justify-end">
+                                    <button
+                                        type="button"
+                                        onClick={handleUpdateSelectedCategory}
+                                        className="bg-foreground text-background px-4 py-1.5 rounded-lg text-xs font-medium hover:opacity-90 transition-opacity"
+                                    >
+                                        Save Category Changes
+                                    </button>
+                                </div>
+                            </div>
+                        )}
+
+                        {showNewCatForm && (
+                            <div className="p-4 rounded-xl border border-border bg-background space-y-3 animate-in slide-in-from-top-2 duration-200">
+                                <div className="text-xs font-mono uppercase tracking-wider text-muted">
+                                    Create New Category
+                                </div>
+                                <div className="grid grid-cols-1 md:grid-cols-3 gap-3">
+                                    <input
+                                        type="text"
+                                        placeholder="Category Name"
+                                        value={newCategoryName}
+                                        onChange={(e) => setNewCategoryName(e.target.value)}
+                                        className="px-3 py-2 border border-border bg-surface/40 rounded-lg text-xs text-foreground placeholder:text-muted/60 focus:outline-none focus:border-foreground/50"
+                                    />
+                                    <input
+                                        type="text"
+                                        placeholder="Description (ID)"
+                                        value={newCategoryDescId}
+                                        onChange={(e) => setNewCategoryDescId(e.target.value)}
+                                        className="px-3 py-2 border border-border bg-surface/40 rounded-lg text-xs text-foreground placeholder:text-muted/60 focus:outline-none focus:border-foreground/50"
+                                    />
+                                    <input
+                                        type="text"
+                                        placeholder="Description (EN)"
+                                        value={newCategoryDescEn}
+                                        onChange={(e) => setNewCategoryDescEn(e.target.value)}
+                                        className="px-3 py-2 border border-border bg-surface/40 rounded-lg text-xs text-foreground placeholder:text-muted/60 focus:outline-none focus:border-foreground/50"
+                                    />
+                                </div>
+                                <div className="flex justify-end">
+                                    <button
+                                        type="button"
+                                        onClick={handleAddCategory}
+                                        className="bg-foreground text-background px-4 py-1.5 rounded-lg text-xs font-medium hover:opacity-90 transition-opacity"
+                                    >
+                                        Create Category
+                                    </button>
+                                </div>
+                            </div>
+                        )}
+                    </div>
+
+                    <div className="pt-2 border-t border-border/60">
+                        <ImageUploader onUpload={setCoverImageUrl} currentUrl={coverImageUrl} />
+                    </div>
+                </div>
+
+                <div className="space-y-2">
+                    <label className="block text-xs font-medium text-secondary">Content</label>
+                    <TiptapEditor content={content} onChange={setContent} />
+                </div>
+
+                <div className="pt-6 border-t border-border flex justify-end">
+                    <button
+                        onClick={handleSave}
+                        disabled={loading}
+                        className="bg-foreground text-background px-6 py-2.5 rounded-lg hover:opacity-90 disabled:opacity-50 transition-opacity text-xs sm:text-sm font-medium w-full sm:w-auto"
                     >
                         {loading ? 'Saving...' : 'Save Post'}
                     </button>

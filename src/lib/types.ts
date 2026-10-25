@@ -2,6 +2,8 @@ export type Category = {
   id: string
   name: string
   slug: string
+  description?: string | null
+  description_en?: string | null
   created_at: string
 }
 

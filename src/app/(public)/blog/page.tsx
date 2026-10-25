@@ -1,7 +1,7 @@
 import { createPublicClient } from '@/lib/supabase/server'
 import PostCard from '@/components/blog/PostCard'
 import CategoryFilter from '@/components/blog/CategoryFilter'
-import { T } from '@/components/layout/ThemeProvider'
+import { T, CategoryDescription } from '@/components/layout/ThemeProvider'
 import { Post, Category } from '@/lib/types'
 import type { Metadata } from 'next'
 
@@ -12,8 +12,13 @@ export const metadata: Metadata = {
     description: 'Writing by Alapakadala on Flutter and life.',
 }
 
-export default async function BlogPage() {
+export default async function BlogPage({
+    searchParams,
+}: {
+    searchParams: { category?: string }
+}) {
     const supabase = createPublicClient()
+    const activeSlug = searchParams.category
 
     const { data: postsData } = await supabase
         .from('posts')
@@ -31,12 +36,19 @@ export default async function BlogPage() {
         .select('*')
         .order('name', { ascending: true })
 
-    const posts: Post[] = (postsData ?? []).map((p) => ({
+    let posts: Post[] = (postsData ?? []).map((p) => ({
         ...p,
         category: Array.isArray(p.categories) ? p.categories[0] : (p.categories ?? undefined),
     }))
 
-    const categories: Category[] = categoriesData ?? []
+    const categories: Category[] = (categoriesData ?? []) as Category[]
+    const activeCategory = activeSlug
+        ? categories.find((c) => c.slug === activeSlug) ?? null
+        : null
+
+    if (activeSlug) {
+        posts = posts.filter((post) => post.category?.slug === activeSlug)
+    }
 
     return (
         <div className="space-y-8 animate-in fade-in duration-500">
@@ -45,16 +57,19 @@ export default async function BlogPage() {
                     <T section="blog" k="title" />
                 </h1>
 
-                <p className="text-sm sm:text-[15px] text-secondary leading-relaxed m-0">
-                    <T section="blog" k="subtitle" />
-                </p>
+                <div className="space-y-0.5">
+                    <p className="text-sm sm:text-[15px] text-secondary leading-relaxed m-0">
+                        <T section="blog" k="subtitle" />
+                    </p>
+                    <CategoryDescription category={activeCategory} />
+                </div>
 
                 <div className="pt-1">
-                    <CategoryFilter categories={categories} />
+                    <CategoryFilter categories={categories} activeSlug={activeSlug} />
                 </div>
             </header>
 
-            <div className="space-y-4 pt-1">
+            <div key={activeSlug || 'all'} className="space-y-1.5 pt-1 animate-in duration-200">
                 {posts.length > 0 ? (
                     posts.map((post) => (
                         <PostCard key={post.id} post={post} />

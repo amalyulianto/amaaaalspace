@@ -1,6 +1,7 @@
 'use client'
 
 import { useState, useEffect } from 'react'
+import Link from 'next/link'
 import { useRouter } from 'next/navigation'
 import { createBrowserClient } from '@supabase/ssr'
 import ImageUploader from '@/components/admin/ImageUploader'
@@ -140,183 +141,220 @@ export default function NewPortfolioPage() {
     }
 
     return (
-        <div>
-            <div className="flex justify-between items-end mb-8 border-b border-[#E5E7EB] pb-4">
-                <h1 className="text-xl font-bold text-[#111111]">New Portfolio Project</h1>
-            </div>
-
-            {error && <div className="bg-red-50 text-red-600 p-4 rounded mb-6 border border-red-200">{error}</div>}
-
-            <div className="space-y-6">
-                <div>
-                    <label className="block text-sm font-medium text-[#111111] mb-2">Title</label>
-                    <input
-                        type="text"
-                        value={title}
-                        onChange={handleTitleChange}
-                        className="w-full px-4 py-2 border border-[#E5E7EB] rounded focus:outline-none focus:border-[#2563EB] focus:ring-1 focus:ring-[#2563EB] text-[#111111] transition-colors"
-                    />
-                </div>
-
-                <div>
-                    <label className="block text-sm font-medium text-[#111111] mb-2">Slug</label>
-                    <input
-                        type="text"
-                        value={slug}
-                        onChange={(e) => setSlug(e.target.value)}
-                        className="w-full px-4 py-2 border border-[#E5E7EB] rounded focus:outline-none focus:border-[#2563EB] focus:ring-1 focus:ring-[#2563EB] text-[#111111] transition-colors"
-                    />
-                </div>
-
-                <div>
-                    <label className="block text-sm font-medium text-[#111111] mb-2">Description (Short)</label>
-                    <textarea
-                        value={description}
-                        onChange={(e) => setDescription(e.target.value)}
-                        rows={3}
-                        className="w-full px-4 py-2 border border-[#E5E7EB] rounded focus:outline-none focus:border-[#2563EB] focus:ring-1 focus:ring-[#2563EB] text-[#111111] transition-colors"
-                    />
-                </div>
-
-                <div>
-                    <label className="block text-sm font-medium text-[#111111] mb-2">Category</label>
-                    <div className="flex gap-2 items-center">
-                        <div className="flex gap-4 flex-col items-start">
-                            <div className="flex flex-col gap-2">
-                                {portfolioCategories.map(cat => (
-                                    <div key={cat.id} className="flex items-center gap-2">
-                                        <input
-                                            type="checkbox"
-                                            id={`cat-${cat.id}`}
-                                            checked={selectedCategoryIds.includes(cat.id)}
-                                            onChange={(e) => {
-                                                if (e.target.checked) {
-                                                    setSelectedCategoryIds(prev => [...prev, cat.id])
-                                                } else {
-                                                    setSelectedCategoryIds(prev => prev.filter(id => id !== cat.id))
-                                                }
-                                            }}
-                                            className="w-4 h-4 text-[#2563EB] border-[#E5E7EB] rounded focus:ring-[#2563EB]"
-                                        />
-                                        <label htmlFor={`cat-${cat.id}`} className="text-sm text-[#111111]">
-                                            {cat.name}
-                                        </label>
-                                    </div>
-                                ))}
-                                {portfolioCategories.length === 0 && <span className="text-sm text-[#666666]">No categories found.</span>}
-                            </div>
-                            <div className="flex items-center gap-2 mt-2">
-                                <input
-                                    type="text"
-                                    placeholder="New Category"
-                                    value={newCategoryName}
-                                    onChange={(e) => setNewCategoryName(e.target.value)}
-                                    className="w-40 px-4 py-2 border border-[#E5E7EB] rounded focus:outline-none focus:border-[#2563EB] focus:ring-1 focus:ring-[#2563EB] text-[15px] text-[#111111]"
-                                />
-                                <button
-                                    type="button"
-                                    onClick={handleAddCategory}
-                                    className="border border-[#E5E7EB] px-4 py-2 rounded text-[15px] text-[#111111] hover:bg-[#F3F4F6] transition-colors"
-                                >
-                                    Add
-                                </button>
-                            </div>
-                        </div>
-                    </div>
-                </div>
-
-                <div className="flex items-center gap-3">
-                    <input
-                        type="checkbox"
-                        id="isSelected"
-                        checked={isSelected}
-                        onChange={(e) => setIsSelected(e.target.checked)}
-                        className="w-4 h-4 text-[#2563EB] border-[#E5E7EB] rounded focus:ring-[#2563EB]"
-                    />
-                    <label htmlFor="isSelected" className="text-sm font-medium text-[#111111]">
-                        Mark as Selected Project
-                    </label>
-                </div>
-
-                <div>
-                    <label className="block text-sm font-medium text-[#111111] mb-2">Full Content (Blog Style)</label>
-                    <TiptapEditor content={content} onChange={setContent} />
-                </div>
-
-                <div>
-                    <label className="block text-sm font-medium text-[#111111] mb-2">Tech Stack</label>
-                    <input
-                        type="text"
-                        value={techStackInput}
-                        onChange={(e) => setTechStackInput(e.target.value)}
-                        placeholder="Flutter, Dart, Firebase"
-                        className="w-full px-4 py-2 border border-[#E5E7EB] rounded focus:outline-none focus:border-[#2563EB] focus:ring-1 focus:ring-[#2563EB] text-[#111111] transition-colors"
-                    />
-                    <p className="text-[#666666] text-[13px] mt-2">Comma-separated values.</p>
-                </div>
-
-                <div>
-                    <ImageUploader onUpload={setCoverImageUrl} currentUrl={coverImageUrl} />
-                </div>
-
-                <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
-                    <div>
-                        <label className="block text-sm font-medium text-[#111111] mb-2">Public Link</label>
-                        <input
-                            type="url"
-                            value={projectUrl}
-                            onChange={(e) => setProjectUrl(e.target.value)}
-                            placeholder="https://example.com"
-                            className="w-full px-4 py-2 border border-[#E5E7EB] rounded focus:outline-none focus:border-[#2563EB] focus:ring-1 focus:ring-[#2563EB] text-[#111111] transition-colors"
-                        />
-                    </div>
-                    <div>
-                        <label className="block text-sm font-medium text-[#111111] mb-2">Play Store Link</label>
-                        <input
-                            type="url"
-                            value={playStoreUrl}
-                            onChange={(e) => setPlayStoreUrl(e.target.value)}
-                            placeholder="https://play.google.com/store/apps/..."
-                            className="w-full px-4 py-2 border border-[#E5E7EB] rounded focus:outline-none focus:border-[#2563EB] focus:ring-1 focus:ring-[#2563EB] text-[#111111] transition-colors"
-                        />
-                    </div>
-                    <div>
-                        <label className="block text-sm font-medium text-[#111111] mb-2">Apple Store Link</label>
-                        <input
-                            type="url"
-                            value={appStoreUrl}
-                            onChange={(e) => setAppStoreUrl(e.target.value)}
-                            placeholder="https://apps.apple.com/app/..."
-                            className="w-full px-4 py-2 border border-[#E5E7EB] rounded focus:outline-none focus:border-[#2563EB] focus:ring-1 focus:ring-[#2563EB] text-[#111111] transition-colors"
-                        />
-                    </div>
-                    <div>
-                        <label className="block text-sm font-medium text-[#111111] mb-2">GitHub Link</label>
-                        <input
-                            type="url"
-                            value={githubUrl}
-                            onChange={(e) => setGithubUrl(e.target.value)}
-                            placeholder="https://github.com/..."
-                            className="w-full px-4 py-2 border border-[#E5E7EB] rounded focus:outline-none focus:border-[#2563EB] focus:ring-1 focus:ring-[#2563EB] text-[#111111] transition-colors"
-                        />
-                    </div>
-                </div>
-
-                <div>
-                    <label className="block text-sm font-medium text-[#111111] mb-2">Display Order</label>
-                    <input
-                        type="number"
-                        value={displayOrder}
-                        onChange={(e) => setDisplayOrder(parseInt(e.target.value) || 0)}
-                        className="w-32 px-4 py-2 border border-[#E5E7EB] rounded focus:outline-none focus:border-[#2563EB] focus:ring-1 focus:ring-[#2563EB] text-[#111111] transition-colors"
-                    />
-                </div>
-
-                <div className="pt-6 mt-6 border-t border-[#E5E7EB]">
+        <div className="space-y-8 animate-in fade-in duration-300">
+            <div className="space-y-3 border-b border-border pb-5">
+                <Link
+                    href="/admin/portfolio"
+                    className="inline-flex items-center text-xs text-secondary hover:text-foreground transition-colors no-underline"
+                >
+                    &larr; Back to Portfolio
+                </Link>
+                <div className="flex flex-col sm:flex-row sm:justify-between sm:items-center gap-4">
+                    <h1 className="text-2xl font-bold tracking-tight text-foreground">
+                        New Portfolio Project 🪄
+                    </h1>
                     <button
                         onClick={handleSave}
                         disabled={loading}
-                        className="bg-[#111111] text-white px-6 py-2.5 rounded hover:bg-[#2563EB] disabled:opacity-50 transition-colors font-medium w-full sm:w-auto"
+                        className="bg-foreground text-background px-5 py-2 rounded-lg text-xs sm:text-sm font-medium hover:opacity-90 disabled:opacity-50 transition-opacity self-start sm:self-auto"
+                    >
+                        {loading ? 'Saving...' : 'Save Project'}
+                    </button>
+                </div>
+            </div>
+
+            {error && (
+                <div className="bg-red-500/10 text-red-600 dark:text-red-400 p-4 rounded-xl border border-red-500/20 text-xs sm:text-sm">
+                    {error}
+                </div>
+            )}
+
+            <div className="space-y-6">
+                <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+                    <div className="space-y-1.5">
+                        <label className="block text-xs font-medium text-secondary">Title</label>
+                        <input
+                            type="text"
+                            value={title}
+                            onChange={handleTitleChange}
+                            placeholder="Project title..."
+                            className="w-full px-3.5 py-2 border border-border bg-background rounded-lg text-sm text-foreground placeholder:text-muted/60 focus:outline-none focus:border-foreground/50 transition-colors"
+                        />
+                    </div>
+
+                    <div className="space-y-1.5">
+                        <label className="block text-xs font-medium text-secondary">Slug</label>
+                        <input
+                            type="text"
+                            value={slug}
+                            onChange={(e) => setSlug(e.target.value)}
+                            placeholder="project-slug"
+                            className="w-full px-3.5 py-2 border border-border bg-background rounded-lg text-sm font-mono text-foreground placeholder:text-muted/60 focus:outline-none focus:border-foreground/50 transition-colors"
+                        />
+                    </div>
+                </div>
+
+                <div className="space-y-1.5">
+                    <label className="block text-xs font-medium text-secondary">Description (Short)</label>
+                    <textarea
+                        value={description}
+                        onChange={(e) => setDescription(e.target.value)}
+                        rows={2}
+                        placeholder="Short description shown on the portfolio list..."
+                        className="w-full px-3.5 py-2 border border-border bg-background rounded-lg text-sm text-foreground placeholder:text-muted/60 focus:outline-none focus:border-foreground/50 transition-colors leading-relaxed"
+                    />
+                </div>
+
+                <div className="p-5 rounded-xl border border-border bg-surface/30 space-y-5">
+                    <div className="space-y-2">
+                        <label className="block text-xs font-medium text-secondary">Categories</label>
+                        <div className="flex flex-wrap gap-3">
+                            {portfolioCategories.map((cat) => (
+                                <label
+                                    key={cat.id}
+                                    htmlFor={`cat-${cat.id}`}
+                                    className="inline-flex items-center gap-2 px-3 py-1.5 rounded-lg border border-border bg-background text-xs font-medium text-foreground cursor-pointer hover:border-foreground/30 transition-colors"
+                                >
+                                    <input
+                                        type="checkbox"
+                                        id={`cat-${cat.id}`}
+                                        checked={selectedCategoryIds.includes(cat.id)}
+                                        onChange={(e) => {
+                                            if (e.target.checked) {
+                                                setSelectedCategoryIds((prev) => [...prev, cat.id])
+                                            } else {
+                                                setSelectedCategoryIds((prev) => prev.filter((id) => id !== cat.id))
+                                            }
+                                        }}
+                                        className="w-3.5 h-3.5 rounded border-border accent-foreground"
+                                    />
+                                    <span>{cat.name}</span>
+                                </label>
+                            ))}
+                            {portfolioCategories.length === 0 && (
+                                <span className="text-xs text-muted">No categories found.</span>
+                            )}
+                        </div>
+                        <div className="flex items-center gap-2 pt-2">
+                            <input
+                                type="text"
+                                placeholder="New Category"
+                                value={newCategoryName}
+                                onChange={(e) => setNewCategoryName(e.target.value)}
+                                className="w-44 px-3 py-1.5 border border-border bg-background rounded-lg text-xs text-foreground placeholder:text-muted/60 focus:outline-none focus:border-foreground/50 transition-colors"
+                            />
+                            <button
+                                type="button"
+                                onClick={handleAddCategory}
+                                className="bg-surface border border-border px-3.5 py-1.5 rounded-lg text-xs font-medium text-foreground hover:border-foreground/30 transition-colors"
+                            >
+                                Add
+                            </button>
+                        </div>
+                    </div>
+
+                    <div className="grid grid-cols-1 sm:grid-cols-2 gap-4 pt-3 border-t border-border/60 items-center">
+                        <label
+                            htmlFor="isSelected"
+                            className="inline-flex items-center gap-2.5 cursor-pointer"
+                        >
+                            <input
+                                type="checkbox"
+                                id="isSelected"
+                                checked={isSelected}
+                                onChange={(e) => setIsSelected(e.target.checked)}
+                                className="w-4 h-4 rounded border-border accent-foreground"
+                            />
+                            <span className="text-xs sm:text-sm font-medium text-foreground">
+                                ⭐ Mark as Highlighted Project
+                            </span>
+                        </label>
+
+                        <div className="flex items-center gap-3">
+                            <label className="text-xs font-medium text-secondary">
+                                Display Order:
+                            </label>
+                            <input
+                                type="number"
+                                value={displayOrder}
+                                onChange={(e) => setDisplayOrder(parseInt(e.target.value) || 0)}
+                                className="w-24 px-3 py-1.5 border border-border bg-background rounded-lg text-sm font-mono text-foreground focus:outline-none focus:border-foreground/50 transition-colors"
+                            />
+                        </div>
+                    </div>
+
+                    <div className="space-y-1.5 pt-3 border-t border-border/60">
+                        <label className="block text-xs font-medium text-secondary">Tech Stack</label>
+                        <input
+                            type="text"
+                            value={techStackInput}
+                            onChange={(e) => setTechStackInput(e.target.value)}
+                            placeholder="Flutter, Dart, Firebase"
+                            className="w-full px-3.5 py-2 border border-border bg-background rounded-lg text-sm text-foreground placeholder:text-muted/60 focus:outline-none focus:border-foreground/50 transition-colors"
+                        />
+                        <p className="text-muted text-[11px]">Comma-separated values.</p>
+                    </div>
+
+                    <div className="grid grid-cols-1 md:grid-cols-2 gap-4 pt-3 border-t border-border/60">
+                        <div className="space-y-1.5">
+                            <label className="block text-xs font-medium text-secondary">Public Link</label>
+                            <input
+                                type="url"
+                                value={projectUrl}
+                                onChange={(e) => setProjectUrl(e.target.value)}
+                                placeholder="https://example.com"
+                                className="w-full px-3.5 py-2 border border-border bg-background rounded-lg text-sm text-foreground placeholder:text-muted/60 focus:outline-none focus:border-foreground/50 transition-colors"
+                            />
+                        </div>
+                        <div className="space-y-1.5">
+                            <label className="block text-xs font-medium text-secondary">Play Store Link</label>
+                            <input
+                                type="url"
+                                value={playStoreUrl}
+                                onChange={(e) => setPlayStoreUrl(e.target.value)}
+                                placeholder="https://play.google.com/store/apps/..."
+                                className="w-full px-3.5 py-2 border border-border bg-background rounded-lg text-sm text-foreground placeholder:text-muted/60 focus:outline-none focus:border-foreground/50 transition-colors"
+                            />
+                        </div>
+                        <div className="space-y-1.5">
+                            <label className="block text-xs font-medium text-secondary">Apple Store Link</label>
+                            <input
+                                type="url"
+                                value={appStoreUrl}
+                                onChange={(e) => setAppStoreUrl(e.target.value)}
+                                placeholder="https://apps.apple.com/app/..."
+                                className="w-full px-3.5 py-2 border border-border bg-background rounded-lg text-sm text-foreground placeholder:text-muted/60 focus:outline-none focus:border-foreground/50 transition-colors"
+                            />
+                        </div>
+                        <div className="space-y-1.5">
+                            <label className="block text-xs font-medium text-secondary">GitHub Link</label>
+                            <input
+                                type="url"
+                                value={githubUrl}
+                                onChange={(e) => setGithubUrl(e.target.value)}
+                                placeholder="https://github.com/..."
+                                className="w-full px-3.5 py-2 border border-border bg-background rounded-lg text-sm text-foreground placeholder:text-muted/60 focus:outline-none focus:border-foreground/50 transition-colors"
+                            />
+                        </div>
+                    </div>
+
+                    <div className="pt-3 border-t border-border/60">
+                        <ImageUploader onUpload={setCoverImageUrl} currentUrl={coverImageUrl} />
+                    </div>
+                </div>
+
+                <div className="space-y-2">
+                    <label className="block text-xs font-medium text-secondary">
+                        Full Content (Blog Style)
+                    </label>
+                    <TiptapEditor content={content} onChange={setContent} />
+                </div>
+
+                <div className="pt-6 border-t border-border flex justify-end">
+                    <button
+                        onClick={handleSave}
+                        disabled={loading}
+                        className="bg-foreground text-background px-6 py-2.5 rounded-lg hover:opacity-90 disabled:opacity-50 transition-opacity text-xs sm:text-sm font-medium w-full sm:w-auto"
                     >
                         {loading ? 'Saving...' : 'Save Project'}
                     </button>

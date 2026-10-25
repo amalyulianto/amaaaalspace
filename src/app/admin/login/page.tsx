@@ -1,8 +1,10 @@
 'use client'
 
 import { useState } from 'react'
+import Link from 'next/link'
 import { useRouter } from 'next/navigation'
 import { createBrowserClient } from '@supabase/ssr'
+import { ThemeToggle } from '@/components/layout/ThemeToggle'
 
 export default function AdminLogin() {
     const [email, setEmail] = useState('')
@@ -36,42 +38,71 @@ export default function AdminLogin() {
     }
 
     return (
-        <div className="flex min-h-screen items-center justify-center bg-white dark:bg-[#111111] px-6 transition-colors">
-            <div className="w-full max-w-[400px]">
-                <div className="mb-8 text-center text-[#111111] dark:text-[#FFFFFF]">
-                    <h1 className="text-xl font-bold mb-2">Admin Login</h1>
-                    <p className="text-[#666666] dark:text-neutral-400 text-sm">Sign in to manage your site.</p>
+        <div className="flex min-h-screen flex-col justify-center items-center bg-background text-foreground px-6 transition-colors">
+            <div className="w-full max-w-[380px] space-y-6">
+                <div className="flex items-center justify-between text-xs text-secondary">
+                    <Link
+                        href="/me"
+                        className="hover:text-foreground transition-colors no-underline"
+                    >
+                        &larr; Back to site
+                    </Link>
+                    <ThemeToggle />
                 </div>
 
-                <form onSubmit={handleLogin} className="space-y-5 bg-white dark:bg-neutral-900 p-6 rounded border border-[#E5E7EB] dark:border-neutral-800">
-                    <div>
-                        <label className="block text-sm font-medium text-[#111111] dark:text-[#FFFFFF] mb-2">Email</label>
+                <div className="space-y-1.5">
+                    <h1 className="text-2xl font-bold tracking-tight text-foreground">
+                        Admin Login 🔐
+                    </h1>
+                    <p className="text-secondary text-xs sm:text-sm">
+                        Sign in to manage your writings, works, and guestbook.
+                    </p>
+                </div>
+
+                <form
+                    onSubmit={handleLogin}
+                    className="space-y-4 bg-surface/40 p-6 rounded-xl border border-border"
+                >
+                    <div className="space-y-1.5">
+                        <label className="block text-xs font-medium text-secondary">
+                            Email
+                        </label>
                         <input
                             type="email"
                             value={email}
                             onChange={(e) => setEmail(e.target.value)}
-                            className="w-full px-4 py-2 border border-[#E5E7EB] dark:border-neutral-700 bg-white dark:bg-neutral-800 rounded focus:outline-none focus:border-[#2563EB] focus:ring-1 focus:ring-[#2563EB] text-[#111111] dark:text-[#FFFFFF] transition-colors"
+                            placeholder="amal.yulianto@gmail.com"
+                            className="w-full px-3.5 py-2 border border-border bg-background rounded-lg text-sm text-foreground placeholder:text-muted/60 focus:outline-none focus:border-foreground/50 transition-colors"
                             required
                         />
                     </div>
-                    <div>
-                        <label className="block text-sm font-medium text-[#111111] dark:text-[#FFFFFF] mb-2">Password</label>
+                    <div className="space-y-1.5">
+                        <label className="block text-xs font-medium text-secondary">
+                            Password
+                        </label>
                         <input
                             type="password"
                             value={password}
                             onChange={(e) => setPassword(e.target.value)}
-                            className="w-full px-4 py-2 border border-[#E5E7EB] dark:border-neutral-700 bg-white dark:bg-neutral-800 rounded focus:outline-none focus:border-[#2563EB] focus:ring-1 focus:ring-[#2563EB] text-[#111111] dark:text-[#FFFFFF] transition-colors"
+                            placeholder="••••••••"
+                            className="w-full px-3.5 py-2 border border-border bg-background rounded-lg text-sm text-foreground placeholder:text-muted/60 focus:outline-none focus:border-foreground/50 transition-colors"
                             required
                         />
                     </div>
-                    <button
-                        type="submit"
-                        disabled={loading}
-                        className="w-full bg-[#111111] dark:bg-neutral-100 dark:text-neutral-900 text-white py-2.5 rounded font-medium hover:bg-[#2563EB] dark:hover:bg-blue-400 disabled:opacity-50 transition-colors"
-                    >
-                        {loading ? 'Authenticating...' : 'Sign In'}
-                    </button>
-                    {error && <p className="text-red-500 text-sm mt-4 text-center">{error}</p>}
+                    <div className="pt-1">
+                        <button
+                            type="submit"
+                            disabled={loading}
+                            className="w-full bg-foreground text-background py-2.5 rounded-lg text-xs sm:text-sm font-medium hover:opacity-90 disabled:opacity-50 transition-opacity"
+                        >
+                            {loading ? 'Authenticating...' : 'Sign In'}
+                        </button>
+                    </div>
+                    {error && (
+                        <p className="text-red-500 text-xs mt-3 text-center">
+                            {error}
+                        </p>
+                    )}
                 </form>
             </div>
         </div>

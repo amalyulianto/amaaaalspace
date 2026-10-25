@@ -1,34 +1,40 @@
-"use client";
+'use client'
 
-import { useState } from "react";
-import { Comment } from "@/lib/types";
-import { PALESTINE_NAMES } from "@/lib/constants";
-import { SectionHeading } from "@/components/ui/SectionHeading";
-import { Card } from "@/components/ui/Card";
-import { Bullet } from "@/components/ui/Badge";
-import { formatDate } from "@/lib/utils";
-import { useLanguage } from "@/components/layout/ThemeProvider";
+import { useState } from 'react'
+import { Comment } from '@/lib/types'
+import { PALESTINE_NAMES } from '@/lib/constants'
+import { SectionHeading } from '@/components/ui/SectionHeading'
+import { Card } from '@/components/ui/Card'
+import { Bullet } from '@/components/ui/Badge'
+import { formatDate } from '@/lib/utils'
+import { useLanguage } from '@/components/layout/ThemeProvider'
 
-export function CommentClient({ postId, initialComments }: { postId: string; initialComments: Comment[] }) {
-    const { lang, t } = useLanguage();
-    const [comments] = useState<Comment[]>(initialComments);
-    const [commentForm, setCommentForm] = useState({ name: "", message: "", honeypot: "" });
-    const [isSubmitting, setIsSubmitting] = useState(false);
-    const [submitSuccess, setSubmitSuccess] = useState(false);
+export default function CommentClient({
+    postId,
+    initialComments,
+}: {
+    postId: string
+    initialComments: Comment[]
+}) {
+    const { lang, t } = useLanguage()
+    const [comments] = useState<Comment[]>(initialComments)
+    const [commentForm, setCommentForm] = useState({ name: '', message: '', honeypot: '' })
+    const [isSubmitting, setIsSubmitting] = useState(false)
+    const [submitSuccess, setSubmitSuccess] = useState(false)
 
     const generateRandomName = () => {
-        const randomIndex = Math.floor(Math.random() * PALESTINE_NAMES.length);
-        setCommentForm({ ...commentForm, name: PALESTINE_NAMES[randomIndex] });
-    };
+        const randomIndex = Math.floor(Math.random() * PALESTINE_NAMES.length)
+        setCommentForm({ ...commentForm, name: PALESTINE_NAMES[randomIndex] })
+    }
 
     const handleSubmit = async (e: React.FormEvent) => {
-        e.preventDefault();
+        e.preventDefault()
 
         if (commentForm.honeypot) {
-            return;
+            return
         }
 
-        setIsSubmitting(true);
+        setIsSubmitting(true)
 
         try {
             const body = {
@@ -36,25 +42,25 @@ export function CommentClient({ postId, initialComments }: { postId: string; ini
                 author_name: commentForm.name,
                 content: commentForm.message,
                 website: commentForm.honeypot,
-            };
+            }
 
             const res = await fetch('/api/comments', {
                 method: 'POST',
                 headers: { 'Content-Type': 'application/json' },
                 body: JSON.stringify(body),
-            });
+            })
 
             if (res.ok) {
-                setSubmitSuccess(true);
-                setIsSubmitting(false);
-                setCommentForm({ name: "", message: "", honeypot: "" });
+                setSubmitSuccess(true)
+                setIsSubmitting(false)
+                setCommentForm({ name: '', message: '', honeypot: '' })
             } else {
-                setIsSubmitting(false);
+                setIsSubmitting(false)
             }
         } catch {
-            setIsSubmitting(false);
+            setIsSubmitting(false)
         }
-    };
+    }
 
     return (
         <section id="comments" className="space-y-8">
@@ -69,7 +75,7 @@ export function CommentClient({ postId, initialComments }: { postId: string; ini
                             <div key={comment.id} className="flex items-start gap-3">
                                 <Bullet className="mt-[5px]" />
                                 <div className="min-w-0 space-y-1">
-                                    <p className="text-sm sm:text-[15px] text-foreground leading-relaxed whitespace-pre-wrap m-0">
+                                    <p className="text-base sm:text-[16px] text-foreground leading-relaxed whitespace-pre-wrap m-0">
                                         {comment.content}
                                     </p>
                                     <div className="flex items-center gap-1.5 text-xs text-muted tabular-nums">
@@ -77,7 +83,9 @@ export function CommentClient({ postId, initialComments }: { postId: string; ini
                                             {comment.author_name}
                                         </span>
                                         <span>•</span>
-                                        <time dateTime={comment.created_at}>{formatDate(comment.created_at, lang)}</time>
+                                        <time dateTime={comment.created_at}>
+                                            {formatDate(comment.created_at, lang)}
+                                        </time>
                                     </div>
                                 </div>
                             </div>
@@ -97,18 +105,20 @@ export function CommentClient({ postId, initialComments }: { postId: string; ini
                 </SectionHeading>
 
                 {submitSuccess ? (
-                    <Card className="space-y-1 text-sm">
+                    <Card className="space-y-2 text-sm">
                         <p className="font-semibold text-foreground m-0">{t.blog.thanksTitle}</p>
-                        <p className="text-xs text-secondary m-0">
+                        <p className="text-xs sm:text-sm text-secondary m-0">
                             {t.blog.thanksSubtitle}
                         </p>
-                        <button
-                            type="button"
-                            onClick={() => setSubmitSuccess(false)}
-                            className="pt-2 text-xs font-medium text-foreground underline underline-offset-4"
-                        >
-                            {t.blog.commentAgain}
-                        </button>
+                        <div className="pt-1">
+                            <button
+                                type="button"
+                                onClick={() => setSubmitSuccess(false)}
+                                className="inline-flex items-center justify-center px-4 py-2 rounded-lg border border-border bg-background text-xs sm:text-sm font-medium text-foreground hover:border-foreground/30 transition-colors"
+                            >
+                                {t.blog.commentAgain}
+                            </button>
+                        </div>
                     </Card>
                 ) : (
                     <form onSubmit={handleSubmit} className="space-y-4">
@@ -132,7 +142,7 @@ export function CommentClient({ postId, initialComments }: { postId: string; ini
                                     onClick={generateRandomName}
                                     className="text-xs text-muted hover:text-foreground underline underline-offset-4 transition-colors"
                                 >
-                                    {t.blog.randomName}
+                                    {t.blog.randomName} 🎲
                                 </button>
                             </div>
                             <input
@@ -141,7 +151,7 @@ export function CommentClient({ postId, initialComments }: { postId: string; ini
                                 required
                                 value={commentForm.name}
                                 onChange={(e) => setCommentForm({ ...commentForm, name: e.target.value })}
-                                className="w-full px-3 py-2 text-sm bg-surface/60 border border-border rounded focus:border-foreground outline-none transition-colors placeholder:text-muted text-foreground"
+                                className="w-full px-3.5 py-2 text-sm bg-background border border-border rounded-lg focus:outline-none focus:border-foreground/50 transition-colors placeholder:text-muted/60 text-foreground"
                                 placeholder={t.blog.namePlaceholder}
                             />
                         </div>
@@ -156,7 +166,7 @@ export function CommentClient({ postId, initialComments }: { postId: string; ini
                                 rows={3}
                                 value={commentForm.message}
                                 onChange={(e) => setCommentForm({ ...commentForm, message: e.target.value })}
-                                className="w-full px-3 py-2 text-sm bg-surface/60 border border-border rounded focus:border-foreground outline-none transition-colors resize-y placeholder:text-muted text-foreground"
+                                className="w-full px-3.5 py-2 text-sm bg-background border border-border rounded-lg focus:outline-none focus:border-foreground/50 transition-colors resize-y placeholder:text-muted/60 text-foreground leading-relaxed"
                                 placeholder={t.blog.messagePlaceholder}
                             />
                         </div>
@@ -165,7 +175,7 @@ export function CommentClient({ postId, initialComments }: { postId: string; ini
                             <button
                                 type="submit"
                                 disabled={isSubmitting}
-                                className="px-4 py-1.5 bg-foreground text-background text-xs font-medium rounded hover:opacity-85 transition-opacity disabled:opacity-50"
+                                className="inline-flex items-center justify-center bg-foreground text-background hover:opacity-90 px-4 py-2 rounded-lg text-xs sm:text-sm font-medium transition-opacity disabled:opacity-50"
                             >
                                 {isSubmitting ? t.blog.submitting : t.blog.submitButton}
                             </button>
@@ -174,5 +184,7 @@ export function CommentClient({ postId, initialComments }: { postId: string; ini
                 )}
             </div>
         </section>
-    );
+    )
 }
+
+export { CommentClient }
