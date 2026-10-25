@@ -1,7 +1,8 @@
 import { createPublicClient } from '@/lib/supabase/server'
 import { Resume, ResumeData } from '@/lib/types'
+import { ProfileBadge } from '@/components/ui/Badge'
+import { SectionHeading } from '@/components/ui/SectionHeading'
 import type { Metadata } from 'next'
-import { Badge } from '@/components/ui/Badge'
 
 export const revalidate = 60
 
@@ -24,10 +25,15 @@ export default async function ResumePage() {
 
     if (!content) {
         return (
-            <div className="space-y-16 animate-in fade-in duration-500 pt-4 md:pt-10">
-                <header className="space-y-4 border-b border-neutral-100 dark:border-neutral-800 pb-8">
-                    <h1 className="text-3xl font-bold tracking-tight text-neutral-900 dark:text-neutral-100">Resume</h1>
-                    <p className="text-lg text-neutral-600 dark:text-neutral-400 leading-relaxed">
+            <div className="space-y-8 animate-in fade-in duration-500">
+                <header className="space-y-5">
+                    <h1 className="text-[32px] sm:text-[36px] font-bold tracking-tight text-foreground leading-tight m-0">
+                        Resume 📃
+                    </h1>
+
+                    <ProfileBadge />
+
+                    <p className="text-sm sm:text-[15px] text-secondary leading-relaxed m-0">
                         Currently unavailable.
                     </p>
                 </header>
@@ -36,11 +42,16 @@ export default async function ResumePage() {
     }
 
     return (
-        <article className="animate-in fade-in duration-500">
-            <header className="space-y-4 border-b border-neutral-100 dark:border-neutral-800 pb-8">
-                <h1 className="text-3xl font-bold tracking-tight text-neutral-900 dark:text-neutral-100">Resume</h1>
+        <article className="space-y-8 animate-in fade-in duration-500">
+            <header className="space-y-5">
+                <h1 className="text-[32px] sm:text-[36px] font-bold tracking-tight text-foreground leading-tight m-0">
+                    Resume 📃
+                </h1>
+
+                <ProfileBadge />
+
                 {content.summary && (
-                    <p className="text-lg text-neutral-600 dark:text-neutral-400 leading-relaxed whitespace-pre-wrap">
+                    <p className="text-sm sm:text-[15px] text-secondary leading-relaxed whitespace-pre-wrap m-0">
                         {content.summary}
                     </p>
                 )}
@@ -48,22 +59,27 @@ export default async function ResumePage() {
 
             {/* Experience */}
             {content.experience && content.experience.length > 0 && (
-                <section className="space-y-8 mt-12">
-                    <h2 className="text-2xl font-bold tracking-tight text-neutral-900 dark:text-neutral-100">Experience</h2>
-                    <div className="space-y-12 border-l-2 border-neutral-100 dark:border-neutral-800 pl-6 ml-2 relative">
+                <section className="space-y-4 pt-1">
+                    <SectionHeading>Experience 💼</SectionHeading>
+                    <div className="space-y-6">
                         {content.experience.map((exp, i) => (
-                            <div key={i} className="relative">
-                                <span className="absolute w-3 h-3 rounded-full bg-neutral-900 dark:bg-neutral-100 border-2 border-white dark:border-neutral-900 -left-[31px] top-1.5" />
-                                <div className="flex flex-col md:flex-row md:items-baseline md:justify-between mb-2 gap-1">
-                                    <h3 className="text-xl font-bold text-neutral-900 dark:text-neutral-100">{exp.role}</h3>
-                                    <Badge className="whitespace-nowrap">
+                            <div key={i} className="space-y-1.5">
+                                <div className="flex flex-col sm:flex-row sm:items-baseline sm:justify-between gap-1">
+                                    <h3 className="text-sm sm:text-[15px] font-medium text-foreground leading-snug m-0">
+                                        {exp.role}{' '}
+                                        <span className="text-muted font-normal">
+                                            · {exp.company}
+                                        </span>
+                                    </h3>
+                                    <span className="text-xs text-muted shrink-0 tabular-nums">
                                         {exp.period}
-                                    </Badge>
+                                    </span>
                                 </div>
-                                <h4 className="text-lg font-medium text-blue-600 dark:text-blue-400 mb-4">{exp.company}</h4>
-                                <p className="text-neutral-600 dark:text-neutral-400 leading-relaxed whitespace-pre-wrap">
-                                    {exp.description}
-                                </p>
+                                {exp.description && (
+                                    <p className="text-xs sm:text-[13.5px] text-secondary leading-relaxed whitespace-pre-wrap m-0">
+                                        {exp.description}
+                                    </p>
+                                )}
                             </div>
                         ))}
                     </div>
@@ -72,16 +88,22 @@ export default async function ResumePage() {
 
             {/* Education */}
             {content.education && content.education.length > 0 && (
-                <section className="space-y-8 mt-16">
-                    <h2 className="text-2xl font-bold tracking-tight text-neutral-900 dark:text-neutral-100">Education</h2>
-                    <div className="space-y-8">
+                <section className="space-y-4 pt-1">
+                    <SectionHeading>Education 🎓</SectionHeading>
+                    <div className="space-y-4">
                         {content.education.map((edu, i) => (
-                            <div key={i} className="flex flex-col md:flex-row justify-between md:items-baseline gap-1 bg-neutral-50 dark:bg-neutral-900/50 p-6 rounded-xl border border-neutral-100 dark:border-neutral-800">
+                            <div key={i} className="flex flex-col sm:flex-row sm:items-baseline sm:justify-between gap-1">
                                 <div>
-                                    <h3 className="text-lg font-bold text-neutral-900 dark:text-neutral-100">{edu.degree}</h3>
-                                    <h4 className="text-md font-medium text-neutral-600 dark:text-neutral-400">{edu.institution}</h4>
+                                    <h3 className="text-sm sm:text-[15px] font-medium text-foreground leading-snug m-0">
+                                        {edu.degree}
+                                    </h3>
+                                    <p className="text-xs text-muted mt-0.5 m-0">
+                                        {edu.institution}
+                                    </p>
                                 </div>
-                                <span className="text-sm font-medium text-neutral-500 dark:text-neutral-400">{edu.period}</span>
+                                <span className="text-xs text-muted shrink-0 tabular-nums">
+                                    {edu.period}
+                                </span>
                             </div>
                         ))}
                     </div>
@@ -90,13 +112,12 @@ export default async function ResumePage() {
 
             {/* Skills */}
             {content.skills && content.skills.length > 0 && (
-                <section className="space-y-8 mt-16">
-                    <h2 className="text-2xl font-bold tracking-tight text-neutral-900 dark:text-neutral-100">Skills</h2>
-                    <ul className="grid grid-cols-2 sm:grid-cols-3 gap-y-4 gap-x-6">
+                <section className="space-y-4 pt-1">
+                    <SectionHeading>Skills 🛠️</SectionHeading>
+                    <ul className="grid grid-cols-2 sm:grid-cols-3 gap-y-2.5 gap-x-6">
                         {content.skills.map((skill, i) => (
-                            <li key={i} className="flex items-center gap-2 text-neutral-700 dark:text-neutral-300">
-                                <span className="w-1.5 h-1.5 rounded-full bg-blue-600 dark:bg-blue-400" />
-                                <span className="text-sm font-medium">{skill}</span>
+                            <li key={i} className="text-sm text-secondary">
+                                {skill}
                             </li>
                         ))}
                     </ul>

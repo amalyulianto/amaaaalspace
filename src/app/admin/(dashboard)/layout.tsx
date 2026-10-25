@@ -10,21 +10,36 @@ export default function DashboardLayout({ children }: { children: React.ReactNod
     const router = useRouter()
 
     useEffect(() => {
-        const checkSession = async () => {
+        const checkUser = async () => {
             const supabase = createBrowserClient(
                 process.env.NEXT_PUBLIC_SUPABASE_URL!,
                 process.env.NEXT_PUBLIC_SUPABASE_ANON_KEY!
             )
-            const { data: { session } } = await supabase.auth.getSession()
+            const {
+                data: { user },
+                error,
+            } = await supabase.auth.getUser()
 
-            if (!session) {
-                router.push('/admin/login')
+            const configuredAdminEmail = (process.env.NEXT_PUBLIC_ADMIN_EMAIL || '')
+                .trim()
+                .toLowerCase()
+
+            const isAuthorized =
+                !error &&
+                Boolean(user) &&
+                (!configuredAdminEmail || user?.email?.toLowerCase() === configuredAdminEmail)
+
+            if (!isAuthorized) {
+                if (user) {
+                    await supabase.auth.signOut()
+                }
+                router.replace('/admin/login')
             } else {
                 setLoading(false)
             }
         }
 
-        checkSession()
+        checkUser()
     }, [router])
 
     if (loading) {

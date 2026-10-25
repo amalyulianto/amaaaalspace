@@ -1,6 +1,7 @@
 import { notFound } from 'next/navigation'
-import { createClient } from '@/lib/supabase/server'
+import { createPublicClient } from '@/lib/supabase/server'
 import RedirectScreen from '@/components/ui/RedirectScreen'
+import { sanitizeUrl } from '@/lib/security'
 
 interface ShortLinkPageProps {
     params: {
@@ -25,11 +26,11 @@ const RESERVED_SLUGS = new Set([
 export default async function ShortLinkPage({ params }: ShortLinkPageProps) {
     const rawSlug = params.slug?.toLowerCase()
 
-    if (!rawSlug || RESERVED_SLUGS.has(rawSlug)) {
+    if (!rawSlug || RESERVED_SLUGS.has(rawSlug) || !/^[a-z0-9-_]+$/.test(rawSlug)) {
         notFound()
     }
 
-    const supabase = createClient()
+    const supabase = createPublicClient()
 
     const { data: link, error } = await supabase
         .from('short_links')
@@ -37,7 +38,9 @@ export default async function ShortLinkPage({ params }: ShortLinkPageProps) {
         .eq('slug', rawSlug)
         .single()
 
-    if (error || !link?.destination_url) {
+    const safeDestinationUrl = sanitizeUrl(link?.destination_url)
+
+    if (error || !safeDestinationUrl) {
         notFound()
     }
 
@@ -48,5 +51,5 @@ export default async function ShortLinkPage({ params }: ShortLinkPageProps) {
         // Continue redirection even if RPC encounters an error
     }
 
-    return <RedirectScreen destinationUrl={link.destination_url} />
+    return <RedirectScreen destinationUrl={safeDestinationUrl} />
 }

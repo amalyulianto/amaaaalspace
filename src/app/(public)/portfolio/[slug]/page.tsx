@@ -1,11 +1,11 @@
 import { createPublicClient } from '@/lib/supabase/server'
 import { notFound } from 'next/navigation'
-import Link from 'next/link'
-import { ArrowLeft, ExternalLink, Code } from 'lucide-react'
 import type { Metadata } from 'next'
-import { Badge } from '@/components/ui/Badge'
+import { ArrowUpRight } from 'lucide-react'
+import { T } from '@/components/layout/ThemeProvider'
+import { sanitizeHtml, sanitizeUrl } from '@/lib/security'
 
-export const revalidate = 60;
+export const revalidate = 60
 
 type Props = {
     params: { slug: string }
@@ -39,7 +39,6 @@ export async function generateMetadata({ params }: Props): Promise<Metadata> {
 export default async function PortfolioDetailPage({ params }: Props) {
     const supabase = createPublicClient()
 
-    // Fetch portfolio item
     const { data: item } = await supabase
         .from('portfolio')
         .select(`
@@ -53,102 +52,96 @@ export default async function PortfolioDetailPage({ params }: Props) {
         notFound()
     }
 
-    return (
-        <article className="animate-in fade-in duration-500 max-w-2xl mx-auto">
-            <Link
-                href="/portfolio"
-                className="inline-flex items-center gap-2 text-sm text-neutral-500 hover:text-neutral-900 dark:hover:text-neutral-100 mb-8 transition-colors no-underline"
-            >
-                <ArrowLeft className="w-4 h-4" /> Kembali ke Karya
-            </Link>
+    const categoriesText =
+        item.portfolio_categories && item.portfolio_categories.length > 0
+            ? item.portfolio_categories.map((cat: { name: string }) => cat.name.toLowerCase()).join(', ')
+            : ''
 
-            <header className="mb-10 space-y-4 text-center">
-                <h1 className="text-3xl sm:text-4xl md:text-5xl font-bold tracking-tight text-neutral-900 dark:text-neutral-100 leading-tight">
+    const techText =
+        item.tech_stack && item.tech_stack.length > 0
+            ? item.tech_stack.join(', ')
+            : ''
+
+    const externalLinks = [
+        { label: 'Public Link', url: sanitizeUrl(item.project_url) },
+        { label: 'Play Store', url: sanitizeUrl(item.play_store_url) },
+        { label: 'Apple Store', url: sanitizeUrl(item.app_store_url) },
+        { label: 'GitHub', url: sanitizeUrl(item.github_url) },
+    ].filter((link): link is { label: string; url: string } => Boolean(link.url))
+
+    const safeCoverImageUrl = sanitizeUrl(item.cover_image_url)
+    const safeHtmlContent = sanitizeHtml(item.content)
+
+    return (
+        <article className="space-y-8 animate-in fade-in duration-500">
+            <header className="space-y-3 border-b border-border pb-6">
+                <h1 className="text-[28px] sm:text-[32px] font-bold tracking-tight text-foreground leading-tight m-0">
                     {item.title}
                 </h1>
 
                 {item.description && (
-                    <p className="text-xl text-neutral-500 dark:text-neutral-400 max-w-xl mx-auto italic">
+                    <p className="text-sm sm:text-[15px] text-secondary leading-relaxed m-0">
                         {item.description}
                     </p>
                 )}
 
-                <div className="flex flex-col items-center gap-4 pt-4">
-                    {item.portfolio_categories && item.portfolio_categories.length > 0 && (
-                        <div className="flex flex-wrap items-center justify-center gap-2">
-                            <span className="text-sm font-medium text-neutral-500">Kategori:</span>
-                            {item.portfolio_categories.map((cat: any) => (
-                                <Badge key={cat.id}>{cat.name}</Badge>
-                            ))}
+                <div className="space-y-1.5 pt-1 text-xs text-muted">
+                    {categoriesText && (
+                        <div>
+                            <span className="text-secondary font-medium">
+                                <T section="portfolio" k="categoryLabel" />
+                            </span>{' '}
+                            <span>{categoriesText}</span>
                         </div>
                     )}
-                    
-                    {item.tech_stack && item.tech_stack.length > 0 && (
-                        <div className="flex flex-wrap items-center justify-center gap-2">
-                            <span className="text-sm font-medium text-neutral-500">Tech:</span>
-                            {item.tech_stack.map((tech: string) => (
-                                <Badge key={tech}>{tech}</Badge>
-                            ))}
+                    {techText && (
+                        <div>
+                            <span className="text-secondary font-medium">
+                                <T section="portfolio" k="techStackLabel" />
+                            </span>{' '}
+                            <span>{techText}</span>
                         </div>
                     )}
-
-                    <div className="flex items-center gap-4 border-t sm:border-t-0 sm:border-l border-neutral-200 dark:border-neutral-800 pt-4 sm:pt-0 sm:pl-4 mt-2 sm:mt-0">
-                        {item.project_url && (
-                            <a
-                                href={item.project_url}
-                                target="_blank"
-                                rel="noreferrer"
-                                className="inline-flex items-center gap-1.5 text-sm font-medium text-blue-600 dark:text-blue-400 hover:text-blue-700 dark:hover:text-blue-300 transition-colors no-underline"
-                            >
-                                <ExternalLink className="w-4 h-4" /> Live Demo
-                            </a>
-                        )}
-                        {item.github_url && (
-                            <a
-                                href={item.github_url}
-                                target="_blank"
-                                rel="noreferrer"
-                                className="inline-flex items-center gap-1.5 text-sm font-medium text-neutral-600 dark:text-neutral-400 hover:text-neutral-900 dark:hover:text-neutral-100 transition-colors no-underline"
-                            >
-                                <Code className="w-4 h-4" /> Kode Sumber
-                            </a>
-                        )}
-                    </div>
                 </div>
+
+                {externalLinks.length > 0 && (
+                    <div className="flex flex-wrap items-center gap-5 pt-2">
+                        {externalLinks.map((link) => (
+                            <a
+                                key={link.label}
+                                href={link.url}
+                                target="_blank"
+                                rel="noopener noreferrer"
+                                className="inline-flex items-center gap-1 text-xs sm:text-[13px] font-medium text-foreground hover:opacity-75 underline underline-offset-4 transition-opacity"
+                            >
+                                <span>{link.label}</span>
+                                <ArrowUpRight className="w-3.5 h-3.5" />
+                            </a>
+                        ))}
+                    </div>
+                )}
             </header>
 
-            {item.cover_image_url && (
-                <figure className="mb-12 rounded-xl overflow-hidden bg-neutral-100 dark:bg-neutral-900 border border-neutral-200 dark:border-neutral-800 aspect-video relative">
+            {safeCoverImageUrl && (
+                <figure className="rounded-xl overflow-hidden bg-surface border border-border aspect-video relative m-0">
                     <img
-                        src={item.cover_image_url}
+                        src={safeCoverImageUrl}
                         alt={`Cover for ${item.title}`}
                         className="w-full h-full object-cover"
                     />
                 </figure>
             )}
 
-            {/* Post Content */}
-            {item.content ? (
+            {safeHtmlContent ? (
                 <div
-                    className="prose prose-neutral dark:prose-invert prose-lg max-w-none prose-p:leading-relaxed prose-headings:font-bold prose-a:text-blue-600 dark:prose-a:text-blue-400 hover:prose-a:text-blue-500 dark:hover:prose-a:text-blue-300"
-                    dangerouslySetInnerHTML={{ __html: item.content }}
+                    className="prose prose-neutral dark:prose-invert max-w-none text-sm sm:text-[15px] leading-[1.8] text-secondary prose-p:text-sm sm:prose-p:text-[15px] prose-p:leading-[1.8] prose-p:text-secondary prose-headings:tracking-tight prose-headings:font-bold prose-headings:text-foreground prose-h2:text-lg sm:prose-h2:text-xl prose-h2:mt-8 prose-h2:mb-3 prose-h3:text-base sm:prose-h3:text-[17px] prose-h3:mt-6 prose-h3:mb-2 prose-li:text-sm sm:prose-li:text-[15px] prose-li:leading-[1.8] prose-li:text-secondary prose-a:text-foreground prose-a:underline prose-a:underline-offset-4 prose-strong:text-foreground prose-blockquote:text-sm sm:prose-blockquote:text-[15px] prose-blockquote:not-italic prose-blockquote:text-muted prose-blockquote:border-border prose-img:rounded-xl prose-img:border prose-img:border-border prose-img:bg-surface"
+                    dangerouslySetInnerHTML={{ __html: safeHtmlContent }}
                 />
             ) : (
-                <div className="text-center py-12 border border-dashed border-neutral-200 dark:border-neutral-800 rounded-xl bg-neutral-50/50 dark:bg-neutral-900/50">
-                    <p className="text-neutral-500 dark:text-neutral-400">Deskripsi belum diisi. Tunggu, ya!</p>
-                </div>
+                <p className="text-sm text-muted py-4">
+                    <T section="portfolio" k="noDescription" />
+                </p>
             )}
-
-            <hr className="my-16 border-neutral-200 dark:border-neutral-800" />
-
-            <div className="flex justify-center">
-                <Link
-                    href="/portfolio"
-                    className="inline-flex items-center justify-center px-6 py-2.5 bg-neutral-900 dark:bg-neutral-100 text-white dark:text-neutral-900 font-medium text-sm rounded-lg hover:bg-neutral-800 dark:hover:bg-neutral-200 transition-colors no-underline"
-                >
-                    Lihat semua karya
-                </Link>
-            </div>
         </article>
     )
 }

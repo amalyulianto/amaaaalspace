@@ -4,6 +4,7 @@ import { useEffect, useState } from 'react'
 import { createBrowserClient } from '@supabase/ssr'
 import { ShortLink } from '@/lib/types'
 import { Copy, Check, Trash2, Plus, ExternalLink, RefreshCw } from 'lucide-react'
+import { sanitizeUrl } from '@/lib/security'
 
 const RESERVED_SLUGS = [
     'blog',
@@ -21,9 +22,17 @@ const RESERVED_SLUGS = [
 
 function generateRandomSlug(length = 6): string {
     const chars = 'abcdefghijklmnopqrstuvwxyz0123456789'
+    const randomBytes = new Uint8Array(length)
+    if (typeof crypto !== 'undefined' && crypto.getRandomValues) {
+        crypto.getRandomValues(randomBytes)
+    } else {
+        for (let i = 0; i < length; i++) {
+            randomBytes[i] = Math.floor(Math.random() * 256)
+        }
+    }
     let result = ''
     for (let i = 0; i < length; i++) {
-        result += chars.charAt(Math.floor(Math.random() * chars.length))
+        result += chars.charAt(randomBytes[i] % chars.length)
     }
     return result
 }
@@ -76,18 +85,10 @@ export default function AdminShortLinksPage() {
         setError('')
 
         let trimmedSlug = slug.trim().toLowerCase()
-        const trimmedUrl = destinationUrl.trim()
+        const safeDestinationUrl = sanitizeUrl(destinationUrl)
 
-        if (!trimmedUrl) {
-            setError('Please enter a destination URL.')
-            return
-        }
-
-        // Validate destination URL format
-        try {
-            new URL(trimmedUrl)
-        } catch {
-            setError('Please enter a valid URL including http:// or https://')
+        if (!safeDestinationUrl) {
+            setError('Please enter a valid URL starting with http:// or https://')
             return
         }
 
@@ -114,7 +115,7 @@ export default function AdminShortLinksPage() {
             .from('short_links')
             .insert({
                 slug: trimmedSlug,
-                destination_url: trimmedUrl,
+                destination_url: safeDestinationUrl,
             })
 
         if (insertError) {
@@ -249,59 +250,66 @@ export default function AdminShortLinksPage() {
                             </tr>
                         </thead>
                         <tbody className="divide-y divide-[#E5E7EB] dark:divide-neutral-800">
-                            {links.map((item) => (
-                                <tr key={item.id} className="hover:bg-[#F9FAFB] dark:hover:bg-neutral-800/30 transition-colors">
-                                    <td className="px-4 py-3.5">
-                                        <div className="flex items-center gap-2">
-                                            <span className="font-semibold text-[#111111] dark:text-white">
-                                                /{item.slug}
+                            {links.map((item) => {
+                                const safeItemUrl = sanitizeUrl(item.destination_url)
+                                return (
+                                    <tr key={item.id} className="hover:bg-[#F9FAFB] dark:hover:bg-neutral-800/30 transition-colors">
+                                        <td className="px-4 py-3.5">
+                                            <div className="flex items-center gap-2">
+                                                <span className="font-semibold text-[#111111] dark:text-white">
+                                                    /{item.slug}
+                                                </span>
+                                                <button
+                                                    type="button"
+                                                    onClick={() => handleCopy(item.slug)}
+                                                    title="Copy short link"
+                                                    className="text-[#666666] dark:text-neutral-400 hover:text-[#2563EB] p-1 rounded transition-colors"
+                                                >
+                                                    {copiedSlug === item.slug ? (
+                                                        <Check className="w-3.5 h-3.5 text-green-600" />
+                                                    ) : (
+                                                        <Copy className="w-3.5 h-3.5" />
+                                                    )}
+                                                </button>
+                                            </div>
+                                        </td>
+                                        <td className="px-4 py-3.5 max-w-xs">
+                                            {safeItemUrl ? (
+                                                <a
+                                                    href={safeItemUrl}
+                                                    target="_blank"
+                                                    rel="noopener noreferrer"
+                                                    className="text-xs text-[#2563EB] hover:underline flex items-center gap-1 truncate"
+                                                    title={safeItemUrl}
+                                                >
+                                                    <span className="truncate">{safeItemUrl}</span>
+                                                    <ExternalLink className="w-3 h-3 flex-shrink-0 opacity-70" />
+                                                </a>
+                                            ) : (
+                                                <span className="text-xs text-red-500 truncate">Invalid URL</span>
+                                            )}
+                                        </td>
+                                        <td className="px-4 py-3.5 text-center">
+                                            <span className="inline-block px-2 py-0.5 rounded text-xs font-semibold bg-gray-100 dark:bg-neutral-800 text-[#111111] dark:text-neutral-200">
+                                                {item.clicks || 0}
                                             </span>
+                                        </td>
+                                        <td className="px-4 py-3.5 text-xs text-[#666666] dark:text-neutral-400">
+                                            {new Date(item.created_at).toLocaleDateString()}
+                                        </td>
+                                        <td className="px-4 py-3.5 text-right">
                                             <button
                                                 type="button"
-                                                onClick={() => handleCopy(item.slug)}
-                                                title="Copy short link"
-                                                className="text-[#666666] dark:text-neutral-400 hover:text-[#2563EB] p-1 rounded transition-colors"
+                                                onClick={() => handleDelete(item.id, item.slug)}
+                                                title="Delete link"
+                                                className="text-[#666666] dark:text-neutral-400 hover:text-red-600 p-1 rounded transition-colors"
                                             >
-                                                {copiedSlug === item.slug ? (
-                                                    <Check className="w-3.5 h-3.5 text-green-600" />
-                                                ) : (
-                                                    <Copy className="w-3.5 h-3.5" />
-                                                )}
+                                                <Trash2 className="w-4 h-4" />
                                             </button>
-                                        </div>
-                                    </td>
-                                    <td className="px-4 py-3.5 max-w-xs">
-                                        <a
-                                            href={item.destination_url}
-                                            target="_blank"
-                                            rel="noreferrer"
-                                            className="text-xs text-[#2563EB] hover:underline flex items-center gap-1 truncate"
-                                            title={item.destination_url}
-                                        >
-                                            <span className="truncate">{item.destination_url}</span>
-                                            <ExternalLink className="w-3 h-3 flex-shrink-0 opacity-70" />
-                                        </a>
-                                    </td>
-                                    <td className="px-4 py-3.5 text-center">
-                                        <span className="inline-block px-2 py-0.5 rounded text-xs font-semibold bg-gray-100 dark:bg-neutral-800 text-[#111111] dark:text-neutral-200">
-                                            {item.clicks || 0}
-                                        </span>
-                                    </td>
-                                    <td className="px-4 py-3.5 text-xs text-[#666666] dark:text-neutral-400">
-                                        {new Date(item.created_at).toLocaleDateString()}
-                                    </td>
-                                    <td className="px-4 py-3.5 text-right">
-                                        <button
-                                            type="button"
-                                            onClick={() => handleDelete(item.id, item.slug)}
-                                            title="Delete link"
-                                            className="text-[#666666] dark:text-neutral-400 hover:text-red-600 p-1 rounded transition-colors"
-                                        >
-                                            <Trash2 className="w-4 h-4" />
-                                        </button>
-                                    </td>
-                                </tr>
-                            ))}
+                                        </td>
+                                    </tr>
+                                )
+                            })}
                             {links.length === 0 && (
                                 <tr>
                                     <td colSpan={5} className="px-4 py-10 text-center text-[#666666] dark:text-neutral-400 text-sm">

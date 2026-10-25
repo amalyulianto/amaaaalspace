@@ -2,6 +2,7 @@
 
 import { useEffect, useState } from 'react'
 import { ExternalLink } from 'lucide-react'
+import { sanitizeUrl } from '@/lib/security'
 
 interface RedirectScreenProps {
     destinationUrl: string
@@ -9,8 +10,11 @@ interface RedirectScreenProps {
 
 export default function RedirectScreen({ destinationUrl }: RedirectScreenProps) {
     const [progress, setProgress] = useState(0)
+    const safeUrl = sanitizeUrl(destinationUrl)
 
     useEffect(() => {
+        if (!safeUrl) return
+
         // 2-second countdown with progress bar before redirecting
         const duration = 2000
         const intervalTime = 40
@@ -20,7 +24,7 @@ export default function RedirectScreen({ destinationUrl }: RedirectScreenProps) 
             setProgress((prev) => {
                 if (prev >= 100) {
                     clearInterval(timer)
-                    window.location.replace(destinationUrl)
+                    window.location.replace(safeUrl)
                     return 100
                 }
                 return prev + step
@@ -28,7 +32,15 @@ export default function RedirectScreen({ destinationUrl }: RedirectScreenProps) 
         }, intervalTime)
 
         return () => clearInterval(timer)
-    }, [destinationUrl])
+    }, [safeUrl])
+
+    if (!safeUrl) {
+        return (
+            <div className="min-h-screen bg-[#0a0a0a] text-neutral-200 flex items-center justify-center p-6">
+                <p className="text-sm text-neutral-400">Invalid destination URL.</p>
+            </div>
+        )
+    }
 
     return (
         <div className="min-h-screen bg-[#0a0a0a] text-neutral-200 flex flex-col items-center justify-center p-6 antialiased select-none">
@@ -43,7 +55,7 @@ export default function RedirectScreen({ destinationUrl }: RedirectScreenProps) 
                         Redirecting...
                     </h1>
                     <p className="text-xs text-neutral-400 break-all max-w-xs mx-auto leading-relaxed">
-                        {destinationUrl}
+                        {safeUrl}
                     </p>
                 </div>
 
@@ -58,7 +70,8 @@ export default function RedirectScreen({ destinationUrl }: RedirectScreenProps) 
                 {/* Direct fallback link */}
                 <div className="pt-2">
                     <a
-                        href={destinationUrl}
+                        href={safeUrl}
+                        rel="noopener noreferrer"
                         className="text-xs text-neutral-500 hover:text-neutral-300 transition-colors inline-flex items-center gap-1.5"
                     >
                         <span>Click here if not redirected automatically</span>

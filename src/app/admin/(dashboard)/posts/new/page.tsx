@@ -6,6 +6,7 @@ import { createBrowserClient } from '@supabase/ssr'
 import TiptapEditor from '@/components/admin/TiptapEditor'
 import ImageUploader from '@/components/admin/ImageUploader'
 import { Category } from '@/lib/types'
+import { sanitizeHtml, sanitizeUrl } from '@/lib/security'
 
 export default function NewPostPage() {
     const router = useRouter()
@@ -58,7 +59,7 @@ export default function NewPostPage() {
             process.env.NEXT_PUBLIC_SUPABASE_ANON_KEY!
         )
         const newSlug = generateSlug(newCategoryName)
-        const { error } = await supabase.from('categories').insert({ name: newCategoryName, slug: newSlug })
+        const { error } = await supabase.from('categories').insert({ name: newCategoryName.trim(), slug: newSlug })
         if (error) {
             alert('Failed to add category')
         } else {
@@ -86,11 +87,11 @@ export default function NewPostPage() {
             : (status === 'published' ? new Date().toISOString() : null)
 
         const { error: insertError } = await supabase.from('posts').insert({
-            title,
-            slug,
+            title: title.trim(),
+            slug: slug.trim(),
             excerpt,
-            content,
-            cover_image_url: coverImageUrl || null,
+            content: sanitizeHtml(content),
+            cover_image_url: sanitizeUrl(coverImageUrl),
             category_id: categoryId || null,
             status,
             published_at: publishedAtISO,

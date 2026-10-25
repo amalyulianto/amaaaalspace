@@ -1,4 +1,4 @@
-import { createClient } from '@/lib/supabase/server'
+import { createPublicClient } from '@/lib/supabase/server'
 import { Comment } from '@/lib/types'
 
 interface CommentListProps {
@@ -14,7 +14,7 @@ function formatDate(dateString: string): string {
 }
 
 export default async function CommentList({ postId }: CommentListProps) {
-    const supabase = createClient()
+    const supabase = createPublicClient()
 
     const { data } = await supabase
         .from('comments')

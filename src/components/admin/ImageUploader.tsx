@@ -2,6 +2,7 @@
 
 import { useEffect, useRef, useState } from 'react'
 import { createBrowserClient } from '@supabase/ssr'
+import { generateSafeStorageFilename, sanitizeUrl, validateImageFile } from '@/lib/security'
 
 interface ImageUploaderProps {
     onUpload: (url: string) => void
@@ -13,33 +14,47 @@ export default function ImageUploader({ onUpload, currentUrl, label = 'Cover Ima
     const fileInputRef = useRef<HTMLInputElement>(null)
     const [uploading, setUploading] = useState(false)
     const [uploadStatus, setUploadStatus] = useState<'idle' | 'success' | 'error'>('idle')
-    const [previewUrl, setPreviewUrl] = useState<string | undefined>(currentUrl)
+    const [errorMessage, setErrorMessage] = useState('')
+    const [previewUrl, setPreviewUrl] = useState<string | undefined>(
+        sanitizeUrl(currentUrl) ?? undefined
+    )
 
     useEffect(() => {
-        setPreviewUrl(currentUrl)
+        setPreviewUrl(sanitizeUrl(currentUrl) ?? undefined)
     }, [currentUrl])
 
     const handleFileChange = async (e: React.ChangeEvent<HTMLInputElement>) => {
         const file = e.target.files?.[0]
         if (!file) return
 
+        const validation = validateImageFile(file)
+        if (!validation.valid) {
+            setErrorMessage(validation.error || 'Invalid file.')
+            setUploadStatus('error')
+            if (fileInputRef.current) {
+                fileInputRef.current.value = ''
+            }
+            return
+        }
+
         setUploading(true)
         setUploadStatus('idle')
+        setErrorMessage('')
 
         const supabase = createBrowserClient(
             process.env.NEXT_PUBLIC_SUPABASE_URL!,
             process.env.NEXT_PUBLIC_SUPABASE_ANON_KEY!
         )
 
-        const timestamp = new Date().getTime()
-        const safeName = file.name.replace(/[^a-zA-Z0-9.\-_]/g, '')
-        const path = `covers/${timestamp}-${safeName}`
+        const path = `covers/${generateSafeStorageFilename(file.name)}`
 
-        const { data, error } = await supabase.storage.from('images').upload(path, file, { cacheControl: '3600', upsert: false })
+        const { error } = await supabase.storage
+            .from('images')
+            .upload(path, file, { cacheControl: '3600', upsert: false, contentType: file.type })
 
         if (error) {
             console.error('Upload error', error)
-            alert(`Upload failed: ${error.message}`)
+            setErrorMessage('Upload failed. Please try again.')
             setUploadStatus('error')
             setUploading(false)
             return
@@ -80,14 +95,18 @@ export default function ImageUploader({ onUpload, currentUrl, label = 'Cover Ima
                 </button>
                 <input
                     type="file"
-                    accept="image/*"
+                    accept="image/jpeg,image/png,image/webp,image/gif"
                     ref={fileInputRef}
                     onChange={handleFileChange}
                     className="hidden"
                 />
 
                 {uploadStatus === 'success' && <span className="text-green-600 text-sm font-medium">Upload complete</span>}
-                {uploadStatus === 'error' && <span className="text-red-600 text-sm font-medium">Upload failed. Try again.</span>}
+                {uploadStatus === 'error' && (
+                    <span className="text-red-600 text-sm font-medium">
+                        {errorMessage || 'Upload failed. Try again.'}
+                    </span>
+                )}
             </div>
         </div>
     )

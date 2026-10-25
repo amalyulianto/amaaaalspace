@@ -1,11 +1,16 @@
 "use client";
 
 import { useState } from "react";
-import { MessageSquare } from "lucide-react";
 import { Comment } from "@/lib/types";
 import { PALESTINE_NAMES } from "@/lib/constants";
+import { SectionHeading } from "@/components/ui/SectionHeading";
+import { Card } from "@/components/ui/Card";
+import { Bullet } from "@/components/ui/Badge";
+import { formatDate } from "@/lib/utils";
+import { useLanguage } from "@/components/layout/ThemeProvider";
 
-export function CommentClient({ postId, initialComments }: { postId: string, initialComments: Comment[] }) {
+export function CommentClient({ postId, initialComments }: { postId: string; initialComments: Comment[] }) {
+    const { lang, t } = useLanguage();
     const [comments] = useState<Comment[]>(initialComments);
     const [commentForm, setCommentForm] = useState({ name: "", message: "", honeypot: "" });
     const [isSubmitting, setIsSubmitting] = useState(false);
@@ -19,9 +24,7 @@ export function CommentClient({ postId, initialComments }: { postId: string, ini
     const handleSubmit = async (e: React.FormEvent) => {
         e.preventDefault();
 
-        // Spam protection (honeypot)
         if (commentForm.honeypot) {
-            console.log("Spam detected");
             return;
         }
 
@@ -33,13 +36,13 @@ export function CommentClient({ postId, initialComments }: { postId: string, ini
                 author_name: commentForm.name,
                 content: commentForm.message,
                 website: commentForm.honeypot,
-            }
+            };
 
             const res = await fetch('/api/comments', {
                 method: 'POST',
                 headers: { 'Content-Type': 'application/json' },
                 body: JSON.stringify(body),
-            })
+            });
 
             if (res.ok) {
                 setSubmitSuccess(true);
@@ -55,69 +58,81 @@ export function CommentClient({ postId, initialComments }: { postId: string, ini
 
     return (
         <section id="comments" className="space-y-8">
-            <div className="flex items-center gap-2">
-                <MessageSquare className="w-5 h-5 text-neutral-500" />
-                <h2 className="text-2xl font-bold">Comments ({comments.length})</h2>
-            </div>
+            <div className="space-y-4">
+                <SectionHeading>
+                    {t.blog.commentsTitle} ({comments.length}) 💬
+                </SectionHeading>
 
-            <div className="space-y-6">
-                {comments.map((comment) => (
-                    <div key={comment.id} className="bg-neutral-50 p-6 rounded-lg border border-neutral-100 space-y-3">
-                        <div className="flex justify-between items-baseline">
-                            <h3 className="font-semibold text-neutral-900">{comment.author_name}</h3>
-                            <time className="text-xs text-neutral-500">
-                                {new Date(comment.created_at).toLocaleDateString()}
-                            </time>
-                        </div>
-                        <p className="text-neutral-700 leading-relaxed whitespace-pre-wrap">{comment.content}</p>
+                {comments.length > 0 ? (
+                    <div className="space-y-5 pt-1">
+                        {comments.map((comment) => (
+                            <div key={comment.id} className="flex items-start gap-3">
+                                <Bullet className="mt-[5px]" />
+                                <div className="min-w-0 space-y-1">
+                                    <p className="text-sm sm:text-[15px] text-foreground leading-relaxed whitespace-pre-wrap m-0">
+                                        {comment.content}
+                                    </p>
+                                    <div className="flex items-center gap-1.5 text-xs text-muted tabular-nums">
+                                        <span className="font-medium text-secondary">
+                                            {comment.author_name}
+                                        </span>
+                                        <span>•</span>
+                                        <time dateTime={comment.created_at}>{formatDate(comment.created_at, lang)}</time>
+                                    </div>
+                                </div>
+                            </div>
+                        ))}
                     </div>
-                ))}
-
-                {comments.length === 0 && (
-                    <p className="text-neutral-500 italic">Belum ada komentar. Mari aja lah kalau mau komeng, aku sule.</p>
+                ) : (
+                    <p className="text-xs sm:text-sm text-muted">
+                        {t.blog.commentsEmpty}
+                    </p>
                 )}
             </div>
 
             {/* Comment Form */}
-            <div className="mt-12 bg-white p-6 md:p-8 rounded-xl border border-neutral-200 shadow-sm">
-                <h3 className="text-lg font-bold mb-6">Balas komentar</h3>
+            <div className="space-y-4 pt-2">
+                <SectionHeading>
+                    {t.blog.replyTitle}
+                </SectionHeading>
 
                 {submitSuccess ? (
-                    <div className="bg-green-50 text-green-800 p-4 rounded-lg border border-green-200">
-                        <p className="font-medium">Makasih udah komeng</p>
-                        <p className="text-sm mt-1">Komengmu sudah masuk, tapi ga tau ya kalo bakal kutampilin di sini. Kalau mood aja sih.</p>
+                    <Card className="space-y-1 text-sm">
+                        <p className="font-semibold text-foreground m-0">{t.blog.thanksTitle}</p>
+                        <p className="text-xs text-secondary m-0">
+                            {t.blog.thanksSubtitle}
+                        </p>
                         <button
+                            type="button"
                             onClick={() => setSubmitSuccess(false)}
-                            className="mt-4 text-sm font-medium underline"
+                            className="pt-2 text-xs font-medium text-foreground underline underline-offset-4"
                         >
-                            Komeng lagi?
+                            {t.blog.commentAgain}
                         </button>
-                    </div>
+                    </Card>
                 ) : (
-                    <form onSubmit={handleSubmit} className="space-y-5">
-                        {/* Honeypot field (hidden from users) */}
-                        <div className="hidden" aria-hidden="true">
-                            <label htmlFor="honeypot">Jangan diisi</label>
-                            <input
-                                type="text"
-                                id="honeypot"
-                                name="honeypot"
-                                value={commentForm.honeypot}
-                                onChange={(e) => setCommentForm({ ...commentForm, honeypot: e.target.value })}
-                                tabIndex={-1}
-                                autoComplete="off"
-                            />
-                        </div>
+                    <form onSubmit={handleSubmit} className="space-y-4">
+                        <input
+                            type="text"
+                            name="website"
+                            value={commentForm.honeypot}
+                            onChange={(e) => setCommentForm({ ...commentForm, honeypot: e.target.value })}
+                            style={{ display: 'none', visibility: 'hidden' }}
+                            tabIndex={-1}
+                            autoComplete="off"
+                        />
 
-                        <div>
-                            <div className="flex justify-between items-baseline mb-1">
-                                <label htmlFor="name" className="block text-sm font-medium text-neutral-700">Nama</label>
+                        <div className="space-y-1.5">
+                            <div className="flex items-center justify-between">
+                                <label htmlFor="name" className="text-xs font-medium text-secondary">
+                                    {t.blog.nameLabel}
+                                </label>
                                 <button
                                     type="button"
                                     onClick={generateRandomName}
-                                    className="text-[0.75rem] text-blue-600 hover:underline font-medium"
+                                    className="text-xs text-muted hover:text-foreground underline underline-offset-4 transition-colors"
                                 >
-                                    Nama Random
+                                    {t.blog.randomName}
                                 </button>
                             </div>
                             <input
@@ -126,31 +141,35 @@ export function CommentClient({ postId, initialComments }: { postId: string, ini
                                 required
                                 value={commentForm.name}
                                 onChange={(e) => setCommentForm({ ...commentForm, name: e.target.value })}
-                                className="w-full px-4 py-2 border border-neutral-300 rounded-lg focus:ring-2 focus:ring-neutral-900 focus:border-neutral-900 outline-none transition-shadow"
-                                placeholder="Jok Mobil"
+                                className="w-full px-3 py-2 text-sm bg-surface/60 border border-border rounded focus:border-foreground outline-none transition-colors placeholder:text-muted text-foreground"
+                                placeholder={t.blog.namePlaceholder}
+                            />
+                        </div>
+
+                        <div className="space-y-1.5">
+                            <label htmlFor="message" className="block text-xs font-medium text-secondary">
+                                {t.blog.messageLabel}
+                            </label>
+                            <textarea
+                                id="message"
+                                required
+                                rows={3}
+                                value={commentForm.message}
+                                onChange={(e) => setCommentForm({ ...commentForm, message: e.target.value })}
+                                className="w-full px-3 py-2 text-sm bg-surface/60 border border-border rounded focus:border-foreground outline-none transition-colors resize-y placeholder:text-muted text-foreground"
+                                placeholder={t.blog.messagePlaceholder}
                             />
                         </div>
 
                         <div>
-                            <label htmlFor="message" className="block text-sm font-medium text-neutral-700 mb-1">Pesan</label>
-                            <textarea
-                                id="message"
-                                required
-                                rows={4}
-                                value={commentForm.message}
-                                onChange={(e) => setCommentForm({ ...commentForm, message: e.target.value })}
-                                className="w-full px-4 py-2 border border-neutral-300 rounded-lg focus:ring-2 focus:ring-neutral-900 focus:border-neutral-900 outline-none transition-shadow resize-y"
-                                placeholder="Apa komengmu tulis sini."
-                            />
+                            <button
+                                type="submit"
+                                disabled={isSubmitting}
+                                className="px-4 py-1.5 bg-foreground text-background text-xs font-medium rounded hover:opacity-85 transition-opacity disabled:opacity-50"
+                            >
+                                {isSubmitting ? t.blog.submitting : t.blog.submitButton}
+                            </button>
                         </div>
-
-                        <button
-                            type="submit"
-                            disabled={isSubmitting}
-                            className="w-full sm:w-auto px-6 py-2.5 bg-neutral-900 text-white font-medium rounded-lg hover:bg-neutral-800 transition-colors disabled:opacity-70 flex items-center justify-center min-w-[120px]"
-                        >
-                            {isSubmitting ? "Mengirim..." : "Kirim Komengtar"}
-                        </button>
                     </form>
                 )}
             </div>

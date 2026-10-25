@@ -6,6 +6,7 @@ import { createBrowserClient } from '@supabase/ssr'
 import ImageUploader from '@/components/admin/ImageUploader'
 import TiptapEditor from '@/components/admin/TiptapEditor'
 import { PortfolioItem, PortfolioCategory } from '@/lib/types'
+import { sanitizeHtml, sanitizeUrl } from '@/lib/security'
 
 export default function EditPortfolioPage({ params }: { params: { id: string } }) {
     const router = useRouter()
@@ -18,6 +19,8 @@ export default function EditPortfolioPage({ params }: { params: { id: string } }
     const [techStackInput, setTechStackInput] = useState('')
     const [coverImageUrl, setCoverImageUrl] = useState('')
     const [projectUrl, setProjectUrl] = useState('')
+    const [playStoreUrl, setPlayStoreUrl] = useState('')
+    const [appStoreUrl, setAppStoreUrl] = useState('')
     const [githubUrl, setGithubUrl] = useState('')
     const [displayOrder, setDisplayOrder] = useState<number>(0)
     const [selectedCategoryIds, setSelectedCategoryIds] = useState<string[]>([])
@@ -58,6 +61,8 @@ export default function EditPortfolioPage({ params }: { params: { id: string } }
             setTechStackInput(item.tech_stack?.join(', ') || '')
             setCoverImageUrl(item.cover_image_url || '')
             setProjectUrl(item.project_url || '')
+            setPlayStoreUrl(item.play_store_url || '')
+            setAppStoreUrl(item.app_store_url || '')
             setGithubUrl(item.github_url || '')
             setDisplayOrder(item.display_order)
             setIsSelected(item.is_selected || false)
@@ -88,7 +93,7 @@ export default function EditPortfolioPage({ params }: { params: { id: string } }
             process.env.NEXT_PUBLIC_SUPABASE_ANON_KEY!
         )
         const newSlug = generateSlug(newCategoryName)
-        const { error } = await supabase.from('portfolio_categories').insert({ name: newCategoryName, slug: newSlug })
+        const { error } = await supabase.from('portfolio_categories').insert({ name: newCategoryName.trim(), slug: newSlug })
         if (error) {
             alert('Failed to add category')
         } else {
@@ -109,6 +114,20 @@ export default function EditPortfolioPage({ params }: { params: { id: string } }
             return
         }
 
+        const urlFields = [
+            { label: 'Public Link', value: projectUrl },
+            { label: 'Play Store Link', value: playStoreUrl },
+            { label: 'Apple Store Link', value: appStoreUrl },
+            { label: 'GitHub Link', value: githubUrl },
+        ]
+
+        for (const field of urlFields) {
+            if (field.value.trim() && !sanitizeUrl(field.value)) {
+                setError(`${field.label} must be a valid http:// or https:// URL.`)
+                return
+            }
+        }
+
         setLoading(true)
         setError('')
 
@@ -125,14 +144,16 @@ export default function EditPortfolioPage({ params }: { params: { id: string } }
         const { error: updateError } = await supabase
             .from('portfolio')
             .update({
-                title,
-                slug,
+                title: title.trim(),
+                slug: slug.trim(),
                 description,
-                content,
+                content: sanitizeHtml(content),
                 tech_stack,
-                cover_image_url: coverImageUrl || null,
-                project_url: projectUrl || null,
-                github_url: githubUrl || null,
+                cover_image_url: sanitizeUrl(coverImageUrl),
+                project_url: sanitizeUrl(projectUrl),
+                play_store_url: sanitizeUrl(playStoreUrl),
+                app_store_url: sanitizeUrl(appStoreUrl),
+                github_url: sanitizeUrl(githubUrl),
                 display_order: displayOrder,
                 is_selected: isSelected
             })
@@ -249,82 +270,105 @@ export default function EditPortfolioPage({ params }: { params: { id: string } }
                             </div>
                         </div>
                     </div>
+                </div>
 
-                    <div className="flex items-center gap-3">
-                        <input
-                            type="checkbox"
-                            id="isSelected"
-                            checked={isSelected}
-                            onChange={(e) => setIsSelected(e.target.checked)}
-                            className="w-4 h-4 text-[#2563EB] border-[#E5E7EB] rounded focus:ring-[#2563EB]"
-                        />
-                        <label htmlFor="isSelected" className="text-sm font-medium text-[#111111]">
-                            Mark as Selected Project
-                        </label>
-                    </div>
+                <div className="flex items-center gap-3">
+                    <input
+                        type="checkbox"
+                        id="isSelected"
+                        checked={isSelected}
+                        onChange={(e) => setIsSelected(e.target.checked)}
+                        className="w-4 h-4 text-[#2563EB] border-[#E5E7EB] rounded focus:ring-[#2563EB]"
+                    />
+                    <label htmlFor="isSelected" className="text-sm font-medium text-[#111111]">
+                        Mark as Selected Project
+                    </label>
+                </div>
 
+                <div>
+                    <label className="block text-sm font-medium text-[#111111] mb-2">Full Content (Blog Style)</label>
+                    <TiptapEditor content={content} onChange={setContent} />
+                </div>
+
+                <div>
+                    <label className="block text-sm font-medium text-[#111111] mb-2">Tech Stack</label>
+                    <input
+                        type="text"
+                        value={techStackInput}
+                        onChange={(e) => setTechStackInput(e.target.value)}
+                        placeholder="Flutter, Dart, Firebase"
+                        className="w-full px-4 py-2 border border-[#E5E7EB] rounded focus:outline-none focus:border-[#2563EB] focus:ring-1 focus:ring-[#2563EB] text-[#111111] transition-colors"
+                    />
+                    <p className="text-[#666666] text-[13px] mt-2">Comma-separated values.</p>
+                </div>
+
+                <div>
+                    <ImageUploader onUpload={setCoverImageUrl} currentUrl={coverImageUrl} />
+                </div>
+
+                <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
                     <div>
-                        <label className="block text-sm font-medium text-[#111111] mb-2">Full Content (Blog Style)</label>
-                        <TiptapEditor content={content} onChange={setContent} />
-                    </div>
-
-                    <div>
-                        <label className="block text-sm font-medium text-[#111111] mb-2">Tech Stack</label>
+                        <label className="block text-sm font-medium text-[#111111] mb-2">Public Link</label>
                         <input
-                            type="text"
-                            value={techStackInput}
-                            onChange={(e) => setTechStackInput(e.target.value)}
-                            placeholder="Flutter, Dart, Firebase"
+                            type="url"
+                            value={projectUrl}
+                            onChange={(e) => setProjectUrl(e.target.value)}
+                            placeholder="https://example.com"
                             className="w-full px-4 py-2 border border-[#E5E7EB] rounded focus:outline-none focus:border-[#2563EB] focus:ring-1 focus:ring-[#2563EB] text-[#111111] transition-colors"
                         />
-                        <p className="text-[#666666] text-[13px] mt-2">Comma-separated values.</p>
                     </div>
-
                     <div>
-                        <ImageUploader onUpload={setCoverImageUrl} currentUrl={coverImageUrl} />
-                    </div>
-
-                    <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
-                        <div>
-                            <label className="block text-sm font-medium text-[#111111] mb-2">Project URL</label>
-                            <input
-                                type="url"
-                                value={projectUrl}
-                                onChange={(e) => setProjectUrl(e.target.value)}
-                                className="w-full px-4 py-2 border border-[#E5E7EB] rounded focus:outline-none focus:border-[#2563EB] focus:ring-1 focus:ring-[#2563EB] text-[#111111] transition-colors"
-                            />
-                        </div>
-                        <div>
-                            <label className="block text-sm font-medium text-[#111111] mb-2">GitHub URL</label>
-                            <input
-                                type="url"
-                                value={githubUrl}
-                                onChange={(e) => setGithubUrl(e.target.value)}
-                                className="w-full px-4 py-2 border border-[#E5E7EB] rounded focus:outline-none focus:border-[#2563EB] focus:ring-1 focus:ring-[#2563EB] text-[#111111] transition-colors"
-                            />
-                        </div>
-                    </div>
-
-                    <div>
-                        <label className="block text-sm font-medium text-[#111111] mb-2">Display Order</label>
+                        <label className="block text-sm font-medium text-[#111111] mb-2">Play Store Link</label>
                         <input
-                            type="number"
-                            value={displayOrder}
-                            onChange={(e) => setDisplayOrder(parseInt(e.target.value) || 0)}
-                            className="w-32 px-4 py-2 border border-[#E5E7EB] rounded focus:outline-none focus:border-[#2563EB] focus:ring-1 focus:ring-[#2563EB] text-[#111111] transition-colors"
+                            type="url"
+                            value={playStoreUrl}
+                            onChange={(e) => setPlayStoreUrl(e.target.value)}
+                            placeholder="https://play.google.com/store/apps/..."
+                            className="w-full px-4 py-2 border border-[#E5E7EB] rounded focus:outline-none focus:border-[#2563EB] focus:ring-1 focus:ring-[#2563EB] text-[#111111] transition-colors"
                         />
                     </div>
-
-                    <div className="pt-6 mt-6 border-t border-[#E5E7EB]">
-                        <button
-                            onClick={handleSave}
-                            disabled={loading}
-                            className="bg-[#111111] text-white px-6 py-2.5 rounded hover:bg-[#2563EB] disabled:opacity-50 transition-colors font-medium w-full sm:w-auto"
-                        >
-                            {loading ? 'Saving...' : 'Save Changes'}
-                        </button>
+                    <div>
+                        <label className="block text-sm font-medium text-[#111111] mb-2">Apple Store Link</label>
+                        <input
+                            type="url"
+                            value={appStoreUrl}
+                            onChange={(e) => setAppStoreUrl(e.target.value)}
+                            placeholder="https://apps.apple.com/app/..."
+                            className="w-full px-4 py-2 border border-[#E5E7EB] rounded focus:outline-none focus:border-[#2563EB] focus:ring-1 focus:ring-[#2563EB] text-[#111111] transition-colors"
+                        />
+                    </div>
+                    <div>
+                        <label className="block text-sm font-medium text-[#111111] mb-2">GitHub Link</label>
+                        <input
+                            type="url"
+                            value={githubUrl}
+                            onChange={(e) => setGithubUrl(e.target.value)}
+                            placeholder="https://github.com/..."
+                            className="w-full px-4 py-2 border border-[#E5E7EB] rounded focus:outline-none focus:border-[#2563EB] focus:ring-1 focus:ring-[#2563EB] text-[#111111] transition-colors"
+                        />
                     </div>
                 </div>
-            </div></div>
+
+                <div>
+                    <label className="block text-sm font-medium text-[#111111] mb-2">Display Order</label>
+                    <input
+                        type="number"
+                        value={displayOrder}
+                        onChange={(e) => setDisplayOrder(parseInt(e.target.value) || 0)}
+                        className="w-32 px-4 py-2 border border-[#E5E7EB] rounded focus:outline-none focus:border-[#2563EB] focus:ring-1 focus:ring-[#2563EB] text-[#111111] transition-colors"
+                    />
+                </div>
+
+                <div className="pt-6 mt-6 border-t border-[#E5E7EB]">
+                    <button
+                        onClick={handleSave}
+                        disabled={loading}
+                        className="bg-[#111111] text-white px-6 py-2.5 rounded hover:bg-[#2563EB] disabled:opacity-50 transition-colors font-medium w-full sm:w-auto"
+                    >
+                        {loading ? 'Saving...' : 'Save Changes'}
+                    </button>
+                </div>
+            </div>
+        </div>
     )
 }

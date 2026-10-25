@@ -10,6 +10,12 @@ import TextAlign from '@tiptap/extension-text-align'
 import { createBrowserClient } from '@supabase/ssr'
 import { useRef } from 'react'
 import { AlignLeft, AlignCenter, AlignRight, AlignJustify } from 'lucide-react'
+import {
+    escapeHtml,
+    generateSafeStorageFilename,
+    sanitizeUrl,
+    validateImageFile,
+} from '@/lib/security'
 
 interface TiptapEditorProps {
     content: string
@@ -74,26 +80,40 @@ export default function TiptapEditor({ content, onChange }: TiptapEditorProps) {
         const previousUrl = editor.getAttributes('link').href
         const url = window.prompt('Enter URL:', previousUrl)
         if (url === null) return
-        if (url === '') {
+        if (url.trim() === '') {
             editor.chain().focus().extendMarkRange('link').unsetLink().run()
             return
         }
-        editor.chain().focus().extendMarkRange('link').setLink({ href: url }).run()
+
+        const safeUrl = sanitizeUrl(url, true)
+        if (!safeUrl) {
+            alert('Invalid URL. Please enter a valid http://, https://, or mailto: URL.')
+            return
+        }
+
+        editor.chain().focus().extendMarkRange('link').setLink({ href: safeUrl }).run()
     }
 
     const uploadEditorImage = async (file: File) => {
+        const validation = validateImageFile(file)
+        if (!validation.valid) {
+            alert(validation.error)
+            return null
+        }
+
         const supabase = createBrowserClient(
             process.env.NEXT_PUBLIC_SUPABASE_URL!,
             process.env.NEXT_PUBLIC_SUPABASE_ANON_KEY!
         )
-        const timestamp = new Date().getTime()
-        const safeName = file.name.replace(/[^a-zA-Z0-9.\-_]/g, '')
-        const path = `posts/${timestamp}-${safeName}`
+        const path = `posts/${generateSafeStorageFilename(file.name)}`
 
-        const { data, error } = await supabase.storage.from('images').upload(path, file, { cacheControl: '3600', upsert: false })
+        const { error } = await supabase.storage
+            .from('images')
+            .upload(path, file, { cacheControl: '3600', upsert: false, contentType: file.type })
+
         if (error) {
             console.error('Image upload failed', error)
-            alert(`Upload failed: ${error.message}`)
+            alert('Image upload failed.')
             return null
         }
         const { data: publicUrlData } = supabase.storage.from('images').getPublicUrl(path)
@@ -148,11 +168,18 @@ export default function TiptapEditor({ content, onChange }: TiptapEditorProps) {
                 <ToolbarButton onClick={() => editor.chain().focus().unsetLink().run()}>Remove Link</ToolbarButton>
                 <span className="w-px h-4 bg-gray-300 mx-1"></span>
                 <ToolbarButton onClick={() => fileInputRef.current?.click()}>Image</ToolbarButton>
-                <input type="file" accept="image/*" ref={fileInputRef} onChange={addImage} className="hidden" />
+                <input
+                    type="file"
+                    accept="image/jpeg,image/png,image/webp,image/gif"
+                    ref={fileInputRef}
+                    onChange={addImage}
+                    className="hidden"
+                />
                 <ToolbarButton onClick={() => {
                     const caption = window.prompt('Enter image caption:')
                     if (caption) {
-                        editor.chain().focus().insertContent(`<p class="text-center text-xs text-neutral-500 mt-2 italic">${caption}</p>`).run()
+                        const safeCaption = escapeHtml(caption.trim())
+                        editor.chain().focus().insertContent(`<p class="text-center text-xs text-neutral-500 mt-2 italic">${safeCaption}</p>`).run()
                     }
                 }}>Caption</ToolbarButton>
                 <span className="w-px h-4 bg-gray-300 mx-1"></span>

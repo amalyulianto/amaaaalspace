@@ -1,4 +1,4 @@
-import { createClient } from '@/lib/supabase/server'
+import { createPublicClient } from '@/lib/supabase/server'
 import { GuestbookEntry } from '@/lib/types'
 
 import { Card } from '../ui/Card'
@@ -16,7 +16,7 @@ function getInitials(name: string) {
 }
 
 export default async function GuestbookList() {
-    const supabase = createClient()
+    const supabase = createPublicClient()
 
     const { data } = await supabase
         .from('guestbook')

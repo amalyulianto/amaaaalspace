@@ -1,12 +1,12 @@
 import { createPublicClient } from '@/lib/supabase/server'
 import ProjectCard from '@/components/portfolio/ProjectCard'
-import { PortfolioItem } from '@/lib/types'
+import { PortfolioItem, PortfolioCategory } from '@/lib/types'
 import type { Metadata } from 'next'
-import { SectionHeading } from '@/components/ui/SectionHeading'
 import CategoryFilter from '@/components/portfolio/CategoryFilter'
-import { PortfolioCategory } from '@/lib/types'
+import { SectionHeading } from '@/components/ui/SectionHeading'
+import { T } from '@/components/layout/ThemeProvider'
 
-export const revalidate = 60;
+export const revalidate = 60
 
 export const metadata: Metadata = {
     title: 'Portfolio',
@@ -34,55 +34,58 @@ export default async function PortfolioPage({ searchParams }: { searchParams: { 
     const categories: PortfolioCategory[] = categoriesData ?? []
 
     if (activeSlug) {
-        items = items.filter(item =>
-            item.portfolio_categories?.some((cat: any) => cat.slug === activeSlug)
+        items = items.filter((item) =>
+            item.portfolio_categories?.some((cat) => cat.slug === activeSlug)
         )
     }
 
-    const selectedItems = items.filter(i => i.is_selected)
-    const otherItems = items.filter(i => !i.is_selected)
+    const selectedItems = items.filter((i) => i.is_selected)
+    const otherItems = items.filter((i) => !i.is_selected)
 
-    const groupedItems: Record<string, PortfolioItem[]> = {}
+    const groupedItems: { titleKey: 'highlighted' | 'others'; items: PortfolioItem[] }[] = []
 
     if (selectedItems.length > 0) {
-        groupedItems['Highlighted Karya'] = selectedItems
+        groupedItems.push({ titleKey: 'highlighted', items: selectedItems })
     }
 
     if (otherItems.length > 0) {
-        groupedItems['Karya Lainnya'] = otherItems
+        groupedItems.push({ titleKey: 'others', items: otherItems })
     }
 
-    const sortedGroups = Object.entries(groupedItems)
-
     return (
-        <div className="space-y-2 animate-in fade-in duration-500">
-            <header className="space-y-4 border-b border-neutral-100 dark:border-neutral-800 pb-8">
-                <h1 className="text-3xl font-bold tracking-tight text-neutral-900 dark:text-neutral-100">Karya</h1>
-                <p className="text-lg text-neutral-600 dark:text-neutral-400 max-w-2xl">
-                    Karya-karya yang pernah dibuat yang berani dipublikasikan. Tidak semua bagus, tapi ada yang bagus, kok...
+        <div className="space-y-8 animate-in fade-in duration-500">
+            <header className="space-y-5">
+                <h1 className="text-[32px] sm:text-[36px] font-bold tracking-tight text-foreground leading-tight m-0">
+                    <T section="portfolio" k="title" />
+                </h1>
+
+                <p className="text-sm sm:text-[15px] text-secondary leading-relaxed m-0">
+                    <T section="portfolio" k="subtitle" />
                 </p>
 
-                <div className="pt-4">
+                <div className="pt-1">
                     <CategoryFilter categories={categories} activeSlug={activeSlug} />
                 </div>
             </header>
 
-            <div className="space-y-8">
-                {sortedGroups.length > 0 ? (
-                    sortedGroups.map(([categoryName, categoryItems]) => (
-                        <section key={categoryName}>
-                            <SectionHeading className="border-b border-neutral-100 dark:border-neutral-800 pb-2">
-                                {categoryName}
+            <div className="space-y-8 pt-1">
+                {groupedItems.length > 0 ? (
+                    groupedItems.map((group) => (
+                        <section key={group.titleKey} className="space-y-4">
+                            <SectionHeading>
+                                <T section="portfolio" k={group.titleKey} />
                             </SectionHeading>
-                            <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
-                                {categoryItems.map((item) => (
+                            <div className="space-y-4">
+                                {group.items.map((item) => (
                                     <ProjectCard key={item.id} item={item} />
                                 ))}
                             </div>
                         </section>
                     ))
                 ) : (
-                    <p className="text-neutral-500 dark:text-neutral-400">Belum ada karya.</p>
+                    <p className="text-sm text-muted py-4">
+                        <T section="portfolio" k="empty" />
+                    </p>
                 )}
             </div>
         </div>

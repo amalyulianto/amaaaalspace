@@ -1,26 +1,15 @@
 import { createPublicClient } from '@/lib/supabase/server'
 import type { Metadata } from 'next'
-import Image from 'next/image'
 import { LinkItem } from '@/lib/types'
-import {
-    Link2, Mail, Globe, Book, Briefcase, FileText, Code,
-    MessageSquare, Coffee, Video, Music, Monitor, Smartphone, Heart, Star, Cloud
-} from 'lucide-react'
+import { ProfileBadge } from '@/components/ui/Badge'
+import { ArrowUpRight } from 'lucide-react'
+import { sanitizeUrl } from '@/lib/security'
 
-export const revalidate = 60;
+export const revalidate = 60
 
 export const metadata: Metadata = {
     title: 'Links | Amal Yulianto',
     description: 'All my important links in one place.',
-}
-
-const getIcon = (name: string | null) => {
-    if (!name) return Link2;
-    const icons: Record<string, any> = {
-        Mail, Globe, Book, Briefcase, FileText, Code,
-        MessageSquare, Coffee, Video, Music, Monitor, Smartphone, Heart, Star, Cloud, Link2
-    }
-    return icons[name] || Link2;
 }
 
 export default async function LinksPage() {
@@ -31,59 +20,50 @@ export default async function LinksPage() {
         .select('*')
         .order('display_order', { ascending: true })
 
-    const links: LinkItem[] = linksData || []
+    const links: LinkItem[] = (linksData || [])
+        .map((link) => {
+            const safeUrl = sanitizeUrl(link.url, true)
+            return safeUrl ? { ...link, url: safeUrl } : null
+        })
+        .filter((link): link is LinkItem => link !== null)
 
     return (
-        <div className="max-w-xl mx-auto pt-8 pb-16 animate-in fade-in duration-500">
-            <header className="text-center mb-12">
-                <div className="w-20 h-20 bg-neutral-100 dark:bg-neutral-800 rounded-full mx-auto mb-6 flex items-center justify-center border border-neutral-200 dark:border-neutral-700 shadow-sm overflow-hidden text-2xl font-bold text-neutral-400 dark:text-neutral-500 relative">
-                    <Image
-                        src="/profile.png"
-                        alt="Amal Yulianto"
-                        fill
-                        className="object-cover"
-                        priority
-                    />
-                </div>
-                <h1 className="text-2xl font-bold text-neutral-900 dark:text-neutral-100 mb-2">Amal Yulianto</h1>
-                <p className="text-neutral-500 dark:text-neutral-400">I'm Batman.</p>
+        <div className="space-y-8 animate-in fade-in duration-500">
+            <header className="space-y-5">
+                <h1 className="text-[32px] sm:text-[36px] font-bold tracking-tight text-foreground leading-tight m-0">
+                    Important Links 🔗
+                </h1>
+
+                <ProfileBadge />
+
+                <p className="text-sm sm:text-[15px] text-secondary leading-relaxed m-0">
+                    I&apos;m Batman.
+                </p>
             </header>
 
-            <div className="space-y-4">
-                {links.map((link) => {
-                    const Icon = getIcon(link.icon);
-                    return (
+            <div className="space-y-4 pt-1">
+                {links.length > 0 ? (
+                    links.map((link) => (
                         <a
                             key={link.id}
                             href={link.url}
                             target="_blank"
                             rel="noopener noreferrer"
-                            className="group flex items-center p-4 bg-white dark:bg-neutral-900 border border-neutral-200 dark:border-neutral-800 rounded-xl hover:border-neutral-900 dark:hover:border-neutral-100 hover:shadow-sm transition-all duration-300 no-underline relative overflow-hidden"
+                            className="group flex items-center justify-between gap-4 py-1 no-underline transition-colors"
                         >
-                            {/* Hover background effect */}
-                            <div className="absolute inset-0 bg-neutral-50 dark:bg-neutral-800/50 translate-y-full group-hover:translate-y-0 transition-transform duration-300 pointer-events-none" />
+                            <span className="text-sm sm:text-[15px] font-medium text-foreground group-hover:underline underline-offset-4 truncate">
+                                {link.title}
+                            </span>
 
-                            <div className="relative z-10 flex items-center w-full">
-                                <div className="w-10 h-10 rounded-full bg-neutral-100 dark:bg-neutral-800 flex items-center justify-center text-neutral-600 dark:text-neutral-400 group-hover:bg-white dark:group-hover:bg-neutral-900 group-hover:text-neutral-900 dark:group-hover:text-neutral-100 transition-colors border border-transparent group-hover:border-neutral-200 dark:group-hover:border-neutral-700 shrink-0">
-                                    <Icon className="w-5 h-5" />
-                                </div>
-                                <div className="flex-1 text-center font-medium text-neutral-900 dark:text-neutral-100 truncate px-4">
-                                    {link.title}
-                                </div>
-                                <div className="w-10 h-10 shrink-0 flex items-center justify-center opacity-0 group-hover:opacity-100 transition-opacity">
-                                    <Globe className="w-4 h-4 text-neutral-400 dark:text-neutral-600" />
-                                </div>
-                            </div>
+                            <ArrowUpRight className="w-4 h-4 text-muted group-hover:text-foreground transition-colors shrink-0" />
                         </a>
-                    )
-                })}
-
-                {links.length === 0 && (
-                    <div className="text-center py-10 border border-dashed border-neutral-200 dark:border-neutral-800 rounded-xl bg-neutral-50/50 dark:bg-neutral-900/50">
-                        <p className="text-neutral-500 dark:text-neutral-400">No links added yet.</p>
-                    </div>
+                    ))
+                ) : (
+                    <p className="text-sm text-muted py-4">
+                        No links added yet.
+                    </p>
                 )}
             </div>
-        </div >
+        </div>
     )
 }

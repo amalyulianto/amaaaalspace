@@ -6,6 +6,7 @@ import { createBrowserClient } from '@supabase/ssr'
 import TiptapEditor from '@/components/admin/TiptapEditor'
 import ImageUploader from '@/components/admin/ImageUploader'
 import { Category, Post } from '@/lib/types'
+import { sanitizeHtml, sanitizeUrl } from '@/lib/security'
 
 export default function EditPostPage({ params }: { params: { id: string } }) {
     const router = useRouter()
@@ -47,7 +48,7 @@ export default function EditPostPage({ params }: { params: { id: string } }) {
             process.env.NEXT_PUBLIC_SUPABASE_URL!,
             process.env.NEXT_PUBLIC_SUPABASE_ANON_KEY!
         )
-        const { data, error } = await supabase.from('posts').select('*').eq('id', id).single()
+        const { data } = await supabase.from('posts').select('*').eq('id', id).single()
         if (data) {
             const post = data as Post
             setTitle(post.title)
@@ -85,7 +86,7 @@ export default function EditPostPage({ params }: { params: { id: string } }) {
             process.env.NEXT_PUBLIC_SUPABASE_ANON_KEY!
         )
         const newSlug = generateSlug(newCategoryName)
-        const { error } = await supabase.from('categories').insert({ name: newCategoryName, slug: newSlug })
+        const { error } = await supabase.from('categories').insert({ name: newCategoryName.trim(), slug: newSlug })
         if (error) {
             alert('Failed to add category')
         } else {
@@ -116,11 +117,11 @@ export default function EditPostPage({ params }: { params: { id: string } }) {
         const { error: updateError } = await supabase
             .from('posts')
             .update({
-                title,
-                slug,
+                title: title.trim(),
+                slug: slug.trim(),
                 excerpt,
-                content,
-                cover_image_url: coverImageUrl || null,
+                content: sanitizeHtml(content),
+                cover_image_url: sanitizeUrl(coverImageUrl),
                 category_id: categoryId || null,
                 status,
                 published_at: finalPublishedAt,

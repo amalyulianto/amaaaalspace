@@ -1,16 +1,28 @@
 import slugify from 'slugify'
-import { format } from 'date-fns'
+import { Language } from './constants'
 
 export function generateSlug(text: string): string {
     return slugify(text, { lower: true, strict: true, trim: true })
 }
 
-export function formatDate(dateString: string): string {
-    return format(new Date(dateString), 'MMMM d, yyyy')
+export function formatDate(dateString: string | null | undefined, lang: Language = 'ID'): string {
+    if (!dateString) return ''
+    const locale = lang === 'EN' ? 'en-US' : 'id-ID'
+    return new Date(dateString).toLocaleDateString(locale, {
+        day: 'numeric',
+        month: 'long',
+        year: 'numeric',
+    })
 }
 
-export function formatDateShort(dateString: string): string {
-    return format(new Date(dateString), 'MMM d, yyyy')
+export function formatDateShort(dateString: string | null | undefined, lang: Language = 'ID'): string {
+    if (!dateString) return ''
+    const locale = lang === 'EN' ? 'en-US' : 'id-ID'
+    return new Date(dateString).toLocaleDateString(locale, {
+        day: 'numeric',
+        month: 'short',
+        year: 'numeric',
+    })
 }
 
 export function truncate(text: string, maxLength: number): string {

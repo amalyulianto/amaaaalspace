@@ -1,12 +1,13 @@
 import { NextResponse } from 'next/server'
-import { createAdminClient } from '@/lib/supabase/admin'
+import { createPublicClient } from '@/lib/supabase/server'
 
 export async function GET() {
-    const supabase = createAdminClient()
+    const supabase = createPublicClient()
 
     await supabase
         .from('posts')
-        .select('count(*)', { count: 'exact', head: true })
+        .select('id', { count: 'exact', head: true })
+        .eq('status', 'published')
 
     return NextResponse.json({ ok: true })
 }

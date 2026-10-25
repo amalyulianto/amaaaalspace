@@ -1,8 +1,9 @@
-import { createAdminClient } from '@/lib/supabase/admin'
+import { createPublicClient } from '@/lib/supabase/server'
+import { escapeXml } from '@/lib/security'
 
 export async function GET() {
-    const supabase = createAdminClient()
-    const siteUrl = process.env.NEXT_PUBLIC_SITE_URL ?? ''
+    const supabase = createPublicClient()
+    const siteUrl = (process.env.NEXT_PUBLIC_SITE_URL ?? '').replace(/\/+$/, '')
 
     const { data: posts } = await supabase
         .from('posts')
@@ -16,7 +17,7 @@ export async function GET() {
         .map(
             (path) => `
   <url>
-    <loc>${siteUrl}${path}</loc>
+    <loc>${escapeXml(`${siteUrl}${path}`)}</loc>
     <changefreq>weekly</changefreq>
   </url>`
         )
@@ -26,8 +27,8 @@ export async function GET() {
         .map(
             (post) => `
   <url>
-    <loc>${siteUrl}/blog/${post.slug}</loc>
-    <lastmod>${new Date(post.updated_at).toISOString().split('T')[0]}</lastmod>
+    <loc>${escapeXml(`${siteUrl}/blog/${encodeURIComponent(post.slug)}`)}</loc>
+    <lastmod>${escapeXml(new Date(post.updated_at).toISOString().split('T')[0])}</lastmod>
     <changefreq>monthly</changefreq>
   </url>`
         )
@@ -41,7 +42,7 @@ ${postUrls}
 
     return new Response(xml, {
         headers: {
-            'Content-Type': 'application/xml',
+            'Content-Type': 'application/xml; charset=utf-8',
         },
     })
 }

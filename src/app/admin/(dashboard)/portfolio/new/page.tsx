@@ -6,6 +6,7 @@ import { createBrowserClient } from '@supabase/ssr'
 import ImageUploader from '@/components/admin/ImageUploader'
 import TiptapEditor from '@/components/admin/TiptapEditor'
 import { PortfolioCategory } from '@/lib/types'
+import { sanitizeHtml, sanitizeUrl } from '@/lib/security'
 
 export default function NewPortfolioPage() {
     const router = useRouter()
@@ -17,6 +18,8 @@ export default function NewPortfolioPage() {
     const [techStackInput, setTechStackInput] = useState('')
     const [coverImageUrl, setCoverImageUrl] = useState('')
     const [projectUrl, setProjectUrl] = useState('')
+    const [playStoreUrl, setPlayStoreUrl] = useState('')
+    const [appStoreUrl, setAppStoreUrl] = useState('')
     const [githubUrl, setGithubUrl] = useState('')
     const [displayOrder, setDisplayOrder] = useState<number>(0)
     const [selectedCategoryIds, setSelectedCategoryIds] = useState<string[]>([])
@@ -52,7 +55,7 @@ export default function NewPortfolioPage() {
             process.env.NEXT_PUBLIC_SUPABASE_ANON_KEY!
         )
         const newSlug = generateSlug(newCategoryName)
-        const { error } = await supabase.from('portfolio_categories').insert({ name: newCategoryName, slug: newSlug })
+        const { error } = await supabase.from('portfolio_categories').insert({ name: newCategoryName.trim(), slug: newSlug })
         if (error) {
             alert('Failed to add category')
         } else {
@@ -73,6 +76,20 @@ export default function NewPortfolioPage() {
             return
         }
 
+        const urlFields = [
+            { label: 'Public Link', value: projectUrl },
+            { label: 'Play Store Link', value: playStoreUrl },
+            { label: 'Apple Store Link', value: appStoreUrl },
+            { label: 'GitHub Link', value: githubUrl },
+        ]
+
+        for (const field of urlFields) {
+            if (field.value.trim() && !sanitizeUrl(field.value)) {
+                setError(`${field.label} must be a valid http:// or https:// URL.`)
+                return
+            }
+        }
+
         setLoading(true)
         setError('')
 
@@ -87,14 +104,16 @@ export default function NewPortfolioPage() {
         )
 
         const { data: insertedProject, error: insertError } = await supabase.from('portfolio').insert({
-            title,
-            slug,
+            title: title.trim(),
+            slug: slug.trim(),
             description,
-            content,
+            content: sanitizeHtml(content),
             tech_stack,
-            cover_image_url: coverImageUrl || null,
-            project_url: projectUrl || null,
-            github_url: githubUrl || null,
+            cover_image_url: sanitizeUrl(coverImageUrl),
+            project_url: sanitizeUrl(projectUrl),
+            play_store_url: sanitizeUrl(playStoreUrl),
+            app_store_url: sanitizeUrl(appStoreUrl),
+            github_url: sanitizeUrl(githubUrl),
             display_order: displayOrder,
             is_selected: isSelected
         }).select().single()
@@ -162,49 +181,49 @@ export default function NewPortfolioPage() {
                 <div>
                     <label className="block text-sm font-medium text-[#111111] mb-2">Category</label>
                     <div className="flex gap-2 items-center">
-                    <div className="flex gap-4 flex-col items-start">
-                        <div className="flex flex-col gap-2">
-                            {portfolioCategories.map(cat => (
-                                <div key={cat.id} className="flex items-center gap-2">
-                                    <input
-                                        type="checkbox"
-                                        id={`cat-${cat.id}`}
-                                        checked={selectedCategoryIds.includes(cat.id)}
-                                        onChange={(e) => {
-                                            if (e.target.checked) {
-                                                setSelectedCategoryIds(prev => [...prev, cat.id])
-                                            } else {
-                                                setSelectedCategoryIds(prev => prev.filter(id => id !== cat.id))
-                                            }
-                                        }}
-                                        className="w-4 h-4 text-[#2563EB] border-[#E5E7EB] rounded focus:ring-[#2563EB]"
-                                    />
-                                    <label htmlFor={`cat-${cat.id}`} className="text-sm text-[#111111]">
-                                        {cat.name}
-                                    </label>
-                                </div>
-                            ))}
-                            {portfolioCategories.length === 0 && <span className="text-sm text-[#666666]">No categories found.</span>}
-                        </div>
-                        <div className="flex items-center gap-2 mt-2">
-                            <input
-                                type="text"
-                                placeholder="New Category"
-                                value={newCategoryName}
-                                onChange={(e) => setNewCategoryName(e.target.value)}
-                                className="w-40 px-4 py-2 border border-[#E5E7EB] rounded focus:outline-none focus:border-[#2563EB] focus:ring-1 focus:ring-[#2563EB] text-[15px] text-[#111111]"
-                            />
-                            <button
-                                type="button"
-                                onClick={handleAddCategory}
-                                className="border border-[#E5E7EB] px-4 py-2 rounded text-[15px] text-[#111111] hover:bg-[#F3F4F6] transition-colors"
-                            >
-                                Add
-                            </button>
+                        <div className="flex gap-4 flex-col items-start">
+                            <div className="flex flex-col gap-2">
+                                {portfolioCategories.map(cat => (
+                                    <div key={cat.id} className="flex items-center gap-2">
+                                        <input
+                                            type="checkbox"
+                                            id={`cat-${cat.id}`}
+                                            checked={selectedCategoryIds.includes(cat.id)}
+                                            onChange={(e) => {
+                                                if (e.target.checked) {
+                                                    setSelectedCategoryIds(prev => [...prev, cat.id])
+                                                } else {
+                                                    setSelectedCategoryIds(prev => prev.filter(id => id !== cat.id))
+                                                }
+                                            }}
+                                            className="w-4 h-4 text-[#2563EB] border-[#E5E7EB] rounded focus:ring-[#2563EB]"
+                                        />
+                                        <label htmlFor={`cat-${cat.id}`} className="text-sm text-[#111111]">
+                                            {cat.name}
+                                        </label>
+                                    </div>
+                                ))}
+                                {portfolioCategories.length === 0 && <span className="text-sm text-[#666666]">No categories found.</span>}
+                            </div>
+                            <div className="flex items-center gap-2 mt-2">
+                                <input
+                                    type="text"
+                                    placeholder="New Category"
+                                    value={newCategoryName}
+                                    onChange={(e) => setNewCategoryName(e.target.value)}
+                                    className="w-40 px-4 py-2 border border-[#E5E7EB] rounded focus:outline-none focus:border-[#2563EB] focus:ring-1 focus:ring-[#2563EB] text-[15px] text-[#111111]"
+                                />
+                                <button
+                                    type="button"
+                                    onClick={handleAddCategory}
+                                    className="border border-[#E5E7EB] px-4 py-2 rounded text-[15px] text-[#111111] hover:bg-[#F3F4F6] transition-colors"
+                                >
+                                    Add
+                                </button>
+                            </div>
                         </div>
                     </div>
                 </div>
-            </div>
 
                 <div className="flex items-center gap-3">
                     <input
@@ -242,20 +261,42 @@ export default function NewPortfolioPage() {
 
                 <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
                     <div>
-                        <label className="block text-sm font-medium text-[#111111] mb-2">Project URL</label>
+                        <label className="block text-sm font-medium text-[#111111] mb-2">Public Link</label>
                         <input
                             type="url"
                             value={projectUrl}
                             onChange={(e) => setProjectUrl(e.target.value)}
+                            placeholder="https://example.com"
                             className="w-full px-4 py-2 border border-[#E5E7EB] rounded focus:outline-none focus:border-[#2563EB] focus:ring-1 focus:ring-[#2563EB] text-[#111111] transition-colors"
                         />
                     </div>
                     <div>
-                        <label className="block text-sm font-medium text-[#111111] mb-2">GitHub URL</label>
+                        <label className="block text-sm font-medium text-[#111111] mb-2">Play Store Link</label>
+                        <input
+                            type="url"
+                            value={playStoreUrl}
+                            onChange={(e) => setPlayStoreUrl(e.target.value)}
+                            placeholder="https://play.google.com/store/apps/..."
+                            className="w-full px-4 py-2 border border-[#E5E7EB] rounded focus:outline-none focus:border-[#2563EB] focus:ring-1 focus:ring-[#2563EB] text-[#111111] transition-colors"
+                        />
+                    </div>
+                    <div>
+                        <label className="block text-sm font-medium text-[#111111] mb-2">Apple Store Link</label>
+                        <input
+                            type="url"
+                            value={appStoreUrl}
+                            onChange={(e) => setAppStoreUrl(e.target.value)}
+                            placeholder="https://apps.apple.com/app/..."
+                            className="w-full px-4 py-2 border border-[#E5E7EB] rounded focus:outline-none focus:border-[#2563EB] focus:ring-1 focus:ring-[#2563EB] text-[#111111] transition-colors"
+                        />
+                    </div>
+                    <div>
+                        <label className="block text-sm font-medium text-[#111111] mb-2">GitHub Link</label>
                         <input
                             type="url"
                             value={githubUrl}
                             onChange={(e) => setGithubUrl(e.target.value)}
+                            placeholder="https://github.com/..."
                             className="w-full px-4 py-2 border border-[#E5E7EB] rounded focus:outline-none focus:border-[#2563EB] focus:ring-1 focus:ring-[#2563EB] text-[#111111] transition-colors"
                         />
                     </div>

@@ -4,6 +4,7 @@ import { useEffect, useState } from 'react'
 import { createBrowserClient } from '@supabase/ssr'
 import { LinkItem } from '@/lib/types'
 import { ArrowUp, ArrowDown, Trash2, Edit2, Plus } from 'lucide-react'
+import { sanitizeUrl } from '@/lib/security'
 
 const ICON_OPTIONS = [
     'Link2', 'Mail', 'Globe', 'Book', 'Briefcase', 'FileText', 'Code',
@@ -62,14 +63,21 @@ export default function AdminLinksPage() {
 
     const handleSave = async (e: React.FormEvent) => {
         e.preventDefault()
-        setFormLoading(true)
         setError('')
+
+        const safeUrl = sanitizeUrl(url, true)
+        if (!safeUrl) {
+            setError('Please enter a valid http://, https://, or mailto: URL.')
+            return
+        }
+
+        setFormLoading(true)
 
         if (editingId) {
             // Update
             const { error: updateError } = await supabase
                 .from('links')
-                .update({ title, url, icon })
+                .update({ title: title.trim(), url: safeUrl, icon })
                 .eq('id', editingId)
 
             if (updateError) setError(updateError.message)
@@ -82,7 +90,7 @@ export default function AdminLinksPage() {
             const display_order = links.length > 0 ? links[links.length - 1].display_order + 1 : 0
             const { error: insertError } = await supabase
                 .from('links')
-                .insert({ title, url, icon, display_order })
+                .insert({ title: title.trim(), url: safeUrl, icon, display_order })
 
             if (insertError) setError(insertError.message)
             else {
@@ -222,55 +230,62 @@ export default function AdminLinksPage() {
                                         <td colSpan={4} className="py-8 text-center text-[#666666]">No links found. Create one.</td>
                                     </tr>
                                 ) : (
-                                    links.map((link, index) => (
-                                        <tr key={link.id} className="border-b border-[#E5E7EB] last:border-0 hover:bg-gray-50">
-                                            <td className="py-3 px-4 text-center">
-                                                <span className="inline-block p-2 bg-neutral-100 rounded text-neutral-600 text-xs">
-                                                    {link.icon || 'Link2'}
-                                                </span>
-                                            </td>
-                                            <td className="py-3 px-4">
-                                                <div className="font-medium text-[#111111]">{link.title}</div>
-                                                <a href={link.url} target="_blank" rel="noreferrer" className="text-xs text-blue-600 truncate max-w-[200px] inline-block hover:underline">
-                                                    {link.url}
-                                                </a>
-                                            </td>
-                                            <td className="py-3 px-4">
-                                                <div className="flex items-center justify-center gap-1">
-                                                    <button
-                                                        onClick={() => handleMove(index, 'up')}
-                                                        disabled={index === 0}
-                                                        className="p-1 text-gray-500 hover:text-gray-900 disabled:opacity-30 disabled:cursor-not-allowed"
-                                                    >
-                                                        <ArrowUp className="w-4 h-4" />
-                                                    </button>
-                                                    <button
-                                                        onClick={() => handleMove(index, 'down')}
-                                                        disabled={index === links.length - 1}
-                                                        className="p-1 text-gray-500 hover:text-gray-900 disabled:opacity-30 disabled:cursor-not-allowed"
-                                                    >
-                                                        <ArrowDown className="w-4 h-4" />
-                                                    </button>
-                                                </div>
-                                            </td>
-                                            <td className="py-3 px-4 text-right">
-                                                <div className="flex items-center justify-end gap-2">
-                                                    <button
-                                                        onClick={() => handleEdit(link)}
-                                                        className="text-blue-600 hover:text-blue-800 p-1"
-                                                    >
-                                                        <Edit2 className="w-4 h-4" />
-                                                    </button>
-                                                    <button
-                                                        onClick={() => handleDelete(link.id)}
-                                                        className="text-red-500 hover:text-red-700 p-1"
-                                                    >
-                                                        <Trash2 className="w-4 h-4" />
-                                                    </button>
-                                                </div>
-                                            </td>
-                                        </tr>
-                                    ))
+                                    links.map((link, index) => {
+                                        const safeLinkUrl = sanitizeUrl(link.url, true)
+                                        return (
+                                            <tr key={link.id} className="border-b border-[#E5E7EB] last:border-0 hover:bg-gray-50">
+                                                <td className="py-3 px-4 text-center">
+                                                    <span className="inline-block p-2 bg-neutral-100 rounded text-neutral-600 text-xs">
+                                                        {link.icon || 'Link2'}
+                                                    </span>
+                                                </td>
+                                                <td className="py-3 px-4">
+                                                    <div className="font-medium text-[#111111]">{link.title}</div>
+                                                    {safeLinkUrl ? (
+                                                        <a href={safeLinkUrl} target="_blank" rel="noopener noreferrer" className="text-xs text-blue-600 truncate max-w-[200px] inline-block hover:underline">
+                                                            {safeLinkUrl}
+                                                        </a>
+                                                    ) : (
+                                                        <span className="text-xs text-red-500">Invalid URL</span>
+                                                    )}
+                                                </td>
+                                                <td className="py-3 px-4">
+                                                    <div className="flex items-center justify-center gap-1">
+                                                        <button
+                                                            onClick={() => handleMove(index, 'up')}
+                                                            disabled={index === 0}
+                                                            className="p-1 text-gray-500 hover:text-gray-900 disabled:opacity-30 disabled:cursor-not-allowed"
+                                                        >
+                                                            <ArrowUp className="w-4 h-4" />
+                                                        </button>
+                                                        <button
+                                                            onClick={() => handleMove(index, 'down')}
+                                                            disabled={index === links.length - 1}
+                                                            className="p-1 text-gray-500 hover:text-gray-900 disabled:opacity-30 disabled:cursor-not-allowed"
+                                                        >
+                                                            <ArrowDown className="w-4 h-4" />
+                                                        </button>
+                                                    </div>
+                                                </td>
+                                                <td className="py-3 px-4 text-right">
+                                                    <div className="flex items-center justify-end gap-2">
+                                                        <button
+                                                            onClick={() => handleEdit(link)}
+                                                            className="text-blue-600 hover:text-blue-800 p-1"
+                                                        >
+                                                            <Edit2 className="w-4 h-4" />
+                                                        </button>
+                                                        <button
+                                                            onClick={() => handleDelete(link.id)}
+                                                            className="text-red-500 hover:text-red-700 p-1"
+                                                        >
+                                                            <Trash2 className="w-4 h-4" />
+                                                        </button>
+                                                    </div>
+                                                </td>
+                                            </tr>
+                                        )
+                                    })
                                 )}
                             </tbody>
                         </table>

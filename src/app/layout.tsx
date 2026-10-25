@@ -1,6 +1,19 @@
 import type { Metadata } from 'next'
+import localFont from 'next/font/local'
 import './globals.css'
 import { ThemeProvider } from '@/components/layout/ThemeProvider'
+
+const geistSans = localFont({
+  src: './fonts/GeistVF.woff',
+  variable: '--font-geist-sans',
+  weight: '100 900',
+})
+
+const geistMono = localFont({
+  src: './fonts/GeistMonoVF.woff',
+  variable: '--font-geist-mono',
+  weight: '100 900',
+})
 
 export const metadata: Metadata = {
   title: {
@@ -30,10 +43,10 @@ export default function RootLayout({
 }) {
   return (
     <html lang="en" suppressHydrationWarning>
-      <body className="bg-[#FAFAFA] text-[#1A1A1A] dark:bg-[#121212] dark:text-[#D4D4D4] antialiased selection:bg-blue-100 dark:selection:bg-blue-900 transition-colors duration-300 ease-in-out">
+      <body className={`${geistSans.variable} ${geistMono.variable} font-sans bg-background text-foreground antialiased selection:bg-surface selection:text-foreground transition-colors duration-300 ease-in-out`}>
         <ThemeProvider
           attribute="class"
-          defaultTheme="system"
+          defaultTheme="light"
           enableSystem
         >
           {children}

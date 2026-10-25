@@ -1,11 +1,12 @@
 import { createPublicClient } from '@/lib/supabase/server'
 import PostCard from '@/components/blog/PostCard'
 import CategoryFilter from '@/components/blog/CategoryFilter'
+import { T } from '@/components/layout/ThemeProvider'
 import { Post, Category } from '@/lib/types'
 import { notFound } from 'next/navigation'
 import type { Metadata } from 'next'
 
-export const revalidate = 60;
+export const revalidate = 60
 
 type Props = {
     params: { slug: string }
@@ -74,27 +75,30 @@ export default async function CategoryPage({ params }: Props) {
     const allCategories: Category[] = categoriesData ?? []
 
     return (
-        <div className="space-y-12 animate-in fade-in duration-500">
-            <header className="space-y-4 border-b border-neutral-100 dark:border-neutral-800 pb-8">
-                <h1 className="text-3xl font-bold tracking-tight text-neutral-900 dark:text-neutral-100">
-                    Tulisan: {category.name}
+        <div className="space-y-8 animate-in fade-in duration-500">
+            <header className="space-y-5">
+                <h1 className="text-[32px] sm:text-[36px] font-bold tracking-tight text-foreground leading-tight m-0">
+                    <T section="blog" k="title" />
                 </h1>
-                <p className="text-lg text-neutral-600 dark:text-neutral-400 max-w-2xl">
-                    Blog pribadi. Setiap tulisannya dihasilkan setiap kurasa ingin menulis, dan diunggah kalau ingin diunggah. Tentang apa saja.
+
+                <p className="text-sm sm:text-[15px] text-secondary leading-relaxed m-0">
+                    <T section="blog" k="subtitle" />
                 </p>
 
-                <div className="pt-4">
+                <div className="pt-1">
                     <CategoryFilter categories={allCategories} activeSlug={params.slug} />
                 </div>
             </header>
 
-            <div className="divide-y divide-neutral-200 dark:divide-neutral-800">
+            <div className="space-y-4 pt-1">
                 {posts.length > 0 ? (
                     posts.map((post) => (
                         <PostCard key={post.id} post={post} />
                     ))
                 ) : (
-                    <p className="text-neutral-500 dark:text-neutral-400 py-12">No posts found in this category.</p>
+                    <p className="text-sm text-muted py-4">
+                        <T section="blog" k="empty" />
+                    </p>
                 )}
             </div>
         </div>
