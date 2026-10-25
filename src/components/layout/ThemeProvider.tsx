@@ -63,7 +63,8 @@ export function T<S extends keyof (typeof TRANSLATIONS)['ID']>({
     k: keyof (typeof TRANSLATIONS)['ID'][S]
 }) {
     const { t } = useLanguage()
-    return <>{String(t[section][k])}</>
+    const sectionObj = t[section] as Record<string, string>
+    return <>{sectionObj[k as string] ?? ''}</>
 }
 
 export function LocalizedDate({
