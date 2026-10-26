@@ -95,7 +95,7 @@ export const TRANSLATIONS = {
             languagesTitle: 'Languages 🌐',
         },
         music: {
-            title: 'Musik',
+            title: 'Music Dashboard',
             nowPlaying: 'Sedang didengarkan',
             lastPlayed: 'Terakhir didengarkan',
             notPlaying: 'Tidak sedang memutar musik',
@@ -182,7 +182,7 @@ export const TRANSLATIONS = {
             languagesTitle: 'Languages 🌐',
         },
         music: {
-            title: 'Music',
+            title: 'Music Dashboard',
             nowPlaying: 'Now playing',
             lastPlayed: 'Last played',
             notPlaying: 'Not playing anything right now',
