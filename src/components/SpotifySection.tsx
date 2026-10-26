@@ -36,12 +36,12 @@ export default function SpotifySection() {
     const topTracks = data?.topTracks || []
 
     return (
-        <section className="rounded-xl border border-border bg-surface/30 overflow-hidden transition-all">
+        <section className="pt-6 border-t border-border/40 space-y-3">
             {/* Header / Collapse Toggle */}
             <button
                 type="button"
                 onClick={() => setIsExpanded((prev) => !prev)}
-                className="w-full flex items-center justify-between p-4 sm:p-5 text-left hover:bg-surface/50 transition-colors focus-visible:outline-none"
+                className="w-full flex items-center justify-between py-1 text-left group focus-visible:outline-none"
                 aria-expanded={isExpanded}
             >
                 <div className="flex items-center gap-2.5 min-w-0 pr-2">
@@ -64,7 +64,7 @@ export default function SpotifySection() {
                     )}
                 </div>
 
-                <div className="flex items-center gap-2 shrink-0 text-secondary">
+                <div className="flex items-center gap-2 shrink-0 text-secondary group-hover:text-foreground transition-colors">
                     <span className="text-xs hidden sm:inline">
                         {isExpanded ? 'Collapse' : 'Expand'}
                     </span>
@@ -78,15 +78,15 @@ export default function SpotifySection() {
 
             {/* Expandable Content Body */}
             {isExpanded && (
-                <div className="px-4 pb-4 sm:px-5 sm:pb-5 pt-0 space-y-4 border-t border-border/50 animate-in fade-in-50 duration-200">
+                <div className="pt-1 space-y-4 animate-in fade-in-50 duration-200">
                     {loading && !data ? (
-                        <p className="text-sm text-secondary animate-pulse pt-3 m-0">
+                        <p className="text-sm text-secondary animate-pulse m-0">
                             Loading music activity...
                         </p>
                     ) : (
                         <>
                             {/* Now Playing / Last Played */}
-                            <div className="pt-3.5 space-y-1">
+                            <div className="space-y-1">
                                 <div className="text-xs font-medium uppercase tracking-wider text-muted">
                                     {nowPlaying?.isPlaying ? t.music.nowPlaying : t.music.lastPlayed}
                                 </div>
@@ -110,11 +110,8 @@ export default function SpotifySection() {
                                 )}
                             </div>
 
-                            {/* Divider */}
-                            <div className="border-t border-border/40" />
-
                             {/* Top Songs of the Month */}
-                            <div className="space-y-2">
+                            <div className="space-y-2 pt-1">
                                 <div className="text-xs font-medium uppercase tracking-wider text-muted">
                                     {t.music.topMonthlyTitle}
                                 </div>
