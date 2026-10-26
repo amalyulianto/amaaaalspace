@@ -92,6 +92,16 @@ export const TRANSLATIONS = {
             projectsTitle: 'Featured Projects 🚀',
             achievementsTitle: 'Achievements & Awards 🏆',
             skillsTitle: 'Skills 🛠️',
+            languagesTitle: 'Languages 🌐',
+        },
+        music: {
+            title: 'Musik',
+            nowPlaying: 'Sedang didengarkan',
+            lastPlayed: 'Terakhir didengarkan',
+            notPlaying: 'Tidak sedang memutar musik',
+            topMonthlyTitle: 'Lagu Teratas Bulan Ini',
+            plays: 'kali diputar',
+            emptyTopTracks: 'Belum ada data lagu teratas.',
         },
     },
     EN: {
@@ -169,6 +179,16 @@ export const TRANSLATIONS = {
             projectsTitle: 'Featured Projects 🚀',
             achievementsTitle: 'Achievements & Awards 🏆',
             skillsTitle: 'Skills 🛠️',
+            languagesTitle: 'Languages 🌐',
+        },
+        music: {
+            title: 'Music',
+            nowPlaying: 'Now playing',
+            lastPlayed: 'Last played',
+            notPlaying: 'Not playing anything right now',
+            topMonthlyTitle: 'Top Songs of the Month',
+            plays: 'plays',
+            emptyTopTracks: 'No top songs recorded yet.',
         },
     },
 } as const

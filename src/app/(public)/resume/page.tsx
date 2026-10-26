@@ -21,6 +21,7 @@ const DEFAULT_SECTIONS: ResumeSectionKey[] = [
     'projects',
     'achievements',
     'skills',
+    'languages',
 ]
 
 export default async function ResumePage() {
@@ -245,6 +246,32 @@ export default async function ResumePage() {
                                     {skill}
                                 </li>
                             ))}
+                        </ul>
+                    </section>
+                )
+
+            case 'languages':
+                if (!content.languages || content.languages.length === 0) return null
+                return (
+                    <section key={key} className="space-y-4 pt-1">
+                        <SectionHeading>
+                            <T section="resume" k="languagesTitle" />
+                        </SectionHeading>
+                        <ul className="grid grid-cols-2 sm:grid-cols-3 gap-y-2.5 gap-x-6 m-0 p-0 list-none">
+                            {content.languages.map((item, i) => {
+                                const name = typeof item === 'string' ? item : item.language
+                                const fluency = typeof item === 'string' ? undefined : item.fluency
+                                return (
+                                    <li key={i} className="text-base sm:text-[16px] text-secondary">
+                                        <span className="font-medium text-foreground">{name}</span>
+                                        {fluency && (
+                                            <span className="text-muted text-sm ml-1.5">
+                                                · {fluency}
+                                            </span>
+                                        )}
+                                    </li>
+                                )
+                            })}
                         </ul>
                     </section>
                 )

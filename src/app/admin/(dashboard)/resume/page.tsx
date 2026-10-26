@@ -11,6 +11,7 @@ import {
     ResumeOrganisation,
     ResumeProject,
     ResumeAchievement,
+    ResumeLanguage,
 } from '@/lib/types'
 import { ArrowUp, ArrowDown, Plus, Trash2 } from 'lucide-react'
 
@@ -21,6 +22,7 @@ const DEFAULT_SECTIONS: ResumeSectionKey[] = [
     'projects',
     'achievements',
     'skills',
+    'languages',
 ]
 
 const SECTION_LABELS: Record<ResumeSectionKey, { title: string; subtitle: string }> = {
@@ -30,6 +32,7 @@ const SECTION_LABELS: Record<ResumeSectionKey, { title: string; subtitle: string
     projects: { title: 'Featured Projects 🚀', subtitle: 'Key software, web, and design projects' },
     achievements: { title: 'Achievements & Awards 🏆', subtitle: 'Honors, competitions, certifications, and awards' },
     skills: { title: 'Skills 🛠️', subtitle: 'Core technologies and competencies' },
+    languages: { title: 'Languages 🌐', subtitle: 'Languages spoken and fluency levels' },
 }
 
 const initialResumeData: ResumeData = {
@@ -40,6 +43,7 @@ const initialResumeData: ResumeData = {
     projects: [],
     achievements: [],
     skills: [],
+    languages: [],
     section_order: DEFAULT_SECTIONS,
 }
 
@@ -77,6 +81,13 @@ export default function AdminResumePage() {
                 }
             })
 
+            // Normalize languages: support both { language, fluency } and legacy string format
+            const normalizedLanguages: ResumeLanguage[] = Array.isArray(content.languages)
+                ? content.languages.map((item: any) =>
+                      typeof item === 'string' ? { language: item, fluency: '' } : item
+                  )
+                : []
+
             setResumeId(resume.id)
             setData({
                 summary: content.summary || '',
@@ -86,6 +97,7 @@ export default function AdminResumePage() {
                 projects: Array.isArray(content.projects) ? content.projects : [],
                 achievements: Array.isArray(content.achievements) ? content.achievements : [],
                 skills: Array.isArray(content.skills) ? content.skills : [],
+                languages: normalizedLanguages,
                 section_order: mergedOrder,
             })
             setSkillsInput(content.skills?.join(', ') || '')
@@ -109,6 +121,7 @@ export default function AdminResumePage() {
                 .split(',')
                 .map((s) => s.trim())
                 .filter((s) => s !== ''),
+            languages: (data.languages || []).filter((l) => l.language.trim() !== ''),
             section_order: data.section_order || DEFAULT_SECTIONS,
         }
 
@@ -278,6 +291,33 @@ export default function AdminResumePage() {
         setData({
             ...data,
             achievements: moveItem(data.achievements || [], index, direction),
+        })
+    }
+
+    // --- Languages Handlers ---
+    const updateLanguage = (index: number, field: keyof ResumeLanguage, value: string) => {
+        const list = [...(data.languages || [])]
+        list[index] = { ...list[index], [field]: value }
+        setData({ ...data, languages: list })
+    }
+    const addLanguage = () => {
+        setData({
+            ...data,
+            languages: [
+                ...(data.languages || []),
+                { language: '', fluency: '' },
+            ],
+        })
+    }
+    const removeLanguage = (index: number) => {
+        const list = [...(data.languages || [])]
+        list.splice(index, 1)
+        setData({ ...data, languages: list })
+    }
+    const moveLanguageItem = (index: number, direction: 'up' | 'down') => {
+        setData({
+            ...data,
+            languages: moveItem(data.languages || [], index, direction),
         })
     }
 
@@ -717,6 +757,46 @@ export default function AdminResumePage() {
                     </section>
                 )
 
+            case 'languages':
+                const langList = data.languages || []
+                return (
+                    <section key={key} className="p-5 border border-border rounded-xl bg-surface/30 space-y-4">
+                        {renderSectionHeader(key, sectionIndex, addLanguage, 'Add Language')}
+                        <div className="space-y-4">
+                            {langList.map((lang, i) => (
+                                <div key={i} className="p-4 border border-border rounded-xl bg-background space-y-3">
+                                    {renderItemControls(i, langList.length, moveLanguageItem, () => removeLanguage(i))}
+                                    <div className="grid grid-cols-1 md:grid-cols-2 gap-3">
+                                        <div className="space-y-1">
+                                            <label className="block text-xs font-medium text-secondary">Language</label>
+                                            <input
+                                                type="text"
+                                                value={lang.language}
+                                                onChange={(e) => updateLanguage(i, 'language', e.target.value)}
+                                                placeholder="e.g. English, Indonesian, Japanese"
+                                                className="w-full px-3 py-1.5 border border-border rounded-lg text-sm text-foreground bg-surface/50 focus:outline-none focus:border-foreground/50 transition-colors"
+                                            />
+                                        </div>
+                                        <div className="space-y-1">
+                                            <label className="block text-xs font-medium text-secondary">Fluency Level</label>
+                                            <input
+                                                type="text"
+                                                value={lang.fluency || ''}
+                                                onChange={(e) => updateLanguage(i, 'fluency', e.target.value)}
+                                                placeholder="e.g. Native / Bilingual, Professional, Conversational"
+                                                className="w-full px-3 py-1.5 border border-border rounded-lg text-sm text-foreground bg-surface/50 focus:outline-none focus:border-foreground/50 transition-colors"
+                                            />
+                                        </div>
+                                    </div>
+                                </div>
+                            ))}
+                            {langList.length === 0 && (
+                                <p className="text-xs text-muted py-2 italic text-center">No languages added yet. Click &apos;Add Language&apos; above.</p>
+                            )}
+                        </div>
+                    </section>
+                )
+
             default:
                 return null
         }
@@ -730,7 +810,7 @@ export default function AdminResumePage() {
                         Resume 📃
                     </h1>
                     <p className="text-xs sm:text-sm text-secondary m-0">
-                        Manage resume summary, sections, and rearrange item ordering.
+                        Manage resume summary, sections, languages, and rearrange ordering.
                     </p>
                 </div>
                 <button

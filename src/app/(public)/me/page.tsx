@@ -3,6 +3,7 @@
 import Link from 'next/link'
 import { ProfileBadge } from '@/components/ui/Badge'
 import { useLanguage } from '@/components/layout/ThemeProvider'
+import SpotifySection from '@/components/SpotifySection'
 
 export default function PersonalHomePage() {
     const { t } = useLanguage()
@@ -47,6 +48,8 @@ export default function PersonalHomePage() {
                     ))}
                 </ul>
             </nav>
+
+            <SpotifySection />
         </div>
     )
 }

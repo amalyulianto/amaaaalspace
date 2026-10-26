@@ -63,6 +63,7 @@ export type ResumeSectionKey =
   | 'projects'
   | 'achievements'
   | 'skills'
+  | 'languages'
 
 export type ResumeOrganisation = {
   organization: string
@@ -99,6 +100,11 @@ export type ResumeEducation = {
   period: string
 }
 
+export type ResumeLanguage = {
+  language: string
+  fluency?: string
+}
+
 export type ResumeData = {
   summary: string
   experience: ResumeExperience[]
@@ -107,6 +113,7 @@ export type ResumeData = {
   projects?: ResumeProject[]
   achievements?: ResumeAchievement[]
   skills: string[]
+  languages?: ResumeLanguage[]
   section_order?: ResumeSectionKey[]
 }
 
@@ -140,4 +147,24 @@ export type ShortLink = {
   clicks: number
   created_at: string
   updated_at: string
+}
+
+export type NowPlayingTrack = {
+  title: string
+  artist: string
+  album?: string
+  url: string
+  isPlaying: boolean
+}
+
+export type TopTrack = {
+  title: string
+  artist: string
+  url: string
+  playcount: number
+}
+
+export type SpotifyData = {
+  nowPlaying: NowPlayingTrack | null
+  topTracks: TopTrack[]
 }
