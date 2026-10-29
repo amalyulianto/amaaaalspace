@@ -16,11 +16,11 @@ export default function SiteHeader() {
         return null
     }
 
-    const isHome = pathname === '/' || pathname === '/me'
+    const isHome = pathname === '/'
     const isBlogDetail = pathname.startsWith('/blog/') && !pathname.startsWith('/blog/category/')
     const isPortfolioDetail = pathname.startsWith('/portfolio/')
 
-    let backHref = '/me'
+    let backHref = '/'
     let backLabel: string = t.header.backToHome
 
     if (isBlogDetail) {

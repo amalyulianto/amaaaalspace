@@ -17,6 +17,7 @@ const RESERVED_SLUGS = new Set([
     'guestbook',
     'links',
     'me',
+    'alapakadala',
     'admin',
     'api',
     'robots.txt',

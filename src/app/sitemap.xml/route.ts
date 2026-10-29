@@ -11,7 +11,7 @@ export async function GET() {
         .eq('status', 'published')
         .lte('published_at', new Date().toISOString())
 
-    const staticPages = ['/', '/blog', '/portfolio', '/resume', '/guestbook']
+    const staticPages = ['/', '/alapakadala', '/blog', '/portfolio', '/resume', '/guestbook']
 
     const staticUrls = staticPages
         .map(

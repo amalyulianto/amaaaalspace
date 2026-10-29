@@ -69,7 +69,7 @@ export default function AdminNav() {
             {/* Mobile Top Header (< md) */}
             <div className="flex md:hidden items-center justify-between px-4 py-3 border-b border-border bg-surface/50 sticky top-0 z-40 backdrop-blur-md transition-colors">
                 <Link
-                    href="/me"
+                    href="/"
                     className="text-sm font-bold tracking-tight text-foreground no-underline"
                 >
                     Amal&apos;s Space <span className="text-muted font-normal">&rarr;</span>
@@ -100,7 +100,7 @@ export default function AdminNav() {
                         <div>
                             <div className="flex items-center justify-between pb-4 border-b border-border">
                                 <Link
-                                    href="/me"
+                                    href="/"
                                     onClick={() => setMobileOpen(false)}
                                     className="text-sm font-bold text-foreground no-underline"
                                 >
@@ -161,7 +161,7 @@ export default function AdminNav() {
                 <div>
                     <div className="p-6 pb-4 flex items-center justify-between border-b border-border/60">
                         <Link
-                            href="/me"
+                            href="/"
                             className="text-sm tracking-tight font-bold text-foreground hover:text-secondary transition-colors no-underline"
                         >
                             Amal&apos;s Space <span className="text-muted font-normal ml-0.5">&rarr;</span>

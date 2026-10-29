@@ -64,6 +64,8 @@ export async function middleware(request: NextRequest) {
 
     const isAdminRoute = request.nextUrl.pathname.startsWith('/admin')
     const isLoginPage = request.nextUrl.pathname === '/admin/login'
+    const isResetPasswordPage = request.nextUrl.pathname === '/admin/reset-password'
+    const isPublicAdminRoute = isLoginPage || isResetPasswordPage
 
     if (isAdminRoute) {
         response.headers.set('Cache-Control', 'no-store, no-cache, must-revalidate, proxy-revalidate')
@@ -71,7 +73,7 @@ export async function middleware(request: NextRequest) {
         response.headers.set('Expires', '0')
     }
 
-    if (isAdminRoute && !isLoginPage && !isAuthorizedAdmin) {
+    if (isAdminRoute && !isPublicAdminRoute && !isAuthorizedAdmin) {
         const redirectResponse = NextResponse.redirect(new URL('/admin/login', request.url))
         for (const cookie of cookiesToSet) {
             redirectResponse.cookies.set(cookie.name, cookie.value, cookie.options)

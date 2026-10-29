@@ -24,7 +24,7 @@ export default function StudioLandingPage() {
             {/* Bottom Section - Low-key, subtle, non-CTA reference */}
             <footer className="w-full max-w-3xl mx-auto flex justify-center pb-2 sm:pb-4">
                 <Link
-                    href="/me"
+                    href="/"
                     className="text-[11px] text-neutral-400 hover:text-neutral-200 transition-colors font-light underline underline-offset-4 decoration-neutral-700 hover:decoration-neutral-400"
                 >
                     Visit a man&apos;s personal site instead

@@ -42,7 +42,7 @@ export default function AdminLogin() {
             <div className="w-full max-w-[380px] space-y-6">
                 <div className="flex items-center justify-between text-xs text-secondary">
                     <Link
-                        href="/me"
+                        href="/"
                         className="hover:text-foreground transition-colors no-underline"
                     >
                         &larr; Back to site
@@ -71,15 +71,23 @@ export default function AdminLogin() {
                             type="email"
                             value={email}
                             onChange={(e) => setEmail(e.target.value)}
-                            placeholder="amal.yulianto@gmail.com"
+                            placeholder="you@example.com"
                             className="w-full px-3.5 py-2 border border-border bg-background rounded-lg text-sm text-foreground placeholder:text-muted/60 focus:outline-none focus:border-foreground/50 transition-colors"
                             required
                         />
                     </div>
                     <div className="space-y-1.5">
-                        <label className="block text-xs font-medium text-secondary">
-                            Password
-                        </label>
+                        <div className="flex items-center justify-between">
+                            <label className="block text-xs font-medium text-secondary">
+                                Password
+                            </label>
+                            <Link
+                                href="/admin/reset-password"
+                                className="text-xs text-primary hover:underline transition-colors"
+                            >
+                                Forgot password?
+                            </Link>
+                        </div>
                         <input
                             type="password"
                             value={password}
